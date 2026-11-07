@@ -14,6 +14,7 @@
     "typecheck": "pnpm -r typecheck && tsc -p .claude/hooks && tsc -p tools/sdd",
     "db:generate": "pnpm --filter @joj/api db:generate",
     "db:seed": "pnpm --filter @joj/api db:seed",
+    "db:scrape": "pnpm --filter @joj/api db:scrape",
     "db:reset": "pnpm --filter @joj/api db:reset",
     "test:tools": "node --test \"tools/sdd/**/*.test.mts\"",
     "spec:check": "node tools/sdd/spec-check.mts",
