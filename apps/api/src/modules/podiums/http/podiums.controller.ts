@@ -1,15 +1,21 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
+  correctPodiumSchema,
   listPodiumsQuerySchema,
   type PodiumList,
   podiumListSchema,
+  type PodiumRevisionList,
+  podiumRevisionListSchema,
   podiumSchema,
+  publishedPodiumSchema,
   type PodiumResponse,
   type PublishedPodium,
   recordPodiumSchema,
 } from '@joj/shared';
 import { createZodDto, ZodSerializerDto } from 'nestjs-zod';
+import { CorrectPodium } from '../application/use-cases/correct-podium';
+import { ListPodiumRevisions } from '../application/use-cases/list-podium-revisions';
 import { ListPodiums } from '../application/use-cases/list-podiums';
 import { RecordPodium } from '../application/use-cases/record-podium';
 import type { Podium } from '../domain/podium';
@@ -18,6 +24,9 @@ class RecordPodiumDto extends createZodDto(recordPodiumSchema) {}
 class PodiumDto extends createZodDto(podiumSchema) {}
 class ListPodiumsQueryDto extends createZodDto(listPodiumsQuerySchema) {}
 class PodiumListDto extends createZodDto(podiumListSchema) {}
+class CorrectPodiumDto extends createZodDto(correctPodiumSchema) {}
+class PublishedPodiumDto extends createZodDto(publishedPodiumSchema) {}
+class PodiumRevisionListDto extends createZodDto(podiumRevisionListSchema) {}
 
 /** Couche fine : valider (DTO zod), appeler un cas d'usage, sérialiser. Aucune règle métier ici. */
 @ApiTags('podiums')
@@ -26,6 +35,8 @@ export class PodiumsController {
   constructor(
     private readonly recordPodium: RecordPodium,
     private readonly listPodiums: ListPodiums,
+    private readonly correctPodium: CorrectPodium,
+    private readonly listPodiumRevisions: ListPodiumRevisions,
   ) {}
 
   @Post()
@@ -39,6 +50,26 @@ export class PodiumsController {
   async list(@Query() query: ListPodiumsQueryDto): Promise<PodiumList> {
     const podiums = await this.listPodiums.execute(query);
     return { items: podiums.map(toPublishedResponse) };
+  }
+
+  @Put(':id')
+  @ZodSerializerDto(PublishedPodiumDto)
+  async correct(@Param('id') id: string, @Body() body: CorrectPodiumDto): Promise<PublishedPodium> {
+    return toPublishedResponse(await this.correctPodium.execute({ id, ...body }));
+  }
+
+  @Get(':id/revisions')
+  @ZodSerializerDto(PodiumRevisionListDto)
+  async revisions(@Param('id') id: string): Promise<PodiumRevisionList> {
+    const revisions = await this.listPodiumRevisions.execute(id);
+    return {
+      items: revisions.map((revision) => ({
+        gold: revision.gold,
+        silver: revision.silver,
+        bronze: revision.bronze,
+        correctedAt: revision.correctedAt.toISOString(),
+      })),
+    };
   }
 }
 

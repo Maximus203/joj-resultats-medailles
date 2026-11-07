@@ -85,7 +85,9 @@ function contractTests(open: () => DatabaseConnection) {
       correctedAt: new Date('2026-11-05T19:00:00.000Z'),
     };
 
-    await expect(repository.saveCorrection(corrected, brokenRevision)).rejects.toThrow();
+    await expect(repository.saveCorrection(corrected, brokenRevision)).rejects.toThrow(
+      /failed query/i,
+    );
 
     expect(await repository.findById(original.id)).toMatchObject({
       gold: 'SEN',

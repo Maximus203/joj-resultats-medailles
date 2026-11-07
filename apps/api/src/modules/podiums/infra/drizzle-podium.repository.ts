@@ -10,6 +10,8 @@ import { podiumAlreadyRecorded } from '../domain/podiums.errors';
 import { toPodium, toPodiumRow } from './podium.mapper';
 import { PODIUMS_EVENT_KEY_UNIQUE, podiumRevisions, podiums } from './podiums.schema';
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 @Injectable()
 export class DrizzlePodiumRepository extends PodiumRepository {
   constructor(@Inject(DATABASE) private readonly db: Database) {
@@ -36,6 +38,8 @@ export class DrizzlePodiumRepository extends PodiumRepository {
   }
 
   async findById(id: string): Promise<Podium | null> {
+    // Un identifiant qui n'est pas un UUID ne peut désigner aucun podium (et la base le refuserait).
+    if (!UUID.test(id)) return null;
     const [row] = await this.db.select().from(podiums).where(eq(podiums.id, id));
     return row ? toPodium(row) : null;
   }
