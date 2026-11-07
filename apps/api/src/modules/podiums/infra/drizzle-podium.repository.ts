@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Database } from '../../../core/database/database';
 import { DATABASE } from '../../../core/database/database.module';
@@ -8,7 +8,7 @@ import type { Podium } from '../domain/podium';
 import type { PodiumRevision } from '../domain/podium-revision';
 import { podiumAlreadyRecorded } from '../domain/podiums.errors';
 import { toPodium, toPodiumRow } from './podium.mapper';
-import { PODIUMS_EVENT_KEY_UNIQUE, podiums } from './podiums.schema';
+import { PODIUMS_EVENT_KEY_UNIQUE, podiumRevisions, podiums } from './podiums.schema';
 
 @Injectable()
 export class DrizzlePodiumRepository extends PodiumRepository {
@@ -35,15 +35,37 @@ export class DrizzlePodiumRepository extends PodiumRepository {
     return rows.map(toPodium);
   }
 
-  async findById(_id: string): Promise<Podium | null> {
-    throw new Error('non implémenté');
+  async findById(id: string): Promise<Podium | null> {
+    const [row] = await this.db.select().from(podiums).where(eq(podiums.id, id));
+    return row ? toPodium(row) : null;
   }
 
-  async saveCorrection(_podium: Podium, _revision: PodiumRevision | null): Promise<void> {
-    throw new Error('non implémenté');
+  async saveCorrection(podium: Podium, revision: PodiumRevision | null): Promise<void> {
+    await this.db.transaction(async (tx) => {
+      await tx
+        .update(podiums)
+        .set({
+          gold: podium.gold,
+          silver: podium.silver,
+          bronze: podium.bronze,
+          correctedAt: podium.correctedAt,
+        })
+        .where(eq(podiums.id, podium.id));
+      if (revision) await tx.insert(podiumRevisions).values({ podiumId: podium.id, ...revision });
+    });
   }
 
-  async revisionsOf(_id: string): Promise<PodiumRevision[]> {
-    throw new Error('non implémenté');
+  async revisionsOf(id: string): Promise<PodiumRevision[]> {
+    const rows = await this.db
+      .select()
+      .from(podiumRevisions)
+      .where(eq(podiumRevisions.podiumId, id))
+      .orderBy(desc(podiumRevisions.correctedAt));
+    return rows.map(({ gold, silver, bronze, correctedAt }) => ({
+      gold,
+      silver,
+      bronze,
+      correctedAt,
+    }));
   }
 }

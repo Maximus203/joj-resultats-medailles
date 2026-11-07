@@ -1,6 +1,15 @@
 // Lu par drizzle-kit pour générer les migrations : ce fichier n'importe que drizzle-orm.
 import { sql } from 'drizzle-orm';
-import { check, date, pgTable, timestamp, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  check,
+  date,
+  index,
+  pgTable,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const PODIUMS_EVENT_KEY_UNIQUE = 'podiums_event_key_key';
 
@@ -32,3 +41,22 @@ export const podiums = pgTable(
 );
 
 export type PodiumRow = typeof podiums.$inferSelect;
+
+/** Les versions remplacées d'un podium : une ligne par correction. */
+export const podiumRevisions = pgTable(
+  'podium_revisions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    podiumId: uuid('podium_id')
+      .notNull()
+      .references(() => podiums.id),
+    gold: varchar('gold', { length: 3 }).notNull(),
+    silver: varchar('silver', { length: 3 }).notNull(),
+    bronze: varchar('bronze', { length: 3 }).notNull(),
+    // Le moment où cette version a cessé d'être publiée.
+    correctedAt: timestamp('corrected_at', { withTimezone: true, precision: 3 }).notNull(),
+  },
+  (table) => [index('podium_revisions_podium_id_idx').on(table.podiumId)],
+);
+
+export type PodiumRevisionRow = typeof podiumRevisions.$inferSelect;
