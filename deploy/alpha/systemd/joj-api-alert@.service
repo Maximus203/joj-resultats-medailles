@@ -1,0 +1,6 @@
+[Unit]
+Description=JOJ API : alerte Telegram sur échec de %i
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/usr/local/bin/notify.sh "La tâche %i de l API JOJ a échoué sur alpha. Les sauvegardes de la base ne sont peut-être plus faites. Voir : journalctl -u %i" critical'

@@ -25,11 +25,23 @@ services:
       timeout: 5s
       retries: 15
 
-  # Migrations (et seed idempotent) : étape de déploiement à part, l'API ne migre pas en production.
+  # Migrations seules, étape de déploiement à part (l'API ne migre pas en production). Le seed
+  # (données de démonstration de apps/api/data) n'est jamais joué en production.
   migrate:
     image: joj-api:${IMAGE_TAG:-latest}
     container_name: joj-migrate
-    command: ['node', 'scripts/db.mts', 'seed']
+    command:
+      - node
+      - --input-type=module
+      - -e
+      - |
+        import pg from 'pg';
+        import { drizzle } from 'drizzle-orm/node-postgres';
+        import { migrate } from 'drizzle-orm/node-postgres/migrator';
+        const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+        await migrate(drizzle({ client: pool }), { migrationsFolder: 'migrations' });
+        await pool.end();
+        console.log('Migrations appliquées');
     environment:
       DATABASE_URL: postgres://joj:${POSTGRES_PASSWORD}@postgres:5432/joj
     networks: [internal]
@@ -56,11 +68,25 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=web'
-      - 'traefik.http.routers.joj-api.rule=Host(`${API_HOST:-api-joj.artist-dev.com}`)'
+      - 'traefik.http.services.joj-api.loadbalancer.server.port=3000'
+      # Lecture publique : GET/HEAD/OPTIONS, hors documentation.
+      - 'traefik.http.routers.joj-api.rule=Host(`${API_HOST}`) && (Method(`GET`) || Method(`HEAD`) || Method(`OPTIONS`)) && !PathPrefix(`/api/docs`)'
+      - 'traefik.http.routers.joj-api.priority=100'
       - 'traefik.http.routers.joj-api.entrypoints=websecure'
       - 'traefik.http.routers.joj-api.tls=true'
       - 'traefik.http.routers.joj-api.tls.certresolver=letsencrypt'
-      - 'traefik.http.services.joj-api.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.joj-api.service=joj-api'
+      # Tout le reste (écritures, Swagger) : authentification basique, en attendant l'authentification
+      # applicative. Identifiants dans /opt/joj-api/.env (WRITE_USER / WRITE_PASSWORD).
+      - 'traefik.http.routers.joj-api-write.rule=Host(`${API_HOST}`)'
+      - 'traefik.http.routers.joj-api-write.priority=10'
+      - 'traefik.http.routers.joj-api-write.entrypoints=websecure'
+      - 'traefik.http.routers.joj-api-write.tls=true'
+      - 'traefik.http.routers.joj-api-write.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.joj-api-write.service=joj-api'
+      - 'traefik.http.routers.joj-api-write.middlewares=joj-api-auth'
+      - 'traefik.http.middlewares.joj-api-auth.basicauth.users=${WRITE_HTPASSWD:?défini dans .env}'
+      - 'traefik.http.middlewares.joj-api-auth.basicauth.realm=JOJ Dakar 2026'
 
 volumes:
   postgres-data:

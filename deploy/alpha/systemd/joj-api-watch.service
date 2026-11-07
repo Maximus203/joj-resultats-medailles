@@ -1,0 +1,9 @@
+[Unit]
+Description=JOJ API : déploiement continu depuis origin/main et contrôle de santé
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/joj-api/watch.sh
+TimeoutStartSec=20min

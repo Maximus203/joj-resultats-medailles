@@ -1,0 +1,8 @@
+[Unit]
+Description=JOJ API : sauvegarde quotidienne de PostgreSQL
+After=docker.service
+OnFailure=joj-api-alert@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/joj-api/backup.sh

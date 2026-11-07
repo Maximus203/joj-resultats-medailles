@@ -1,0 +1,9 @@
+[Unit]
+Description=JOJ API : sauvegarde chaque nuit à 03h45 (UTC)
+
+[Timer]
+OnCalendar=*-*-* 03:45:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -14,7 +14,9 @@ SHA="$(git rev-parse --short "$REF")"
 [ "$MODE" = worktree ] && SHA="$SHA-wt"
 
 echo "→ Livraison de $SHA vers $HOST:$DIR"
-ssh "$HOST" "mkdir -p '$DIR/src' && cd '$DIR' && [ -f .env ] || { umask 077; printf 'POSTGRES_PASSWORD=%s\nAPI_HOST=%s\n' \"\$(openssl rand -hex 24)\" '$API_HOST' > .env; echo '.env créé (mot de passe Postgres généré)'; }"
+ssh "$HOST" "mkdir -p '$DIR/src'"
+scp -q deploy/alpha/watch.sh deploy/alpha/backup.sh "$HOST:$DIR/"
+ssh "$HOST" "chmod 755 '$DIR/watch.sh' '$DIR/backup.sh' && '$DIR/watch.sh' --ensure-env"
 ssh "$HOST" "rm -rf '$DIR/src'/* '$DIR/src'/.[!.]* 2>/dev/null || true"
 if [ "$MODE" = worktree ]; then
   comm -23 <(git ls-files -co --exclude-standard | sort -u) <(git ls-files -d | sort -u)     | tar -c -T - | ssh "$HOST" "tar -x -C '$DIR/src'"
