@@ -5,6 +5,7 @@ import { DATABASE } from '../../../core/database/database.module';
 import { isUniqueViolation } from '../../../core/database/pg-errors';
 import { PodiumRepository } from '../application/podium.repository';
 import type { Podium } from '../domain/podium';
+import type { PodiumRevision } from '../domain/podium-revision';
 import { podiumAlreadyRecorded } from '../domain/podiums.errors';
 import { toPodium, toPodiumRow } from './podium.mapper';
 import { PODIUMS_EVENT_KEY_UNIQUE, podiums } from './podiums.schema';
@@ -32,5 +33,17 @@ export class DrizzlePodiumRepository extends PodiumRepository {
       .from(podiums)
       .where(day === undefined ? undefined : eq(podiums.day, day));
     return rows.map(toPodium);
+  }
+
+  async findById(_id: string): Promise<Podium | null> {
+    throw new Error('non implémenté');
+  }
+
+  async saveCorrection(_podium: Podium, _revision: PodiumRevision | null): Promise<void> {
+    throw new Error('non implémenté');
+  }
+
+  async revisionsOf(_id: string): Promise<PodiumRevision[]> {
+    throw new Error('non implémenté');
   }
 }
