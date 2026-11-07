@@ -1,0 +1,1599 @@
+/* ==========================================================================
+   Cachet : design system des maquettes JOJ Dakar 2026, resultats et medailles.
+   MAQUETTE STATIQUE : toutes les donnees sont fictives.
+   Polices : chargees depuis Google Fonts pour la maquette seulement ; en
+   production elles sont auto-hebergees (voir proposition-design.md).
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Sofia+Sans+Extra+Condensed:wght@600;800&display=swap');
+
+:root {
+  /* Surfaces et encres : neutres relevés sur le site officiel Dakar 2026 (olympics.com) */
+  --papier: #f4f6f6;
+  --carte: #ffffff;
+  --encre: #121212;
+  --encre-2: #535454;
+  --encre-3: #6b6c6c;
+  --filet: #dee0e0;
+  --filet-fort: #767777;
+
+  /* Identité Dakar 2026 : relevée sur le site officiel, usage décoratif ou après contrôle */
+  --marque-rouge: #981030;
+  --marque-rouge-vif: #c31b2e;
+  --marque-orange: #fe5400;
+  --marque-jaune: #ffb114;
+  --marque-jaune-clair: #ffe72e;
+  --marque-vert: #00a651;
+  --marque-bleu: #007dc5;
+  --marque-ardoise: #27455c;
+
+  /* Action et etats */
+  --action: #121212;
+  --action-sur: #ffffff;
+  --action-doux: #e2f0f1;
+  --anneau: #015bb3;
+  --ok: #01724a;
+  --ok-doux: #dcefe5;
+  --erreur: #b3261e;
+  --erreur-doux: #f8e0dd;
+  --alerte: #7a4f00;
+  --alerte-doux: #f6e8c8;
+  --info: #27455c;
+  --info-doux: #e1e9ef;
+
+  /* Medailles (variante retenue) : toujours accompagnees d'un chiffre, d'un mot et d'un motif */
+  --or: #c99700;
+  --argent: #b4bbc1;
+  --bronze: #c47a3f;
+
+  /* Typographie */
+  --police-titre: 'Sofia Sans Extra Condensed', 'Arial Narrow', sans-serif;
+  --police-texte: 'Be Vietnam Pro', system-ui, sans-serif;
+  --t-xs: 0.8125rem;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-lg: 1.125rem;
+  --t-xl: 1.5rem;
+  --t-2xl: 2rem;
+  --t-rang: 1.75rem;
+
+  /* Espacements (echelle de 4) */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --gouttiere: 1rem;
+  --cible: 2.75rem;
+
+  /* Rayons et ombres */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --ombre-carte: 0 1px 0 var(--filet), 0 6px 16px -10px rgb(18 18 18 / 0.25);
+  --ombre-feuille: 0 -8px 24px -12px rgb(18 18 18 / 0.35);
+
+  /* Mouvement : jamais ease-in sur une interface */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --d-appui: 80ms;
+  --d-rapide: 140ms;
+  --d-base: 220ms;
+  --d-signal: 1200ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --papier: #121212;
+    --carte: #232325;
+    --encre: #f4f6f6;
+    --encre-2: #bcbdbd;
+    --encre-3: #9b9c9c;
+    --filet: #313131;
+    --filet-fort: #767777;
+    --action: #f4f6f6;
+    --action-sur: #121212;
+    --action-doux: #2a2a2b;
+    --anneau: #8ac1e9;
+    --ok: #7fe4b1;
+    --ok-doux: #123325;
+    --erreur: #ff8a80;
+    --erreur-doux: #3a1d1b;
+    --alerte: #ffb114;
+    --alerte-doux: #33280f;
+    --info: #8ac1e9;
+    --info-doux: #1a2b44;
+    --or: #e0b22e;
+    --argent: #b4bbc1;
+    --bronze: #d98a4a;
+    --ombre-carte: 0 1px 0 var(--filet);
+    --ombre-feuille: 0 -8px 24px -12px rgb(0 0 0 / 0.7);
+  }
+}
+:root[data-theme='dark'] {
+  --papier: #121212;
+  --carte: #232325;
+  --encre: #f4f6f6;
+  --encre-2: #bcbdbd;
+  --encre-3: #9b9c9c;
+  --filet: #313131;
+  --filet-fort: #767777;
+  --action: #f4f6f6;
+  --action-sur: #121212;
+  --action-doux: #2a2a2b;
+  --anneau: #8ac1e9;
+  --ok: #7fe4b1;
+  --ok-doux: #123325;
+  --erreur: #ff8a80;
+  --erreur-doux: #3a1d1b;
+  --alerte: #ffb114;
+  --alerte-doux: #33280f;
+  --info: #8ac1e9;
+  --info-doux: #1a2b44;
+  --or: #e0b22e;
+  --argent: #b4bbc1;
+  --bronze: #d98a4a;
+  --ombre-carte: 0 1px 0 var(--filet);
+  --ombre-feuille: 0 -8px 24px -12px rgb(0 0 0 / 0.7);
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--encre);
+  font-family: var(--police-texte);
+  font-size: var(--t-base);
+  line-height: 1.5;
+  min-height: 100dvh;
+  font-variant-numeric: tabular-nums;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--t-2xl);
+}
+h2 {
+  font-size: var(--t-xl);
+}
+h3 {
+  font-size: var(--t-lg);
+}
+p {
+  margin: 0;
+}
+button,
+[role='button'],
+a,
+label[for],
+summary,
+select {
+  cursor: pointer;
+}
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--anneau);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.lien-evitement {
+  position: absolute;
+  left: var(--s-2);
+  top: -4rem;
+  background: var(--encre);
+  color: var(--papier);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  z-index: 50;
+}
+.lien-evitement:focus {
+  top: var(--s-2);
+}
+
+/* ---------- Coque de l'application ---------- */
+.app {
+  max-width: 40rem;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+}
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--gouttiere);
+  padding-top: calc(var(--s-3) + env(safe-area-inset-top));
+  border-bottom: 2px solid var(--encre);
+}
+.marque {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: var(--t-lg);
+  text-decoration: none;
+  color: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+.marque small {
+  display: block;
+  font-family: var(--police-texte);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--encre-2);
+  margin-top: 2px;
+}
+.marque svg {
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+}
+.lien-pro {
+  min-height: var(--cible);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-3);
+  border: 1.5px solid var(--encre);
+  border-radius: var(--r-md);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+}
+.page {
+  padding: var(--s-5) var(--gouttiere);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  flex: 1;
+}
+.page-titre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.surtitre {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--encre-2);
+}
+.chapo {
+  color: var(--encre-2);
+  font-size: var(--t-sm);
+}
+
+/* Barre d'onglets basse : zone du pouce, safe area */
+.onglets {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  background: var(--carte);
+  border-top: 2px solid var(--encre);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.onglets-liste {
+  display: flex;
+  width: 100%;
+  max-width: 40rem;
+}
+.onglet {
+  flex: 1;
+  min-height: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--encre-2);
+  border-top: 4px solid transparent;
+  margin-top: -2px;
+}
+.onglet svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.onglet[aria-current='page'] {
+  color: var(--encre);
+  border-top-color: var(--marque-rouge-vif);
+}
+
+/* ---------- Boutons et champs ---------- */
+.bouton {
+  min-height: 3rem;
+  padding: 0 var(--s-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  border: 2px solid var(--encre);
+  border-radius: var(--r-md);
+  background: var(--action);
+  border-color: var(--action);
+  color: var(--action-sur);
+  font-weight: 700;
+  font-size: var(--t-base);
+  text-decoration: none;
+  transition:
+    transform var(--d-appui) var(--ease),
+    background-color var(--d-rapide) var(--ease);
+}
+.bouton:active {
+  transform: scale(0.98);
+}
+.bouton[disabled],
+.bouton[aria-disabled='true'] {
+  background: var(--filet);
+  border-color: var(--filet);
+  color: var(--encre-3);
+  cursor: not-allowed;
+}
+.bouton-secondaire {
+  background: transparent;
+  color: var(--encre);
+  border-color: var(--encre);
+}
+.bouton-plein {
+  width: 100%;
+}
+@media (hover: hover) {
+  .bouton:not([disabled]):hover {
+    filter: brightness(1.08);
+  }
+  .bouton-secondaire:hover {
+    background: var(--action-doux);
+  }
+}
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.champ > label,
+.champ > .etiquette {
+  font-weight: 600;
+  font-size: var(--t-sm);
+}
+.champ .aide {
+  font-size: var(--t-xs);
+  color: var(--encre-2);
+}
+.champ .msg-erreur {
+  font-size: var(--t-sm);
+  color: var(--erreur);
+  font-weight: 600;
+  display: flex;
+  gap: var(--s-1);
+  align-items: flex-start;
+}
+.saisie {
+  min-height: 3rem;
+  width: 100%;
+  padding: 0 var(--s-3);
+  font-size: 1rem; /* 16 px minimum : pas de zoom automatique sur iOS */
+  background: var(--carte);
+  border: 1.5px solid var(--filet-fort);
+  border-radius: var(--r-md);
+}
+.saisie[aria-invalid='true'] {
+  border-color: var(--erreur);
+  border-width: 2px;
+  background: var(--erreur-doux);
+}
+.saisie-code {
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0;
+}
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.ligne-medaille {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: var(--s-3);
+  align-items: end;
+}
+.ligne-medaille .champ:first-child {
+  min-width: 0;
+}
+
+/* ---------- Bandeaux d'etat ---------- */
+.bandeau {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  border: 1.5px solid currentColor;
+  font-size: var(--t-sm);
+  align-items: flex-start;
+}
+.bandeau svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  margin-top: 1px;
+}
+.bandeau strong {
+  display: block;
+  font-weight: 700;
+}
+.bandeau-erreur {
+  color: var(--erreur);
+  background: var(--erreur-doux);
+}
+.bandeau-alerte {
+  color: var(--alerte);
+  background: var(--alerte-doux);
+}
+.bandeau-info {
+  color: var(--info);
+  background: var(--info-doux);
+}
+.bandeau-ok {
+  color: var(--ok);
+  background: var(--ok-doux);
+}
+.bandeau > div {
+  color: var(--encre);
+}
+.bandeau > div strong {
+  color: inherit;
+}
+.hors-ligne {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  padding: var(--s-2) var(--gouttiere);
+  background: var(--encre);
+  color: var(--papier);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+.hors-ligne svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+}
+
+/* ---------- Pastille de medaille et plaque pays ---------- */
+.med {
+  --med: var(--or);
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: var(--med);
+  border: 1.5px solid var(--encre);
+  color: #1b1a17;
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: 1.125rem;
+  line-height: 1;
+  position: relative;
+}
+.med-or {
+  --med: var(--or);
+}
+.med-argent {
+  --med: var(--argent);
+  box-shadow:
+    inset 0 0 0 3px var(--med),
+    inset 0 0 0 4.5px #1b1a17;
+}
+.med-bronze {
+  --med: var(--bronze);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 3px,
+    rgb(27 26 23 / 0.32) 3px 4.5px
+  );
+}
+.med-bronze > span {
+  background: var(--bronze);
+  border-radius: 50%;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: grid;
+  place-items: center;
+}
+.med-petite {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.9375rem;
+}
+.plaque {
+  display: inline-block;
+  min-width: 3.25rem;
+  padding: 2px var(--s-2);
+  text-align: center;
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  border: 2px solid var(--encre);
+  border-radius: var(--r-sm);
+  background: var(--carte);
+}
+
+/* ---------- Carte podium en timbre ---------- */
+.timbre {
+  position: relative;
+  background: var(--carte);
+  border-radius: var(--r-md);
+  box-shadow: var(--ombre-carte);
+  padding: var(--s-4);
+  /* perforation : encoches demi-rondes sur les bords gauche et droit */
+  --perfo: radial-gradient(circle at 0 50%, transparent 0 7px, #000 7.5px);
+  -webkit-mask:
+    radial-gradient(circle 6px at 0 25%, #0000 98%, #000) left / 51% 50% repeat-y,
+    radial-gradient(circle 6px at 100% 75%, #0000 98%, #000) right / 51% 50% repeat-y;
+  mask:
+    radial-gradient(circle 6px at 0 25%, #0000 98%, #000) left / 51% 50% repeat-y,
+    radial-gradient(circle 6px at 100% 75%, #0000 98%, #000) right / 51% 50% repeat-y;
+}
+.timbre-tete {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  align-items: flex-start;
+  margin-bottom: var(--s-3);
+}
+.timbre-tete h3 {
+  font-size: 1.375rem;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+.meta {
+  font-size: var(--t-xs);
+  color: var(--encre-2);
+}
+.podium {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.podium li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 2.75rem;
+  border-top: 1px dashed var(--filet-fort);
+  padding: var(--s-1) 0;
+}
+.podium .mot {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--encre-2);
+  width: 4.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.podium .nom-pays {
+  color: var(--encre-2);
+  font-size: var(--t-sm);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cachet-corrige {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-height: 2rem;
+  padding: 0 var(--s-2);
+  border: 2px solid var(--alerte);
+  border-radius: var(--r-sm);
+  color: var(--alerte);
+  background: transparent;
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: var(--t-base);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.version-ancienne .plaque,
+.version-ancienne .nom-pays {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.version-ancienne {
+  background: transparent;
+  border: 1.5px dashed var(--filet-fort);
+  box-shadow: none;
+  -webkit-mask: none;
+  mask: none;
+  color: var(--encre-2);
+}
+
+/* ---------- Tableau des medailles ---------- */
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--carte);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--ombre-carte);
+}
+.tableau caption {
+  text-align: left;
+  padding: 0 0 var(--s-2);
+  font-size: var(--t-xs);
+  color: var(--encre-2);
+}
+.tableau thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--encre);
+  color: var(--papier);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--s-2) var(--s-2);
+  text-align: center;
+}
+.tableau thead th:nth-child(2) {
+  text-align: left;
+}
+.tableau thead .med {
+  width: 1.375rem;
+  height: 1.375rem;
+  font-size: 0.8125rem;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+.tableau td,
+.tableau th[scope='row'] {
+  padding: 0 var(--s-2);
+  height: 3.5rem;
+  border-top: 1px solid var(--filet);
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--t-lg);
+}
+.tableau .rang {
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: var(--t-rang);
+  width: 3rem;
+  text-align: center;
+  line-height: 1;
+}
+.tableau .rang small {
+  display: block;
+  font-family: var(--police-texte);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--encre-2);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.tableau .pays {
+  text-align: left;
+  font-weight: 500;
+  font-size: var(--t-base);
+}
+.tableau .pays .plaque {
+  margin-right: var(--s-2);
+}
+.tableau .pays .nom {
+  font-size: var(--t-xs);
+  color: var(--encre-2);
+  display: block;
+  margin-top: 2px;
+}
+.tableau td.or {
+  background: color-mix(in srgb, var(--or) 14%, transparent);
+  font-weight: 700;
+}
+.tableau td.zero {
+  color: var(--encre-3);
+  font-weight: 400;
+}
+.tableau tr.mon-pays {
+  outline: 3px solid var(--anneau);
+  outline-offset: -3px;
+}
+.tableau tr.mon-pays .pays::after {
+  content: 'Mon pays';
+  display: inline-block;
+  margin-left: var(--s-2);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--action-sur);
+  background: var(--action);
+  border-radius: 99px;
+  padding: 1px var(--s-2);
+  vertical-align: middle;
+}
+.tableau tr.vient-de-changer {
+  animation: signal var(--d-signal) var(--ease) 1;
+}
+@keyframes signal {
+  from {
+    background: var(--action-doux);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+/* ---------- Journee : bande de jours, disciplines ---------- */
+.jours {
+  display: flex;
+  gap: var(--s-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: var(--s-1) var(--gouttiere);
+  margin: 0 calc(var(--gouttiere) * -1);
+  scrollbar-width: none;
+}
+.jour {
+  scroll-snap-align: center;
+  flex: none;
+  min-width: 3.5rem;
+  min-height: 3.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--filet-fort);
+  border-radius: var(--r-md);
+  background: var(--carte);
+  text-decoration: none;
+  color: var(--encre);
+  line-height: 1.1;
+}
+.jour b {
+  font-family: var(--police-titre);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.jour span {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--encre-2);
+}
+.jour[aria-current='true'] {
+  background: var(--encre);
+  color: var(--papier);
+  border-color: var(--encre);
+}
+.jour[aria-current='true'] span {
+  color: var(--papier);
+}
+.jour .point {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--marque-rouge-vif);
+  margin-top: 3px;
+}
+.jour .point.sans {
+  background: transparent;
+  border: 1px solid var(--filet-fort);
+}
+.discipline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.discipline-titre {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  border-bottom: 2px solid var(--encre);
+  padding-bottom: var(--s-1);
+}
+.discipline-titre h2 {
+  font-size: var(--t-xl);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.liste-timbres {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+/* ---------- Resume IA (TR5) ---------- */
+.resume {
+  background: var(--carte);
+  border: 2px solid var(--info);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.etiquette-ia {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  align-self: flex-start;
+  min-height: 1.75rem;
+  padding: 0 var(--s-3);
+  border-radius: 99px;
+  background: var(--info);
+  color: var(--carte);
+  font-size: var(--t-xs);
+  font-weight: 700;
+}
+.etiquette-ia svg {
+  width: 1rem;
+  height: 1rem;
+}
+.resume p {
+  font-size: var(--t-base);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+.sources summary {
+  min-height: var(--cible);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: var(--t-sm);
+}
+.sources ul {
+  margin: 0;
+  padding-left: var(--s-5);
+  font-size: var(--t-sm);
+  color: var(--encre-2);
+}
+
+/* ---------- Etats : chargement, vide ---------- */
+.squelette {
+  background: var(--filet);
+  border-radius: var(--r-md);
+  min-height: 3.5rem;
+  animation: respire 1.4s ease-in-out infinite alternate;
+}
+@keyframes respire {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.vide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-5) 0;
+}
+.vide svg {
+  width: 7rem;
+  height: auto;
+  color: var(--encre);
+}
+.vide h2 {
+  font-size: var(--t-xl);
+}
+.vide p {
+  color: var(--encre-2);
+  max-width: 34ch;
+}
+
+/* ---------- Feuille (historique de correction) ---------- */
+.feuille {
+  background: var(--carte);
+  border-top: 2px solid var(--encre);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  box-shadow: var(--ombre-feuille);
+  padding: var(--s-4) var(--gouttiere) calc(var(--s-5) + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* ---------- Barre de maquette (hors application) ---------- */
+.maquette-barre {
+  background: #1b1a17;
+  color: #f4f1e8;
+  font-family: system-ui, sans-serif;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: center;
+}
+.maquette-barre b {
+  background: #c99700;
+  color: #1b1a17;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.maquette-barre a {
+  color: #f4f1e8;
+  text-decoration: none;
+  border: 1px solid #6b675d;
+  border-radius: 99px;
+  padding: 3px 9px;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+}
+.maquette-barre a.actif {
+  background: #f4f1e8;
+  color: #1b1a17;
+  font-weight: 700;
+}
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+@media (min-width: 48rem) {
+  .page {
+    padding: var(--s-6) var(--s-5);
+  }
+  .entete {
+    padding-left: var(--s-5);
+    padding-right: var(--s-5);
+  }
+}
+
+/* Icones inserees par data-ic : taille par defaut */
+[data-ic] > svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+/* Message d'erreur autonome (hors .champ) */
+.msg-erreur {
+  font-size: var(--t-sm);
+  color: var(--erreur);
+  font-weight: 600;
+  display: flex;
+  gap: var(--s-1);
+  align-items: flex-start;
+}
+
+/* ---------- Identite Dakar 2026 : bandeau de marque ----------
+   Le motif et l'emblem viennent du site officiel (voir assets/SOURCES.md) :
+   usage de maquette seulement, droits a obtenir avant diffusion publique. */
+.bandeau-marque {
+  padding: var(--s-3) var(--gouttiere) var(--s-5);
+  padding-top: calc(var(--s-3) + env(safe-area-inset-top));
+  background-repeat: repeat;
+  background-size: 360px auto;
+  background-position: center top;
+}
+.bandeau-marque--rouge {
+  background-color: var(--marque-rouge-vif);
+  background-image: url('assets/main-pattern-red.svg');
+}
+.bandeau-marque--orange {
+  background-color: var(--marque-jaune);
+  background-image: url('assets/main-pattern-orange.svg');
+}
+.bandeau-marque--ardoise {
+  background-color: var(--marque-ardoise);
+  background-image: url('assets/main-pattern-red.svg');
+  background-blend-mode: soft-light;
+}
+.carte-marque {
+  max-width: 40rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  background: #fff;
+  color: #121212;
+  border-radius: var(--r-sm);
+  padding: var(--s-2) var(--s-3);
+  min-height: 3.75rem;
+}
+.carte-marque .marque {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+.carte-marque .marque img {
+  height: 2.25rem;
+  width: auto;
+  display: block;
+}
+.carte-marque .marque small {
+  margin: 0;
+  font-size: 0.6875rem;
+  color: #535454;
+}
+.carte-marque .lien-pro {
+  border-color: #121212;
+  background: #121212;
+  color: #fff;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex: none;
+}
+.carte-marque .lien-pro.actif {
+  background: #fff;
+  color: #121212;
+}
+.titre-bandeau {
+  max-width: 40rem;
+  margin: var(--s-5) auto 0;
+  padding: 0;
+}
+.titre-bandeau h1 {
+  font-size: var(--t-2xl);
+  text-transform: uppercase;
+  color: #121212;
+}
+.bandeau-marque--rouge .titre-bandeau h1,
+.bandeau-marque--rouge .titre-bandeau .surtitre,
+.bandeau-marque--ardoise .titre-bandeau h1,
+.bandeau-marque--ardoise .titre-bandeau .surtitre {
+  color: #fff;
+}
+.titre-bandeau .surtitre {
+  color: #121212;
+}
+.non-officiel {
+  font-size: var(--t-xs);
+  color: var(--encre-2);
+  border-top: 1px dashed var(--filet-fort);
+  padding-top: var(--s-3);
+}
+
+/* ---------- Disciplines (filtre) et Mon pays ---------- */
+.disciplines-filtre {
+  display: flex;
+  gap: var(--s-2);
+  overflow-x: auto;
+  margin: 0 calc(var(--gouttiere) * -1);
+  padding: var(--s-1) var(--gouttiere);
+  scrollbar-width: none;
+}
+.puce {
+  flex: none;
+  min-height: var(--cible);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--filet-fort);
+  border-radius: 99px;
+  background: var(--carte);
+  color: var(--encre);
+  font-weight: 600;
+  font-size: var(--t-sm);
+  text-decoration: none;
+}
+.puce[aria-current='true'] {
+  background: var(--encre);
+  color: var(--papier);
+  border-color: var(--encre);
+}
+.mon-pays-carte {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  min-height: 3.5rem;
+  background: var(--carte);
+  border: 2px solid var(--encre);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  color: inherit;
+}
+.mon-pays-carte .rang-pays {
+  font-family: var(--police-titre);
+  font-weight: 800;
+  font-size: var(--t-xl);
+  line-height: 1;
+}
+.mon-pays-carte .totaux {
+  display: flex;
+  gap: var(--s-2);
+  margin-left: auto;
+  align-items: center;
+  font-weight: 700;
+}
+.mon-pays-carte .totaux span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.mon-pays-carte .totaux .med {
+  width: 1.375rem;
+  height: 1.375rem;
+  font-size: 0.8125rem;
+}
+
+.mon-pays-carte .rang-pays small {
+  display: block;
+  font-family: var(--police-texte);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--encre-2);
+}
+.mon-pays-carte .totaux span {
+  flex-direction: column;
+  gap: 0;
+  min-width: 2.25rem;
+  text-align: center;
+  border-left: 1px solid var(--filet-fort);
+  padding-left: var(--s-2);
+}
+.mon-pays-carte .totaux b {
+  font-family: var(--police-titre);
+  font-size: var(--t-xl);
+  line-height: 1;
+}
+.mon-pays-carte .totaux small {
+  font-size: 0.6875rem;
+  color: var(--encre-2);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Aide de champ, utilisable hors .champ */
+.aide {
+  font-size: var(--t-xs);
+  color: var(--encre-2);
+}
+
+/* ==========================================================================
+   Grille et points de rupture
+   mobile  : moins de 768 px  (une colonne, barre d'onglets basse)
+   tablette: 768 a 1023 px    (une colonne large, navigation en haut, cartes en grille)
+   ordinateur : 1024 px et plus (deux colonnes : contenu + panneau lateral)
+   large   : 1536 px et plus  (largeur de contenu portee a 90 rem)
+   Largeur maximale du contenu : 80 rem ; gouttiere 16 px puis 32 px.
+   ========================================================================== */
+:root {
+  --maxw: 80rem;
+  --bp-tablette: 768px;
+  --bp-ordinateur: 1024px;
+  --bp-large: 1536px;
+}
+.cols {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+.col-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  min-width: 0;
+  order: 2;
+}
+.col-aside {
+  display: contents;
+}
+.col-aside > * {
+  order: 1;
+}
+.col-aside > .note,
+.col-aside > .recents {
+  order: 3;
+}
+.col-saisie {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  order: 1;
+  min-width: 0;
+}
+.page .formulaire .actions {
+  order: 3;
+}
+.page .formulaire .col-aside > .apercu {
+  order: 2;
+}
+.nav-haut {
+  display: none;
+}
+.recents {
+  display: none;
+}
+.liste-compacte {
+  list-style: none;
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.liste-compacte li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-top: 1px dashed var(--filet-fort);
+  font-size: var(--t-sm);
+}
+.liste-compacte li > span {
+  display: inline-flex;
+  gap: var(--s-1);
+  flex: none;
+}
+.liste-compacte .plaque {
+  min-width: 2.75rem;
+  font-size: 1rem;
+  padding: 0 var(--s-1);
+}
+.recents h2 {
+  font-size: var(--t-lg);
+  text-transform: none;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gouttiere: 2rem;
+  }
+  .app {
+    max-width: none;
+    padding-bottom: 0;
+  }
+  .onglets {
+    display: none;
+  }
+  .bandeau-marque {
+    padding-inline: 2rem;
+    padding-bottom: var(--s-6);
+  }
+  .carte-marque,
+  .titre-bandeau {
+    max-width: var(--maxw);
+  }
+  .carte-marque {
+    padding: var(--s-3) var(--s-5);
+    min-height: 4.5rem;
+    gap: var(--s-5);
+  }
+  .carte-marque .marque small {
+    font-size: var(--t-xs);
+  }
+  .nav-haut {
+    display: flex;
+    gap: var(--s-2);
+    margin-right: auto;
+    margin-left: var(--s-5);
+  }
+  .nav-haut a {
+    min-height: var(--cible);
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--s-4);
+    border-radius: 99px;
+    border: 2px solid transparent;
+    font-weight: 700;
+    text-decoration: none;
+    color: #121212;
+  }
+  .nav-haut a[aria-current='page'] {
+    border-color: #121212;
+  }
+  @media (hover: hover) {
+    .nav-haut a:hover {
+      background: #e2f0f1;
+    }
+  }
+  .titre-bandeau h1 {
+    font-size: 3.25rem;
+  }
+  .page {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: var(--s-6) 2rem var(--s-6);
+  }
+  .liste-timbres {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: var(--s-4);
+  }
+  .jours {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+  }
+  .disciplines-filtre {
+    flex-wrap: wrap;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+  }
+  .tableau thead th {
+    padding: var(--s-3) var(--s-4);
+    font-size: var(--t-sm);
+  }
+  .tableau td,
+  .tableau th[scope='row'] {
+    height: 4rem;
+    padding: 0 var(--s-4);
+  }
+  .tableau .rang {
+    width: 6rem;
+  }
+  .tableau .pays .nom {
+    display: inline;
+    margin-left: var(--s-2);
+    font-size: var(--t-base);
+    color: var(--encre);
+  }
+  .tableau td:not(.pays) {
+    width: 8rem;
+  }
+  .tableau tr.mon-pays .pays::after {
+    margin-left: var(--s-3);
+  }
+  .feuille.feuille-fixe {
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: min(40rem, 92vw);
+    border-radius: var(--r-lg);
+    border: 2px solid var(--encre);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    gap: var(--s-6);
+    align-items: start;
+  }
+  .col-main {
+    order: 0;
+  }
+  .col-aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    position: sticky;
+    top: var(--s-4);
+  }
+  .col-aside > *,
+  .col-aside > .note,
+  .col-aside > .recents,
+  .page .formulaire .col-aside > .apercu {
+    order: 0;
+  }
+  .cols:not(:has(.col-aside > :not([hidden]))) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cols:not(:has(.col-aside > :not([hidden]))) .col-aside {
+    display: none;
+  }
+  .page .formulaire {
+    display: grid;
+    grid-template-columns: minmax(0, 32rem) minmax(0, 1fr);
+    column-gap: var(--s-6);
+    row-gap: var(--s-4);
+    align-items: start;
+  }
+  .page .formulaire .col-saisie {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .page .formulaire .actions {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .page .formulaire .col-aside {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    gap: var(--s-5);
+  }
+  .recents {
+    display: block;
+    padding: var(--s-4);
+    background: var(--carte);
+    border: 1.5px solid var(--filet-fort);
+    border-radius: var(--r-md);
+  }
+  .recents.publie {
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+  .titre-bandeau h1 {
+    font-size: 4rem;
+  }
+  .liste-timbres {
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  }
+  .tableau .rang {
+    width: 7rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --maxw: 90rem;
+  }
+  .cols {
+    grid-template-columns: minmax(0, 1fr) 26rem;
+  }
+  .liste-timbres {
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  }
+}
+
+.jour .point {
+  display: block;
+}
+@media (min-width: 768px) {
+  .carte-marque .marque img {
+    height: 3rem;
+  }
+}
+
+.ligne-medaille {
+  align-items: start;
+}
+
+.liste-timbres > li {
+  display: flex;
+}
+.liste-timbres > li > .timbre {
+  flex: 1;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .jours {
+    flex-wrap: nowrap;
+    gap: var(--s-1);
+  }
+  .jour {
+    flex: 1 1 0;
+    min-width: 2.75rem;
+  }
+  .carte-marque .marque small {
+    white-space: nowrap;
+  }
+  .page .formulaire .col-aside {
+    display: block;
+  }
+}
+@media (min-width: 1024px) {
+  .cols > .col-aside {
+    display: flex;
+    grid-template-columns: none;
+    order: 0;
+  }
+  .page .formulaire .col-aside {
+    display: flex;
+  }
+}
+
+@media (min-width: 768px) {
+  .page .formulaire {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 19rem);
+    column-gap: var(--s-5);
+    row-gap: var(--s-4);
+    align-items: start;
+  }
+  .page .formulaire .col-saisie {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .page .formulaire .actions {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .page .formulaire .col-aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-5);
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    order: 0;
+    position: sticky;
+    top: var(--s-4);
+  }
+  .page .formulaire .col-aside > .apercu {
+    order: 0;
+  }
+}
+@media (min-width: 1024px) {
+  .page .formulaire {
+    grid-template-columns: minmax(0, 32rem) minmax(0, 1fr);
+    column-gap: var(--s-6);
+  }
+}
+
+@media (min-width: 768px) {
+  .recents.publie {
+    display: block;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .carte-marque .marque small {
+    white-space: normal;
+    max-width: 10rem;
+  }
+}

@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Maquette TR3, TR4, TR5 : résultats d'une journée</title>
+    <link rel="stylesheet" href="cachet.css" />
+    <style>
+      .ent-jour {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--s-3);
+        flex-wrap: wrap;
+      }
+      .fond {
+        position: fixed;
+        inset: 0;
+        background: rgb(27 26 23 / 0.55);
+        z-index: 30;
+      }
+      .feuille-fixe {
+        position: fixed;
+        inset: auto 0 0 0;
+        z-index: 31;
+        max-width: 40rem;
+        margin: 0 auto;
+        max-height: 90dvh;
+        overflow: auto;
+      }
+      .ligne-ver {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-2);
+      }
+      .ligne-ver .meta {
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body data-defaut="jour">
+    <div class="maquette-barre" role="navigation" aria-label="Etats de la maquette">
+      <b>MAQUETTE</b> TR3 · TR4 · TR5 · donnees fictives · <a href="#jour">jour</a
+      ><a href="#correction">correction (TR4)</a><a href="#sans-resume">resume indisponible</a
+      ><a href="#jour-vide">jour vide</a><a href="#chargement">chargement</a
+      ><a href="#erreur">erreur</a><a href="#horsligne">hors ligne</a
+      ><a href="guide-de-revue.html">index</a>
+    </div>
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+    <div class="hors-ligne" role="status" data-etats="horsligne">
+      <span data-ic="i-horsligne"></span
+      ><span>Hors ligne. Résultats affichés tels que reçus à 18 h 12.</span>
+    </div>
+
+    <div class="app">
+      <header class="bandeau-marque bandeau-marque--rouge">
+        <div class="carte-marque">
+          <a class="marque" href="00-accueil.html"
+            ><img
+              src="assets/dakar2026-emblem-oly-light.svg"
+              alt="Dakar 2026, Jeux Olympiques de la Jeunesse"
+              height="36"
+            /><small>Résultats et médailles · non officiel</small></a
+          >
+          <nav class="nav-haut" aria-label="Navigation principale">
+            <a href="00-accueil.html">Accueil</a>
+            <a href="03-resultats-jour.html" aria-current="page">Résultats</a
+            ><a href="02-tableau-medailles.html">Médailles</a>
+          </nav>
+          <a class="lien-pro" href="01-saisie-podium.html">Espace journaliste</a>
+        </div>
+        <div class="titre-bandeau page-titre">
+          <span class="surtitre">Résultats du jour</span>
+          <h1 id="titre-jour">Jeudi 5 novembre</h1>
+        </div>
+      </header>
+
+      <main class="page" id="contenu">
+        <p class="meta" data-sauf="jour-vide chargement erreur">5 épreuves · 3 disciplines</p>
+        <nav class="jours" aria-label="Choisir un jour">
+          <a class="jour" href="#jour" aria-label="sam 31 octobre"
+            ><span>sam</span><b>31</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="dim 1 novembre"
+            ><span>dim</span><b>1</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="lun 2 novembre"
+            ><span>lun</span><b>2</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="mar 3 novembre"
+            ><span>mar</span><b>3</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="mer 4 novembre"
+            ><span>mer</span><b>4</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-current="true" aria-label="jeu 5 novembre"
+            ><span>jeu</span><b>5</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="ven 6 novembre"
+            ><span>ven</span><b>6</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="sam 7 novembre"
+            ><span>sam</span><b>7</b><i class="point"></i></a
+          ><a class="jour" href="#jour" aria-label="dim 8 novembre"
+            ><span>dim</span><b>8</b><i class="point sans"></i></a
+          ><a class="jour" href="#jour" aria-label="lun 9 novembre"
+            ><span>lun</span><b>9</b><i class="point sans"></i></a
+          ><a class="jour" href="#jour" aria-label="mar 10 novembre"
+            ><span>mar</span><b>10</b><i class="point sans"></i></a
+          ><a class="jour" href="#jour" aria-label="mer 11 novembre"
+            ><span>mer</span><b>11</b><i class="point sans"></i></a
+          ><a class="jour" href="#jour" aria-label="jeu 12 novembre"
+            ><span>jeu</span><b>12</b><i class="point sans"></i></a
+          ><a class="jour" href="#jour" aria-label="ven 13 novembre"
+            ><span>ven</span><b>13</b><i class="point sans"></i
+          ></a>
+        </nav>
+        <div class="cols">
+          <div class="col-main">
+            <div class="bandeau bandeau-erreur" role="alert" data-etats="erreur">
+              <span data-ic="i-erreur"></span>
+              <div>
+                <strong>Les résultats n'ont pas pu être chargés.</strong>Le serveur ne répond pas
+                pour le moment.
+                <p style="margin-top: 8px">
+                  <button class="bouton bouton-secondaire" style="min-height: 2.75rem">
+                    Réessayer
+                  </button>
+                </p>
+              </div>
+            </div>
+            <div
+              role="status"
+              aria-label="Chargement des résultats"
+              data-etats="chargement"
+              style="display: flex; flex-direction: column; gap: var(--s-3)"
+            >
+              <div class="squelette" style="min-height: 2rem; width: 50%"></div>
+              <div class="squelette" style="min-height: 8rem"></div>
+              <div class="squelette" style="min-height: 8rem"></div>
+            </div>
+            <section class="vide" data-etats="jour-vide" aria-labelledby="t-vide">
+              <svg aria-hidden="true"><use href="#i-ardoise" /></svg>
+              <h2 id="t-vide">Aucun podium enregistré ce jour</h2>
+              <p>
+                Les résultats apparaissent ici dès qu'un podium est enregistré. Il n'y a donc pas de
+                résumé pour cette journée.
+              </p>
+              <a class="bouton bouton-secondaire" href="#jour">Aller au 5 novembre</a>
+            </section>
+            <nav
+              class="disciplines-filtre"
+              aria-label="Filtrer par discipline"
+              data-etats="jour correction horsligne sans-resume"
+            >
+              <a class="puce" href="#jour" aria-current="true">Toutes · 5</a
+              ><a class="puce" href="#d-Lut">Lutte · 2</a
+              ><a class="puce" href="#d-Nat">Natation · 2</a
+              ><a class="puce" href="#d-Pen">Pentathlon moderne · 1</a>
+            </nav>
+            <div
+              data-etats="jour correction horsligne sans-resume"
+              style="display: flex; flex-direction: column; gap: var(--s-5)"
+            >
+              <section class="discipline" aria-labelledby="d-Lut">
+                <div class="discipline-titre">
+                  <h2 id="d-Lut">Lutte</h2>
+                  <span class="meta">2 épreuves</span>
+                </div>
+                <ul class="liste-timbres">
+                  <li>
+                    <article class="timbre">
+                      <div class="timbre-tete">
+                        <div>
+                          <h3>Lutte filles 52 kg</h3>
+                        </div>
+                        <button
+                          class="cachet-corrige"
+                          type="button"
+                          aria-haspopup="dialog"
+                          onclick="location.hash = '#correction'"
+                        >
+                          <svg style="width: 1rem; height: 1rem" aria-hidden="true">
+                            <use href="#i-historique" /></svg
+                          >Corrigé 5 nov.
+                        </button>
+                      </div>
+                      <ol class="podium">
+                        <li>
+                          <span class="med med-or" aria-hidden="true">1</span
+                          ><span class="mot">Or</span><span class="plaque">SEN</span>
+                        </li>
+                        <li>
+                          <span class="med med-argent" aria-hidden="true">2</span
+                          ><span class="mot">Argent</span><span class="plaque">JPN</span>
+                        </li>
+                        <li>
+                          <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                          ><span class="mot">Bronze</span><span class="plaque">FRA</span>
+                        </li>
+                      </ol>
+                    </article>
+                  </li>
+                  <li>
+                    <article class="timbre">
+                      <div class="timbre-tete">
+                        <div>
+                          <h3>Lutte garçons 65 kg</h3>
+                        </div>
+                      </div>
+                      <ol class="podium">
+                        <li>
+                          <span class="med med-or" aria-hidden="true">1</span
+                          ><span class="mot">Or</span><span class="plaque">EGY</span>
+                        </li>
+                        <li>
+                          <span class="med med-argent" aria-hidden="true">2</span
+                          ><span class="mot">Argent</span><span class="plaque">MAR</span>
+                        </li>
+                        <li>
+                          <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                          ><span class="mot">Bronze</span><span class="plaque">JPN</span>
+                        </li>
+                      </ol>
+                    </article>
+                  </li>
+                </ul>
+              </section>
+              <section class="discipline" aria-labelledby="d-Nat">
+                <div class="discipline-titre">
+                  <h2 id="d-Nat">Natation</h2>
+                  <span class="meta">2 épreuves</span>
+                </div>
+                <ul class="liste-timbres">
+                  <li>
+                    <article class="timbre">
+                      <div class="timbre-tete">
+                        <div>
+                          <h3>100 m nage libre filles</h3>
+                        </div>
+                      </div>
+                      <ol class="podium">
+                        <li>
+                          <span class="med med-or" aria-hidden="true">1</span
+                          ><span class="mot">Or</span><span class="plaque">FRA</span>
+                        </li>
+                        <li>
+                          <span class="med med-argent" aria-hidden="true">2</span
+                          ><span class="mot">Argent</span><span class="plaque">BRA</span>
+                        </li>
+                        <li>
+                          <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                          ><span class="mot">Bronze</span><span class="plaque">CHN</span>
+                        </li>
+                      </ol>
+                    </article>
+                  </li>
+                  <li>
+                    <article class="timbre">
+                      <div class="timbre-tete">
+                        <div>
+                          <h3>200 m quatre nages garçons</h3>
+                        </div>
+                      </div>
+                      <ol class="podium">
+                        <li>
+                          <span class="med med-or" aria-hidden="true">1</span
+                          ><span class="mot">Or</span><span class="plaque">JPN</span>
+                        </li>
+                        <li>
+                          <span class="med med-argent" aria-hidden="true">2</span
+                          ><span class="mot">Argent</span><span class="plaque">ITA</span>
+                        </li>
+                        <li>
+                          <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                          ><span class="mot">Bronze</span><span class="plaque">SEN</span>
+                        </li>
+                      </ol>
+                    </article>
+                  </li>
+                </ul>
+              </section>
+              <section class="discipline" aria-labelledby="d-Pen">
+                <div class="discipline-titre">
+                  <h2 id="d-Pen">Pentathlon moderne</h2>
+                  <span class="meta">1 épreuve</span>
+                </div>
+                <ul class="liste-timbres">
+                  <li>
+                    <article class="timbre">
+                      <div class="timbre-tete">
+                        <div>
+                          <h3>Épreuve individuelle filles, finale</h3>
+                        </div>
+                      </div>
+                      <ol class="podium">
+                        <li>
+                          <span class="med med-or" aria-hidden="true">1</span
+                          ><span class="mot">Or</span><span class="plaque">NGR</span>
+                        </li>
+                        <li>
+                          <span class="med med-argent" aria-hidden="true">2</span
+                          ><span class="mot">Argent</span><span class="plaque">CIV</span>
+                        </li>
+                        <li>
+                          <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                          ><span class="mot">Bronze</span><span class="plaque">MAR</span>
+                        </li>
+                      </ol>
+                    </article>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </div>
+          <div class="col-aside">
+            <a
+              class="mon-pays-carte"
+              href="02-tableau-medailles.html"
+              data-etats="jour correction horsligne sans-resume"
+              aria-label="Mon pays : Sénégal, 4e au tableau des médailles, 2 or, 3 argent, 1 bronze"
+              ><span class="plaque">SEN</span
+              ><span class="rang-pays"><small>Rang</small>4<sup>e</sup></span
+              ><span class="totaux" aria-hidden="true"
+                ><span><b>2</b><small>Or</small></span
+                ><span><b>3</b><small>Ar.</small></span
+                ><span><b>1</b><small>Br.</small></span></span
+              ></a
+            >
+            <section
+              class="resume"
+              aria-labelledby="t-resume"
+              data-etats="jour correction horsligne"
+            >
+              <span class="etiquette-ia"
+                ><svg aria-hidden="true"><use href="#i-ia" /></svg>Résumé rédigé par un assistant
+                IA</span
+              >
+              <h2 id="t-resume" style="font-size: var(--t-lg)">La journée en bref</h2>
+              <p>
+                Jeudi 5 novembre, le Sénégal remporte l'or en lutte filles 52 kg devant le Japon,
+                avec la France en bronze. En natation, la France gagne le 100 m nage libre filles.
+                Texte fictif de maquette, écrit à partir des seuls résultats ci-dessous.
+              </p>
+              <details class="sources">
+                <summary>5 épreuves prises en compte</summary>
+                <ul>
+                  <li>Lutte filles 52 kg</li>
+                  <li>Lutte garçons 65 kg</li>
+                  <li>100 m nage libre filles</li>
+                  <li>200 m quatre nages garçons</li>
+                  <li>Pentathlon moderne, épreuve individuelle filles, finale</li>
+                </ul>
+              </details>
+            </section>
+            <div class="bandeau bandeau-info" data-etats="sans-resume">
+              <span data-ic="i-info"></span>
+              <div>
+                <strong>Le résumé n'est pas disponible pour le moment.</strong>Les résultats
+                ci-dessous ne sont pas concernés.
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <nav class="onglets" aria-label="Navigation principale">
+        <div class="onglets-liste">
+          <a class="onglet" href="00-accueil.html"
+            ><svg><use href="#i-logo" /></svg>Accueil</a
+          >
+          <a class="onglet" href="03-resultats-jour.html" aria-current="page"
+            ><svg><use href="#i-jour" /></svg>Résultats</a
+          ><a class="onglet" href="02-tableau-medailles.html"
+            ><svg><use href="#i-medailles" /></svg>Médailles</a
+          >
+        </div>
+      </nav>
+    </div>
+
+    <div data-etats="correction">
+      <div class="fond" onclick="location.hash = '#jour'"></div>
+      <section
+        class="feuille feuille-fixe"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="t-hist"
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            gap: var(--s-3);
+            align-items: flex-start;
+          "
+        >
+          <div>
+            <h2 id="t-hist">Lutte filles 52 kg</h2>
+            <p class="meta">Historique du podium · 2 versions</p>
+          </div>
+          <button
+            class="bouton bouton-secondaire"
+            style="min-height: 2.75rem; padding: 0 var(--s-4)"
+            onclick="location.hash = '#jour'"
+          >
+            Fermer
+          </button>
+        </div>
+        <div class="ligne-ver">
+          <p class="meta">Version actuelle · corrigée le 5 novembre 2026</p>
+          <article class="timbre" style="padding: var(--s-3) var(--s-4)">
+            <ol class="podium">
+              <li>
+                <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                ><span class="plaque">SEN</span>
+              </li>
+              <li>
+                <span class="med med-argent" aria-hidden="true">2</span
+                ><span class="mot">Argent</span><span class="plaque">JPN</span>
+              </li>
+              <li>
+                <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                ><span class="mot">Bronze</span><span class="plaque">FRA</span>
+              </li>
+            </ol>
+          </article>
+        </div>
+        <div class="ligne-ver">
+          <p class="meta">Version remplacée · enregistrée le 5 novembre 2026</p>
+          <article class="timbre version-ancienne" style="padding: var(--s-3) var(--s-4)">
+            <ol class="podium">
+              <li>
+                <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                ><span class="plaque">SEN</span>
+              </li>
+              <li>
+                <span class="med med-argent" aria-hidden="true">2</span
+                ><span class="mot">Argent</span><span class="plaque">FRA</span>
+              </li>
+              <li>
+                <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                ><span class="mot">Bronze</span><span class="plaque">JPN</span>
+              </li>
+            </ol>
+          </article>
+        </div>
+      </section>
+    </div>
+    <script src="maquette.js"></script>
+    <script>
+      var c = document.querySelector('.jour[aria-current]');
+      if (c) {
+        c.scrollIntoView({ inline: 'center', block: 'nearest' });
+        window.scrollTo(0, 0);
+      }
+    </script>
+  </body>
+</html>

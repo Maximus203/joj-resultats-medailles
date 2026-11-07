@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Maquette TR2 : tableau des médailles</title>
+    <link rel="stylesheet" href="cachet.css" />
+    <style>
+      .titre-ligne {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: var(--s-3);
+      }
+      .titre-ligne svg {
+        width: 5.5rem;
+        height: 3.75rem;
+        flex: none;
+        color: var(--encre);
+      }
+      .outils {
+        display: flex;
+        gap: var(--s-3);
+        align-items: end;
+        flex-wrap: wrap;
+      }
+      .outils .champ {
+        flex: 1;
+        min-width: 10rem;
+      }
+      .note {
+        font-size: var(--t-xs);
+        color: var(--encre-2);
+      }
+      .maj {
+        font-size: var(--t-xs);
+        color: var(--encre-2);
+        display: flex;
+        gap: var(--s-2);
+        align-items: center;
+      }
+      .tableau th.rang {
+        background: transparent;
+        position: static;
+        color: var(--encre);
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: var(--t-rang);
+        padding: 0 var(--s-2);
+      }
+    </style>
+  </head>
+  <body data-defaut="normal">
+    <div class="maquette-barre" role="navigation" aria-label="Etats de la maquette">
+      <b>MAQUETTE</b> TR2 · donnees fictives · <a href="#normal">normal</a
+      ><a href="#maj">mise a jour</a><a href="#chargement">chargement</a><a href="#vide">vide</a
+      ><a href="#erreur">erreur</a><a href="#horsligne">hors ligne</a
+      ><a href="guide-de-revue.html">index</a>
+    </div>
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+    <div class="hors-ligne" role="status" data-etats="horsligne">
+      <span data-ic="i-horsligne"></span
+      ><span>Hors ligne. Dernière mise à jour affichée : 5 novembre, 18 h 12.</span>
+    </div>
+
+    <div class="app">
+      <header class="bandeau-marque bandeau-marque--orange">
+        <div class="carte-marque">
+          <a class="marque" href="00-accueil.html"
+            ><img
+              src="assets/dakar2026-emblem-oly-light.svg"
+              alt="Dakar 2026, Jeux Olympiques de la Jeunesse"
+              height="36"
+            /><small>Résultats et médailles · non officiel</small></a
+          >
+          <nav class="nav-haut" aria-label="Navigation principale">
+            <a href="00-accueil.html">Accueil</a> <a href="03-resultats-jour.html">Résultats</a
+            ><a href="02-tableau-medailles.html" aria-current="page">Médailles</a>
+          </nav>
+          <a class="lien-pro" href="01-saisie-podium.html">Espace journaliste</a>
+        </div>
+        <div class="titre-bandeau page-titre">
+          <span class="surtitre">Dakar 2026 · du 31 octobre au 13 novembre</span>
+          <h1 id="titre-page">Tableau des médailles</h1>
+        </div>
+      </header>
+
+      <main class="page" id="contenu">
+        <p class="chapo">
+          Classé par or, puis argent, puis bronze. Le tableau se met à jour à chaque podium
+          enregistré.
+        </p>
+        <div class="cols">
+          <div class="col-main">
+            <div class="bandeau bandeau-erreur" role="alert" data-etats="erreur">
+              <span data-ic="i-erreur"></span>
+              <div>
+                <strong>Le tableau n'a pas pu être chargé.</strong>Le serveur ne répond pas pour le
+                moment. Vos données ne sont pas perdues.
+                <p style="margin-top: 8px">
+                  <button class="bouton bouton-secondaire" style="min-height: 2.75rem">
+                    Réessayer
+                  </button>
+                </p>
+              </div>
+            </div>
+            <div
+              role="status"
+              aria-label="Chargement du tableau"
+              data-etats="chargement"
+              style="display: flex; flex-direction: column; gap: var(--s-2)"
+            >
+              <div class="squelette" style="min-height: 2.5rem"></div>
+              <div class="squelette"></div>
+              <div class="squelette"></div>
+              <div class="squelette"></div>
+              <div class="squelette"></div>
+            </div>
+            <section class="vide" data-etats="vide" aria-labelledby="t-vide">
+              <svg aria-hidden="true"><use href="#i-ardoise" /></svg>
+              <h2 id="t-vide">Aucune médaille pour l'instant</h2>
+              <p>Le tableau se remplit dès le premier podium enregistré.</p>
+              <a class="bouton bouton-secondaire" href="03-resultats-jour.html"
+                >Voir les résultats du jour</a
+              >
+            </section>
+            <div data-etats="normal maj horsligne" id="zone-tableau">
+              <table class="tableau">
+                <caption>
+                  Médailles par pays, données fictives de maquette
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <span class="visuellement-cache">Rang</span><span aria-hidden="true">N°</span>
+                    </th>
+                    <th scope="col">Pays</th>
+                    <th scope="col">
+                      <span class="med med-or" aria-hidden="true">1</span
+                      ><span class="visuellement-cache">Médailles d'or</span
+                      ><span aria-hidden="true">Or</span>
+                    </th>
+                    <th scope="col">
+                      <span class="med med-argent" aria-hidden="true">2</span
+                      ><span class="visuellement-cache">Médailles d'argent</span
+                      ><span aria-hidden="true">Ar</span>
+                    </th>
+                    <th scope="col">
+                      <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                      ><span class="visuellement-cache">Médailles de bronze</span
+                      ><span aria-hidden="true">Br</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>1</th>
+                    <td class="pays">
+                      <span class="plaque">CHN</span><span class="nom">Chine</span>
+                    </td>
+                    <td class="or">4</td>
+                    <td class="">2</td>
+                    <td class="">1</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>2</th>
+                    <td class="pays">
+                      <span class="plaque">JPN</span><span class="nom">Japon</span>
+                    </td>
+                    <td class="or">3</td>
+                    <td class="">2</td>
+                    <td class="">2</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>3</th>
+                    <td class="pays">
+                      <span class="plaque">FRA</span><span class="nom">France</span>
+                    </td>
+                    <td class="or">3</td>
+                    <td class="">1</td>
+                    <td class="">3</td>
+                  </tr>
+                  <tr class="mon-pays">
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>4</th>
+                    <td class="pays">
+                      <span class="plaque">SEN</span><span class="nom">Sénégal</span>
+                    </td>
+                    <td class="or">2</td>
+                    <td class="">3</td>
+                    <td class="">1</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang">
+                      <span class="visuellement-cache">Rang </span>5<small>ex æquo</small>
+                    </th>
+                    <td class="pays">
+                      <span class="plaque">BRA</span><span class="nom">Brésil</span>
+                    </td>
+                    <td class="or">2</td>
+                    <td class="">1</td>
+                    <td class="">1</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang">
+                      <span class="visuellement-cache">Rang </span>5<small>ex æquo</small>
+                    </th>
+                    <td class="pays">
+                      <span class="plaque">MAR</span><span class="nom">Maroc</span>
+                    </td>
+                    <td class="or">2</td>
+                    <td class="">1</td>
+                    <td class="">1</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>7</th>
+                    <td class="pays">
+                      <span class="plaque">EGY</span><span class="nom">Égypte</span>
+                    </td>
+                    <td class="or">1</td>
+                    <td class="">2</td>
+                    <td class="zero">0</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>8</th>
+                    <td class="pays">
+                      <span class="plaque">ITA</span><span class="nom">Italie</span>
+                    </td>
+                    <td class="or">1</td>
+                    <td class="">1</td>
+                    <td class="">2</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang"><span class="visuellement-cache">Rang </span>9</th>
+                    <td class="pays">
+                      <span class="plaque">NGR</span><span class="nom">Nigeria</span>
+                    </td>
+                    <td class="or">1</td>
+                    <td class="zero">0</td>
+                    <td class="">1</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="rang">
+                      <span class="visuellement-cache">Rang </span>10
+                    </th>
+                    <td class="pays">
+                      <span class="plaque">CIV</span><span class="nom">Côte d’Ivoire</span>
+                    </td>
+                    <td class="or zero">0</td>
+                    <td class="">1</td>
+                    <td class="">2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-aside">
+            <div class="outils" data-etats="normal maj horsligne">
+              <div class="champ">
+                <label for="pays">Mon pays</label>
+                <select class="saisie" id="pays">
+                  <option>SEN · Sénégal</option>
+                  <option>Aucun</option>
+                  <option>FRA · France</option>
+                </select>
+              </div>
+              <p class="maj">
+                <span data-ic="i-historique" style="display: inline-flex"></span>Mis à jour le 5
+                nov., 18 h 12
+              </p>
+            </div>
+            <p class="note" data-etats="normal maj horsligne" style="margin-top: var(--s-3)">
+              Tableau calculé à partir des podiums enregistrés dans cette application. Il peut
+              différer du tableau publié sur le site officiel des Jeux ; les équipes mixtes de
+              plusieurs pays ne sont pas comptées.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      <nav class="onglets" aria-label="Navigation principale">
+        <div class="onglets-liste">
+          <a class="onglet" href="00-accueil.html"
+            ><svg><use href="#i-logo" /></svg>Accueil</a
+          >
+          <a class="onglet" href="03-resultats-jour.html"
+            ><svg><use href="#i-jour" /></svg>Résultats</a
+          ><a class="onglet" href="02-tableau-medailles.html" aria-current="page"
+            ><svg><use href="#i-medailles" /></svg>Médailles</a
+          >
+        </div>
+      </nav>
+    </div>
+    <script src="maquette.js"></script>
+    <script>
+      (function () {
+        function m() {
+          var r = document.querySelector('.tableau tbody tr:nth-child(4)');
+          if (r) r.classList.toggle('vient-de-changer', location.hash === '#maj');
+        }
+        window.addEventListener('hashchange', m);
+        m();
+      })();
+    </script>
+  </body>
+</html>

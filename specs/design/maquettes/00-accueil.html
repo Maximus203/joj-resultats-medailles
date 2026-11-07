@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Maquette : page d'accueil publique</title>
+    <link rel="stylesheet" href="cachet.css" />
+    <style>
+      .bandeau-marque {
+        position: relative;
+        overflow: hidden;
+      }
+      .logo-partenaire {
+        height: 3.25rem;
+        width: auto;
+        display: block;
+        flex: none;
+        margin-left: auto;
+        padding-left: var(--s-3);
+        border-left: 1px solid #d9d9d9;
+        box-sizing: content-box;
+      }
+      .mascotte {
+        position: absolute;
+        right: 0.75rem;
+        top: 2.7rem;
+        height: 5.5rem;
+        width: auto;
+        z-index: 1;
+        pointer-events: none;
+        border-radius: 1rem;
+        border: 3px solid #fff;
+        box-shadow: 0 10px 24px rgb(0 0 0 / 0.4);
+        transform: rotate(-3deg);
+      }
+      @media (min-width: 1100px) {
+        .mascotte {
+          right: auto;
+          left: 41%;
+          top: auto;
+          bottom: 0;
+          height: 21rem;
+        }
+      }
+      @media (max-width: 699px) {
+        .carte-marque {
+          gap: var(--s-2);
+        }
+        .carte-marque .marque small {
+          display: none;
+        }
+        .carte-marque .marque img {
+          height: 1.75rem;
+        }
+        .logo-partenaire {
+          height: 2rem;
+          margin-left: 0;
+          padding-left: var(--s-2);
+        }
+        .carte-marque .lien-pro {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8125rem;
+        }
+      }
+      @media (max-width: 1099px) {
+        .hero-texte {
+          position: relative;
+        }
+        .carte-marque .marque small {
+          display: none;
+        }
+        .carte-marque .marque {
+          flex: none;
+        }
+        .carte-marque .marque img {
+          height: 1.75rem;
+        }
+        .nav-haut {
+          gap: 0;
+        }
+        .nav-haut a {
+          padding-inline: 0.5rem;
+          font-size: 0.875rem;
+        }
+        .logo-partenaire {
+          height: 2.25rem;
+          padding-left: var(--s-2);
+        }
+        .carte-marque .lien-pro {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8125rem;
+        }
+      }
+      .hero-grid {
+        max-width: var(--maxw);
+        margin: var(--s-5) auto 0;
+        display: grid;
+        gap: var(--s-5);
+        align-items: center;
+      }
+      .hero-texte h1 {
+        font-size: clamp(2.75rem, 12vw, 6rem);
+        line-height: 0.92;
+        color: #fff;
+        text-transform: uppercase;
+        text-wrap: balance;
+      }
+      .hero-texte h1 em {
+        font-style: normal;
+        color: var(--marque-jaune-clair);
+      }
+      .hero-texte .sous {
+        color: #fff;
+        font-size: var(--t-lg);
+        max-width: 34ch;
+        margin-top: var(--s-3);
+      }
+      .hero-texte .surtitre {
+        color: #fff;
+      }
+      .cta-ligne .bouton {
+        flex: 1 1 12rem;
+      }
+      .cta-ligne {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-3);
+        margin-top: var(--s-5);
+      }
+      .bouton-noir {
+        border-radius: 99px;
+        background: #121212;
+        border-color: #121212;
+        color: #fff;
+      }
+      .bouton-blanc {
+        border-radius: 99px;
+        background: #fff;
+        border-color: #fff;
+        color: #121212;
+      }
+      .chiffres {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        justify-content: space-between;
+        gap: var(--s-2) var(--s-4);
+        margin: var(--s-5) 0 0;
+        padding: 0;
+        color: #fff;
+      }
+      .chiffres div {
+        display: flex;
+        flex-direction: column;
+      }
+      .chiffres dd {
+        margin: 0;
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: 2.5rem;
+        line-height: 1;
+      }
+      .chiffres dt {
+        font-size: var(--t-xs);
+        order: 2;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .carte-podium {
+        margin: 0;
+        background: var(--carte);
+        color: var(--encre);
+        border-radius: var(--r-md);
+        padding: var(--s-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-3);
+      }
+      .carte-podium .etiquette {
+        font-size: var(--t-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--encre-2);
+        display: flex;
+        justify-content: space-between;
+        gap: var(--s-3);
+      }
+      .marches {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--s-2);
+        align-items: end;
+        margin: 0;
+      }
+      .marche {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--s-2);
+        min-width: 0;
+      }
+      .marche .bloc {
+        width: 100%;
+        border: 2px solid var(--encre);
+        border-bottom-width: 4px;
+        border-radius: var(--r-sm) var(--r-sm) 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: var(--s-2);
+        color: #121212;
+      }
+      .marche .bloc b {
+        font-family: var(--police-titre);
+        font-size: 3.25rem;
+        line-height: 0.9;
+      }
+      .marche .bloc small {
+        font-size: var(--t-xs);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .m1 .bloc {
+        height: 9.5rem;
+        background: var(--or);
+      }
+      .m2 .bloc {
+        height: 7.5rem;
+        background: var(--argent);
+      }
+      .m3 .bloc {
+        height: 6.25rem;
+        background: var(--bronze);
+      }
+      .carte-podium figcaption {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-2) var(--s-3);
+        align-items: center;
+        font-size: var(--t-sm);
+        color: var(--encre-2);
+      }
+      .carte-podium figcaption b {
+        font-family: var(--police-titre);
+        font-size: var(--t-xl);
+        color: var(--encre);
+        line-height: 1;
+      }
+      .sections {
+        max-width: var(--maxw);
+        margin: 0 auto;
+        width: 100%;
+        padding: var(--s-6) var(--gouttiere) var(--s-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-6);
+      }
+      .titre-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--s-3);
+        flex-wrap: wrap;
+        border-bottom: 2px solid var(--encre);
+        padding-bottom: var(--s-2);
+        margin-bottom: var(--s-4);
+      }
+      .titre-section h2 {
+        font-size: 2rem;
+        text-transform: uppercase;
+      }
+      .titre-section a {
+        color: var(--encre);
+        font-weight: 700;
+        font-size: var(--t-sm);
+        min-height: var(--cible);
+        display: inline-flex;
+        align-items: center;
+      }
+      .tuiles {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--s-3);
+      }
+      .tuile {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--s-3);
+        min-height: 8rem;
+        padding: var(--s-4);
+        border: 2px solid var(--encre);
+        border-radius: var(--r-md);
+        text-decoration: none;
+        color: #fff;
+        height: 100%;
+      }
+      .tuile strong {
+        font-family: var(--police-titre);
+        font-size: 1.875rem;
+        line-height: 0.95;
+        text-transform: uppercase;
+        text-wrap: balance;
+      }
+      .tuile span {
+        font-size: var(--t-sm);
+        font-weight: 600;
+      }
+      .t-rouge {
+        background: var(--marque-rouge);
+      }
+      .t-ardoise {
+        background: var(--marque-ardoise);
+      }
+      .t-jaune {
+        background: var(--marque-jaune);
+        color: #121212;
+      }
+      .t-noir {
+        background: #121212;
+      }
+      .t-vide {
+        background: transparent;
+        color: var(--encre-2);
+        border-style: dashed;
+      }
+      .t-vert {
+        background: #01724a;
+      }
+      .corps {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--s-6);
+      }
+      .corps > *,
+      .hero-grid > * {
+        min-width: 0;
+      }
+      .tableau-compact thead span[aria-hidden='true']:not(.med) {
+        display: none;
+      }
+      .bande-pro {
+        background: #121212;
+        color: #fff;
+        border-radius: var(--r-md);
+        padding: var(--s-5);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--s-4);
+        align-items: center;
+        justify-content: space-between;
+      }
+      .bande-pro h2 {
+        font-size: var(--t-xl);
+        text-transform: uppercase;
+      }
+      .bande-pro p {
+        color: #dee0e0;
+        max-width: 52ch;
+      }
+      .app {
+        padding-bottom: 0;
+      }
+      .pied {
+        background: #121212;
+        color: #dee0e0;
+        padding: var(--s-6) var(--gouttiere) calc(var(--s-6) + 4.5rem + env(safe-area-inset-bottom));
+        font-size: var(--t-sm);
+      }
+      .pied > div {
+        max-width: var(--maxw);
+        margin: 0 auto;
+        display: grid;
+        gap: var(--s-4);
+      }
+      .pied a {
+        color: #fff;
+      }
+      .pied b {
+        font-family: var(--police-titre);
+        font-size: var(--t-xl);
+        color: #fff;
+        text-transform: uppercase;
+      }
+      .tableau-compact th[scope='row'],
+      .tableau-compact td {
+        height: 3.25rem;
+        font-size: var(--t-base);
+      }
+      .tableau-compact .pays .plaque {
+        margin-right: 0;
+      }
+      .tableau-compact th.rang {
+        font-size: 1.75rem;
+        width: 3rem;
+      }
+      .tableau-compact tr.mon-pays .pays::after {
+        display: none;
+      }
+      .corps .jour {
+        flex: 0 0 4.25rem;
+      }
+      .lecture-seule {
+        font-size: var(--t-xs);
+        color: var(--encre-2);
+        margin-top: var(--s-2);
+      }
+      .cartes-jour {
+        display: flex;
+        gap: var(--s-3);
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        scroll-padding-inline: var(--gouttiere);
+        margin: 0 calc(var(--gouttiere) * -1);
+        padding: var(--s-1) var(--gouttiere);
+        list-style: none;
+        scrollbar-width: none;
+      }
+      .cartes-jour > li {
+        flex: 0 0 min(19rem, 82%);
+        scroll-snap-align: start;
+        display: flex;
+      }
+      .cartes-jour .timbre {
+        flex: 1;
+        min-width: 0;
+      }
+      @media (min-width: 768px) {
+        .hero-texte h1 {
+          font-size: clamp(3rem, 6vw, 6rem);
+        }
+        .tableau-compact thead span[aria-hidden='true']:not(.med) {
+          display: inline;
+        }
+        .pied {
+          padding-bottom: var(--s-6);
+        }
+        .hero-grid {
+          grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+          gap: var(--s-6);
+        }
+        .tuiles {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .sections {
+          padding-inline: 2rem;
+        }
+        .cartes-jour {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          overflow: visible;
+          margin: 0;
+          padding: 0;
+        }
+        .cartes-jour > li {
+          flex: none;
+        }
+        .chiffres {
+          justify-content: start;
+          gap: var(--s-2) var(--s-6);
+        }
+        .cta-ligne .bouton {
+          flex: 0 0 auto;
+        }
+        .chiffres dd {
+          font-size: 3rem;
+        }
+      }
+      @media (min-width: 1024px) {
+        .tuiles {
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+        .tuile {
+          min-height: 11rem;
+        }
+        .corps {
+          grid-template-columns: minmax(0, 1fr) 24rem;
+          align-items: start;
+        }
+        .cartes-jour {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .hero-grid {
+          grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+        }
+        .marche .bloc b {
+          font-size: 4rem;
+        }
+      }
+      @media (min-width: 1536px) {
+        .corps {
+          grid-template-columns: minmax(0, 1fr) 28rem;
+        }
+      }
+    </style>
+  </head>
+  <body data-defaut="normal">
+    <div class="maquette-barre" role="navigation" aria-label="Etats de la maquette">
+      <b>MAQUETTE</b> Accueil · donnees fictives · <a href="#normal">normal</a
+      ><a href="#chargement">chargement</a><a href="#vide">vide</a><a href="#erreur">erreur</a
+      ><a href="#horsligne">hors ligne</a>
+      <a href="guide-de-revue.html">guide de revue</a>
+    </div>
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+    <div class="hors-ligne" role="status" data-etats="horsligne">
+      <span data-ic="i-horsligne"></span
+      ><span>Hors ligne. Résultats affichés tels que reçus à 18 h 12.</span>
+    </div>
+
+    <div class="app">
+      <header class="bandeau-marque bandeau-marque--rouge">
+        <div class="carte-marque">
+          <a class="marque" href="00-accueil.html"
+            ><img
+              src="assets/dakar2026-emblem-oly-light.svg"
+              alt="Dakar 2026, Jeux Olympiques de la Jeunesse"
+              height="36"
+            /><small>Résultats et médailles · non officiel</small></a
+          >
+          <nav class="nav-haut" aria-label="Navigation principale">
+            <a href="00-accueil.html" aria-current="page">Accueil</a
+            ><a href="03-resultats-jour.html">Résultats</a
+            ><a href="02-tableau-medailles.html">Médailles</a>
+          </nav>
+          <a class="lien-pro" href="01-saisie-podium.html">Espace journaliste</a>
+          <img
+            class="logo-partenaire"
+            src="assets/logo-ai-scaling-hub.jpg"
+            alt="Sénégal AI Scaling Hub"
+          />
+        </div>
+        <div class="hero-grid">
+          <div class="hero-texte">
+            <img
+              class="mascotte"
+              src="assets/mascotte-ayo-recadree.png"
+              alt="Ayo, la mascotte des JOJ Dakar 2026"
+            />
+            <span class="surtitre">Dakar 2026 · du 31 octobre au 13 novembre</span>
+            <h1>Qui a gagné <em>aujourd'hui</em> ?</h1>
+            <p class="sous">
+              Les podiums des Jeux, épreuve par épreuve, et le tableau des médailles de votre pays.
+            </p>
+            <div class="cta-ligne">
+              <a class="bouton bouton-noir" href="03-resultats-jour.html">Résultats du jour</a>
+              <a class="bouton bouton-blanc" href="02-tableau-medailles.html"
+                >Tableau des médailles</a
+              >
+            </div>
+            <dl class="chiffres">
+              <div>
+                <dd>14</dd>
+                <dt>jours de Jeux</dt>
+              </div>
+              <div>
+                <dd>25</dd>
+                <dt>sports</dt>
+              </div>
+              <div data-etats="normal horsligne erreur">
+                <dd>5</dd>
+                <dt>podiums du jour *</dt>
+              </div>
+            </dl>
+          </div>
+
+          <figure class="carte-podium timbre" id="hero-podium" data-etats="normal horsligne">
+            <div class="etiquette">
+              <span>Dernier podium enregistré</span><span>18 h 12 *</span>
+            </div>
+            <div class="marches" role="group" aria-label="Or SEN, argent JPN, bronze FRA">
+              <div class="marche m2">
+                <span class="plaque">JPN</span>
+                <div class="bloc"><b>2</b><small>Argent</small></div>
+              </div>
+              <div class="marche m1">
+                <span class="plaque">SEN</span>
+                <div class="bloc"><b>1</b><small>Or</small></div>
+              </div>
+              <div class="marche m3">
+                <span class="plaque">FRA</span>
+                <div class="bloc"><b>3</b><small>Bronze</small></div>
+              </div>
+            </div>
+            <figcaption>
+              <b>Lutte filles 52 kg</b><span>Lutte · jeudi 5 novembre</span>
+              <span class="cachet-corrige">Corrigé 5 nov.</span>
+            </figcaption>
+          </figure>
+          <div
+            class="carte-podium timbre"
+            data-etats="chargement"
+            role="status"
+            aria-label="Chargement du dernier podium"
+          >
+            <div class="squelette" style="min-height: 1.5rem; width: 60%"></div>
+            <div class="squelette" style="min-height: 9rem"></div>
+            <div class="squelette" style="min-height: 2rem; width: 40%"></div>
+          </div>
+          <div class="carte-podium timbre" data-etats="vide">
+            <div class="etiquette"><span>Dernier podium enregistré</span></div>
+            <h2 style="font-size: var(--t-xl)">Pas encore de podium</h2>
+            <p class="meta">
+              Les Jeux commencent le 31 octobre. Les podiums apparaissent ici dès qu'un journaliste
+              en enregistre un.
+            </p>
+          </div>
+          <div
+            class="bandeau bandeau-erreur"
+            role="alert"
+            data-etats="erreur"
+            style="background: var(--erreur-doux)"
+          >
+            <span data-ic="i-erreur"></span>
+            <div>
+              <strong>Le dernier podium n'a pas pu être chargé.</strong>Le serveur ne répond pas
+              pour le moment.
+              <p style="margin-top: 8px">
+                <button class="bouton bouton-secondaire" style="min-height: 2.75rem">
+                  Réessayer
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="meta" style="max-width: var(--maxw); margin: var(--s-4) auto 0; color: #fff">
+          * Données fictives de maquette.
+        </p>
+      </header>
+
+      <main class="sections" id="contenu">
+        <section aria-labelledby="t-disc">
+          <div class="titre-section">
+            <h2 id="t-disc">Par discipline</h2>
+            <a href="03-resultats-jour.html">Toutes les disciplines</a>
+          </div>
+          <ul class="tuiles" data-etats="normal horsligne erreur">
+            <li>
+              <a class="tuile t-rouge" href="03-resultats-jour.html"
+                ><strong>Lutte</strong><span>2 épreuves aujourd'hui</span></a
+              >
+            </li>
+            <li>
+              <a class="tuile t-ardoise" href="03-resultats-jour.html"
+                ><strong>Natation</strong><span>2 épreuves aujourd'hui</span></a
+              >
+            </li>
+            <li>
+              <a class="tuile t-jaune" href="03-resultats-jour.html"
+                ><strong>Pentathlon moderne</strong><span>1 épreuve aujourd'hui</span></a
+              >
+            </li>
+            <li>
+              <a class="tuile t-vert" href="03-resultats-jour.html"
+                ><strong>Athlétisme</strong><span>Voir les podiums</span></a
+              >
+            </li>
+            <li>
+              <a class="tuile t-vide" href="03-resultats-jour.html"
+                ><strong>Tir à l'arc</strong><span>Aucun podium aujourd'hui</span></a
+              >
+            </li>
+            <li>
+              <a class="tuile t-noir" href="03-resultats-jour.html"
+                ><strong>Toutes · 25 sports</strong><span>Choisir une discipline</span></a
+              >
+            </li>
+          </ul>
+          <ul
+            class="tuiles"
+            data-etats="chargement"
+            role="status"
+            aria-label="Chargement des disciplines"
+          >
+            <li><div class="squelette" style="min-height: 8rem"></div></li>
+            <li><div class="squelette" style="min-height: 8rem"></div></li>
+            <li><div class="squelette" style="min-height: 8rem"></div></li>
+            <li><div class="squelette" style="min-height: 8rem"></div></li>
+          </ul>
+          <div class="vide" data-etats="vide" style="padding: 0">
+            <svg aria-hidden="true"><use href="#i-ardoise" /></svg>
+            <h3>Les disciplines apparaissent avec les premiers podiums</h3>
+            <p>Chaque discipline s'ouvre dès qu'un de ses podiums est enregistré.</p>
+          </div>
+        </section>
+
+        <div class="corps">
+          <section aria-labelledby="t-res">
+            <div class="titre-section">
+              <h2 id="t-res">Résultats du jour</h2>
+              <a href="03-resultats-jour.html">Voir les résultats du 5 novembre</a>
+            </div>
+            <nav class="jours" aria-label="Choisir un jour" style="margin-bottom: var(--s-4)">
+              <a class="jour" href="03-resultats-jour.html" aria-label="jeudi 4 novembre"
+                ><span>mer</span><b>4</b><i class="point"></i
+              ></a>
+              <a
+                class="jour"
+                href="03-resultats-jour.html"
+                aria-current="true"
+                aria-label="jeudi 5 novembre"
+                ><span>jeu</span><b>5</b><i class="point"></i
+              ></a>
+              <a class="jour" href="03-resultats-jour.html" aria-label="vendredi 6 novembre"
+                ><span>ven</span><b>6</b><i class="point"></i
+              ></a>
+              <a class="jour" href="03-resultats-jour.html" aria-label="samedi 7 novembre"
+                ><span>sam</span><b>7</b><i class="point"></i
+              ></a>
+              <a class="jour" href="03-resultats-jour.html" aria-label="dimanche 8 novembre"
+                ><span>dim</span><b>8</b><i class="point sans"></i
+              ></a>
+            </nav>
+            <ul class="cartes-jour" data-etats="normal horsligne erreur">
+              <li>
+                <article class="timbre">
+                  <div class="timbre-tete">
+                    <div>
+                      <h3>Lutte garçons 65 kg</h3>
+                      <p class="meta">Lutte</p>
+                    </div>
+                  </div>
+                  <ol class="podium">
+                    <li>
+                      <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                      ><span class="plaque">EGY</span>
+                    </li>
+                    <li>
+                      <span class="med med-argent" aria-hidden="true">2</span
+                      ><span class="mot">Argent</span><span class="plaque">MAR</span>
+                    </li>
+                    <li>
+                      <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                      ><span class="mot">Bronze</span><span class="plaque">JPN</span>
+                    </li>
+                  </ol>
+                </article>
+              </li>
+              <li>
+                <article class="timbre">
+                  <div class="timbre-tete">
+                    <div>
+                      <h3>100 m nage libre filles</h3>
+                      <p class="meta">Natation</p>
+                    </div>
+                  </div>
+                  <ol class="podium">
+                    <li>
+                      <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                      ><span class="plaque">FRA</span>
+                    </li>
+                    <li>
+                      <span class="med med-argent" aria-hidden="true">2</span
+                      ><span class="mot">Argent</span><span class="plaque">BRA</span>
+                    </li>
+                    <li>
+                      <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                      ><span class="mot">Bronze</span><span class="plaque">CHN</span>
+                    </li>
+                  </ol>
+                </article>
+              </li>
+              <li>
+                <article class="timbre">
+                  <div class="timbre-tete">
+                    <div>
+                      <h3>200 m quatre nages garçons</h3>
+                      <p class="meta">Natation</p>
+                    </div>
+                  </div>
+                  <ol class="podium">
+                    <li>
+                      <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                      ><span class="plaque">JPN</span>
+                    </li>
+                    <li>
+                      <span class="med med-argent" aria-hidden="true">2</span
+                      ><span class="mot">Argent</span><span class="plaque">ITA</span>
+                    </li>
+                    <li>
+                      <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                      ><span class="mot">Bronze</span><span class="plaque">SEN</span>
+                    </li>
+                  </ol>
+                </article>
+              </li>
+              <li>
+                <article class="timbre">
+                  <div class="timbre-tete">
+                    <div>
+                      <h3>Épreuve individuelle filles, finale</h3>
+                      <p class="meta">Pentathlon moderne</p>
+                    </div>
+                  </div>
+                  <ol class="podium">
+                    <li>
+                      <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                      ><span class="plaque">NGR</span>
+                    </li>
+                    <li>
+                      <span class="med med-argent" aria-hidden="true">2</span
+                      ><span class="mot">Argent</span><span class="plaque">CIV</span>
+                    </li>
+                    <li>
+                      <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                      ><span class="mot">Bronze</span><span class="plaque">MAR</span>
+                    </li>
+                  </ol>
+                </article>
+              </li>
+            </ul>
+            <div
+              class="bandeau bandeau-erreur"
+              role="alert"
+              data-etats="erreur"
+              style="margin-top: var(--s-4)"
+            >
+              <span data-ic="i-erreur"></span>
+              <div>
+                <strong>Les résultats n'ont pas pu être chargés.</strong>Le serveur ne répond pas
+                pour le moment.
+              </div>
+            </div>
+            <div
+              role="status"
+              aria-label="Chargement des résultats"
+              data-etats="chargement"
+              style="display: grid; gap: var(--s-3)"
+            >
+              <div class="squelette" style="min-height: 11rem"></div>
+              <div class="squelette" style="min-height: 11rem"></div>
+            </div>
+            <div class="vide" data-etats="vide" style="padding: 0">
+              <svg aria-hidden="true"><use href="#i-ardoise" /></svg>
+              <h3>Aucun podium enregistré ce jour</h3>
+              <p>Les résultats apparaissent dès qu'un podium est enregistré.</p>
+            </div>
+          </section>
+
+          <section aria-labelledby="t-med">
+            <div class="titre-section">
+              <h2 id="t-med">Médailles</h2>
+              <a href="02-tableau-medailles.html">Tableau complet</a>
+            </div>
+            <table class="tableau tableau-compact" data-etats="normal horsligne erreur">
+              <caption>
+                Cinq premiers pays et Mon pays, données fictives
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <span class="visuellement-cache">Rang</span><span aria-hidden="true">N°</span>
+                  </th>
+                  <th scope="col">Pays</th>
+                  <th scope="col">
+                    <span class="med med-or" aria-hidden="true">1</span
+                    ><span class="visuellement-cache">Médailles d'or</span
+                    ><span aria-hidden="true">Or</span>
+                  </th>
+                  <th scope="col">
+                    <span class="med med-argent" aria-hidden="true">2</span
+                    ><span class="visuellement-cache">Médailles d'argent</span
+                    ><span aria-hidden="true">Ar</span>
+                  </th>
+                  <th scope="col">
+                    <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                    ><span class="visuellement-cache">Médailles de bronze</span
+                    ><span aria-hidden="true">Br</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row" class="rang">1</th>
+                  <td class="pays"><span class="plaque">CHN</span></td>
+                  <td class="or">4</td>
+                  <td>2</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="rang">2</th>
+                  <td class="pays"><span class="plaque">JPN</span></td>
+                  <td class="or">3</td>
+                  <td>2</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="rang">3</th>
+                  <td class="pays"><span class="plaque">FRA</span></td>
+                  <td class="or">3</td>
+                  <td>1</td>
+                  <td>3</td>
+                </tr>
+                <tr class="mon-pays">
+                  <th scope="row" class="rang">4</th>
+                  <td class="pays">
+                    <span class="plaque">SEN</span
+                    ><span class="visuellement-cache"> (mon pays)</span>
+                  </td>
+                  <td class="or">2</td>
+                  <td>3</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <th scope="row" class="rang">5<small>ex æquo</small></th>
+                  <td class="pays"><span class="plaque">BRA</span></td>
+                  <td class="or">2</td>
+                  <td>1</td>
+                  <td>1</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="lecture-seule" data-etats="normal horsligne erreur">
+              Tableau calculé à partir des podiums enregistrés dans cette application. Il peut
+              différer du tableau publié sur le site officiel des Jeux.
+            </p>
+            <div
+              class="bandeau bandeau-erreur"
+              role="alert"
+              data-etats="erreur"
+              style="margin-top: var(--s-4)"
+            >
+              <span data-ic="i-erreur"></span>
+              <div>
+                <strong>Le tableau n'a pas pu être chargé.</strong>Réessayez dans un instant.
+              </div>
+            </div>
+            <div
+              role="status"
+              aria-label="Chargement du tableau"
+              data-etats="chargement"
+              style="display: grid; gap: var(--s-2)"
+            >
+              <div class="squelette"></div>
+              <div class="squelette"></div>
+              <div class="squelette"></div>
+              <div class="squelette"></div>
+            </div>
+            <div class="vide" data-etats="vide" style="padding: 0">
+              <svg aria-hidden="true"><use href="#i-ardoise" /></svg>
+              <h3>Aucune médaille pour l'instant</h3>
+              <p>Le tableau se remplit dès le premier podium enregistré.</p>
+            </div>
+          </section>
+        </div>
+
+        <section class="bande-pro" aria-labelledby="t-pro">
+          <div>
+            <h2 id="t-pro">Vous enregistrez les podiums ?</h2>
+            <p>
+              L'espace journaliste sert à enregistrer un podium et à corriger une erreur, avec
+              trace.
+            </p>
+          </div>
+          <a class="bouton bouton-blanc" href="01-saisie-podium.html">Espace journaliste</a>
+        </section>
+      </main>
+
+      <footer class="pied">
+        <div>
+          <b>JOJ Dakar 2026 · résultats et médailles</b>
+          <p>
+            Application non officielle. Les données de cette maquette sont fictives. Le tableau des
+            médailles est informatif. Site officiel des Jeux :
+            <a href="https://www.olympics.com/en/dakar-2026">olympics.com/en/dakar-2026</a>.
+          </p>
+        </div>
+      </footer>
+
+      <nav class="onglets" aria-label="Navigation principale">
+        <div class="onglets-liste">
+          <a class="onglet" href="00-accueil.html" aria-current="page"
+            ><svg><use href="#i-logo" /></svg>Accueil</a
+          >
+          <a class="onglet" href="03-resultats-jour.html"
+            ><svg><use href="#i-jour" /></svg>Résultats</a
+          >
+          <a class="onglet" href="02-tableau-medailles.html"
+            ><svg><use href="#i-medailles" /></svg>Médailles</a
+          >
+        </div>
+      </nav>
+    </div>
+    <script src="maquette.js"></script>
+  </body>
+</html>

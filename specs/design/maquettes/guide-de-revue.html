@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Guide de revue des maquettes</title>
+    <link rel="stylesheet" href="cachet.css" />
+    <style>
+      .liste {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-3);
+      }
+      .liste a {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: var(--s-4);
+        background: var(--carte);
+        border: 1.5px solid var(--encre);
+        border-radius: var(--r-md);
+        text-decoration: none;
+        color: inherit;
+        min-height: var(--cible);
+      }
+      .liste b {
+        font-family: var(--police-titre);
+        font-size: var(--t-xl);
+        font-weight: 800;
+      }
+      .liste span {
+        font-size: var(--t-sm);
+        color: var(--encre-2);
+      }
+      .pastilles {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+        gap: var(--s-2);
+      }
+      .pastille {
+        border: 1.5px solid var(--encre);
+        border-radius: var(--r-sm);
+        overflow: hidden;
+        font-size: 0.6875rem;
+        background: var(--carte);
+      }
+      .pastille i {
+        display: block;
+        height: 2.25rem;
+      }
+      .pastille p {
+        padding: 4px 6px;
+        line-height: 1.3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="entete">
+        <span class="marque"
+          ><svg><use href="#i-logo" /></svg
+          ><span
+            >Direction « Cachet »<small>Maquettes statiques, données fictives</small></span
+          ></span
+        >
+      </header>
+      <main class="page" id="contenu">
+        <div class="page-titre">
+          <span class="surtitre"
+            >Sommaire pour valider le design : ce n'est pas la page d'accueil de l'application</span
+          >
+          <h1>Guide de revue</h1>
+          <p class="chapo">
+            Chaque page a une barre noire en haut pour passer d'un état à l'autre (vide, erreur,
+            hors ligne...). Cette barre n'appartient pas à l'application. Composez à 375 px.
+          </p>
+        </div>
+        <div class="bandeau bandeau-alerte">
+          <span data-ic="i-alerte"></span>
+          <div>
+            <strong>Ce guide n'est pas à implémenter.</strong>La vraie page d'accueil publique est
+            la maquette « Accueil » ci-dessous. Ce sommaire ne sert qu'à relire le design.
+          </div>
+        </div>
+        <ul class="liste">
+          <li>
+            <a href="00-accueil.html"
+              ><b>0 · Accueil (page d'entrée publique)</b
+              ><span
+                >Héros, disciplines, résultats du jour, médailles, appel au journaliste</span
+              ></a
+            >
+          </li>
+          <li>
+            <a href="01-saisie-podium.html"
+              ><b>1 · Enregistrer un podium</b
+              ><span>TR1 : AS1 succès, AS2 conflit, AS3 règle métier, validation</span></a
+            >
+          </li>
+          <li>
+            <a href="02-tableau-medailles.html"
+              ><b>2 · Tableau des médailles</b
+              ><span>TR2 : tri or/argent/bronze, ex æquo, mon pays</span></a
+            >
+          </li>
+          <li>
+            <a href="03-resultats-jour.html"
+              ><b>3 · Résultats d'une journée</b
+              ><span>TR3 par discipline, TR4 badge « Corrigé », TR5 résumé IA</span></a
+            >
+          </li>
+          <li>
+            <a href="04-correction-podium.html"
+              ><b>4 · Corriger un podium</b
+              ><span>TR4 : formulaire de correction, historique</span></a
+            >
+          </li>
+        </ul>
+        <section class="page-titre" aria-labelledby="t-tok">
+          <h2 id="t-tok">Jetons de couleur (clair), relevés sur le site officiel</h2>
+          <div class="pastilles">
+            <div class="pastille">
+              <i style="background: #981030"></i>
+              <p>Rouge motif<br />#981030</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #c31b2e"></i>
+              <p>Rouge vif<br />#C31B2E</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #fe5400"></i>
+              <p>Orange<br />#FE5400</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #ffb114"></i>
+              <p>Jaune<br />#FFB114</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #00a651"></i>
+              <p>Vert<br />#00A651</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #007dc5"></i>
+              <p>Bleu<br />#007DC5</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #27455c"></i>
+              <p>Ardoise<br />#27455C</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #f4f6f6"></i>
+              <p>Papier<br />#F4F6F6</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #121212"></i>
+              <p>Encre<br />#121212</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #c99700"></i>
+              <p>Or retenu<br />#C99700</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #b4bbc1"></i>
+              <p>Argent retenu<br />#B4BBC1</p>
+            </div>
+            <div class="pastille">
+              <i style="background: #c47a3f"></i>
+              <p>Bronze retenu<br />#C47A3F</p>
+            </div>
+          </div>
+        </section>
+        <section class="page-titre" aria-labelledby="t-res">
+          <h2 id="t-res">Ressources prises sur le site officiel</h2>
+          <p class="chapo">
+            Usage de validation interne seulement. Détail, dates et conditions d'usage :
+            assets/SOURCES.md. Aucun droit de diffusion publique n'est acquis.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+            <img
+              src="assets/photo-lutte-plage.webp"
+              alt="Carte de direct officielle : mascotte et libellé du jour 7 (lutte de plage)"
+              width="1280"
+              height="720"
+              loading="lazy"
+              style="width: 100%; height: auto; border-radius: 6px"
+            />
+            <img
+              src="assets/photo-tir-arc.webp"
+              alt="Carte de direct officielle : mascotte au tir à l'arc"
+              width="1280"
+              height="720"
+              loading="lazy"
+              style="width: 100%; height: auto; border-radius: 6px"
+            />
+            <img
+              src="assets/photo-gymnastique.webp"
+              alt="Carte de direct officielle : mascotte en gymnastique"
+              width="1280"
+              height="720"
+              loading="lazy"
+              style="width: 100%; height: auto; border-radius: 6px"
+            />
+            <img
+              src="assets/capture-site-officiel-medal-tally-mobile.jpg"
+              alt="Capture du tableau des médailles du site officiel à 375 px"
+              width="750"
+              height="1624"
+              loading="lazy"
+              style="width: 100%; height: auto; border-radius: 6px"
+            />
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="maquette.js"></script>
+  </body>
+</html>

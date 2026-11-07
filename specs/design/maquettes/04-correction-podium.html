@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Maquette TR4 : corriger un podium</title>
+    <link rel="stylesheet" href="cachet.css" />
+    <style>
+      .formulaire {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-4);
+      }
+      .groupe {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-3);
+      }
+      .groupe legend {
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-xl);
+        padding: 0 0 var(--s-2);
+      }
+      .lib-med {
+        display: flex;
+        align-items: center;
+        gap: var(--s-2);
+        font-weight: 600;
+        min-height: 3rem;
+      }
+      .change {
+        border-color: var(--alerte);
+        border-width: 2px;
+        background: var(--alerte-doux);
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-3);
+      }
+      .micro {
+        font-size: var(--t-xs);
+        color: var(--encre-2);
+      }
+      .verrou {
+        background: var(--filet);
+        color: var(--encre-2);
+      }
+    </style>
+  </head>
+  <body data-defaut="edition">
+    <div class="maquette-barre" role="navigation" aria-label="Etats de la maquette">
+      <b>MAQUETTE</b> TR4 · donnees fictives · <a href="#edition">avant changement</a
+      ><a href="#modifie">modifie</a><a href="#regle">regle</a><a href="#succes">succes</a
+      ><a href="#horsligne">hors ligne</a><a href="guide-de-revue.html">index</a>
+    </div>
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+    <div class="hors-ligne" role="status" data-etats="horsligne">
+      <span data-ic="i-horsligne"></span
+      ><span>Pas de connexion. La correction n'est pas envoyée tant que vous êtes hors ligne.</span>
+    </div>
+
+    <div class="app">
+      <header class="bandeau-marque bandeau-marque--ardoise">
+        <div class="carte-marque">
+          <a class="marque" href="00-accueil.html"
+            ><img
+              src="assets/dakar2026-emblem-oly-light.svg"
+              alt="Dakar 2026, Jeux Olympiques de la Jeunesse"
+              height="36"
+            /><small>Résultats et médailles · non officiel</small></a
+          >
+          <nav class="nav-haut" aria-label="Navigation principale">
+            <a href="00-accueil.html">Accueil</a> <a href="03-resultats-jour.html">Résultats</a
+            ><a href="02-tableau-medailles.html">Médailles</a>
+          </nav>
+          <span class="lien-pro actif" aria-current="page">Espace journaliste</span>
+        </div>
+        <div class="titre-bandeau page-titre">
+          <span class="surtitre">Espace journaliste</span>
+          <h1 id="titre-page">Corriger un podium</h1>
+        </div>
+      </header>
+
+      <main class="page" id="contenu">
+        <p class="chapo">Lutte filles 52 kg · Lutte · jeudi 5 novembre 2026</p>
+
+        <div class="bandeau bandeau-alerte" data-sauf="succes">
+          <span data-ic="i-alerte"></span>
+          <div>
+            <strong>Ce podium est déjà public.</strong>La correction remplace l'affichage actuel.
+            L'ancienne version reste consultable, avec la date de correction.
+          </div>
+        </div>
+        <div class="bandeau bandeau-erreur" role="alert" data-etats="regle">
+          <span data-ic="i-erreur"></span>
+          <div>
+            <strong>Un pays ne peut pas figurer deux fois.</strong>JPN apparaît en argent et en
+            bronze. Le podium publié n'a pas changé.
+          </div>
+        </div>
+        <div class="bandeau bandeau-ok" role="status" data-etats="succes">
+          <span data-ic="i-ok"></span>
+          <div>
+            <strong>Correction publiée.</strong>L'ancienne version est conservée et consultable.
+            <p style="margin-top: 8px">
+              <a href="03-resultats-jour.html#correction" style="color: inherit; font-weight: 700"
+                >Voir l'historique</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <form class="formulaire" novalidate onsubmit="return false;" data-sauf="succes">
+          <div class="col-saisie">
+            <p class="micro">
+              L'épreuve, la discipline et le jour ne changent pas. Seuls les trois pays se
+              corrigent.
+            </p>
+            <fieldset class="groupe">
+              <legend>Podium</legend>
+              <div class="ligne-medaille">
+                <div class="champ">
+                  <span class="etiquette lib-med"
+                    ><span class="med med-or" aria-hidden="true">1</span>Or</span
+                  >
+                </div>
+                <div class="champ">
+                  <label class="visuellement-cache" for="or">Pays de l'or</label
+                  ><input class="saisie saisie-code" id="or" maxlength="3" value="SEN" />
+                </div>
+              </div>
+              <div class="ligne-medaille">
+                <div class="champ">
+                  <span class="etiquette lib-med"
+                    ><span class="med med-argent" aria-hidden="true">2</span>Argent</span
+                  >
+                </div>
+                <div class="champ">
+                  <label class="visuellement-cache" for="ar">Pays de l'argent</label
+                  ><input class="saisie saisie-code" id="ar" maxlength="3" value="FRA" /><span
+                    class="aide"
+                    id="ar-ch"
+                    hidden
+                    >Était : FRA</span
+                  >
+                </div>
+              </div>
+              <div class="ligne-medaille">
+                <div class="champ">
+                  <span class="etiquette lib-med"
+                    ><span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                    >Bronze</span
+                  >
+                </div>
+                <div class="champ">
+                  <label class="visuellement-cache" for="br">Pays du bronze</label
+                  ><input class="saisie saisie-code" id="br" maxlength="3" value="JPN" /><span
+                    class="aide"
+                    id="br-ch"
+                    hidden
+                    >Était : JPN</span
+                  >
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="col-aside">
+            <section class="recents publie" aria-labelledby="t-pub">
+              <h2 id="t-pub">Podium publié actuellement</h2>
+              <article class="timbre">
+                <div class="timbre-tete">
+                  <div>
+                    <h3>Lutte filles 52 kg</h3>
+                    <p class="meta">Lutte · jeudi 5 novembre 2026</p>
+                  </div>
+                </div>
+                <ol class="podium">
+                  <li>
+                    <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                    ><span class="plaque">SEN</span>
+                  </li>
+                  <li>
+                    <span class="med med-argent" aria-hidden="true">2</span
+                    ><span class="mot">Argent</span><span class="plaque">FRA</span>
+                  </li>
+                  <li>
+                    <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                    ><span class="mot">Bronze</span><span class="plaque">JPN</span>
+                  </li>
+                </ol>
+              </article>
+              <p class="aide">Après la correction, cette version reste consultable avec sa date.</p>
+            </section>
+          </div>
+          <div class="actions">
+            <button class="bouton bouton-plein" type="submit" id="envoi">
+              Publier la correction
+            </button>
+            <a class="bouton bouton-secondaire bouton-plein" href="03-resultats-jour.html"
+              >Annuler</a
+            >
+          </div>
+        </form>
+
+        <section class="groupe" data-etats="succes" aria-labelledby="t-fin">
+          <h2 id="t-fin" class="visuellement-cache">Podium corrigé</h2>
+          <article class="timbre">
+            <div class="timbre-tete">
+              <div>
+                <h3>Lutte filles 52 kg</h3>
+                <p class="meta">Lutte · jeudi 5 novembre 2026</p>
+              </div>
+              <span class="cachet-corrige"
+                ><svg style="width: 1rem; height: 1rem" aria-hidden="true">
+                  <use href="#i-historique" /></svg
+                >Corrigé 5 nov.</span
+              >
+            </div>
+            <ol class="podium">
+              <li>
+                <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                ><span class="plaque">SEN</span>
+              </li>
+              <li>
+                <span class="med med-argent" aria-hidden="true">2</span
+                ><span class="mot">Argent</span><span class="plaque">JPN</span>
+              </li>
+              <li>
+                <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                ><span class="mot">Bronze</span><span class="plaque">FRA</span>
+              </li>
+            </ol>
+          </article>
+        </section>
+      </main>
+
+      <nav class="onglets" aria-label="Navigation principale">
+        <div class="onglets-liste">
+          <a class="onglet" href="00-accueil.html"
+            ><svg><use href="#i-logo" /></svg>Accueil</a
+          >
+          <a class="onglet" href="03-resultats-jour.html"
+            ><svg><use href="#i-jour" /></svg>Résultats</a
+          ><a class="onglet" href="02-tableau-medailles.html"
+            ><svg><use href="#i-medailles" /></svg>Médailles</a
+          ><a class="onglet" href="01-saisie-podium.html" aria-current="page"
+            ><svg><use href="#i-saisie" /></svg>Journaliste</a
+          >
+        </div>
+      </nav>
+    </div>
+    <script src="maquette.js"></script>
+    <script>
+      (function () {
+        var E = {
+          edition: { ar: 'FRA', br: 'JPN' },
+          modifie: { ar: 'JPN', br: 'FRA' },
+          regle: { ar: 'JPN', br: 'JPN' },
+          horsligne: { ar: 'JPN', br: 'FRA' },
+          succes: { ar: 'JPN', br: 'FRA' },
+        };
+        function etat() {
+          var e = (location.hash || '#edition').slice(1),
+            s = E[e] || E.edition;
+          ['ar', 'br'].forEach(function (k) {
+            var el = document.getElementById(k);
+            el.value = s[k];
+            var orig = k === 'ar' ? 'FRA' : 'JPN',
+              ch = el.value !== orig;
+            el.classList.toggle('change', ch);
+            document.getElementById(k + '-ch').hidden = !ch;
+            if (e === 'regle' && el.value === 'JPN') el.setAttribute('aria-invalid', 'true');
+            else el.removeAttribute('aria-invalid');
+          });
+          var b = document.getElementById('envoi');
+          b.disabled = e === 'edition' || e === 'horsligne';
+          b.textContent =
+            e === 'edition'
+              ? 'Aucun changement à publier'
+              : e === 'horsligne'
+                ? 'Publier (connexion requise)'
+                : 'Publier la correction';
+        }
+        window.addEventListener('hashchange', etat);
+        etat();
+      })();
+    </script>
+  </body>
+</html>

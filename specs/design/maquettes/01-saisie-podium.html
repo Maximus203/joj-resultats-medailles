@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Maquette TR1 : enregistrer un podium</title>
+    <link rel="stylesheet" href="cachet.css" />
+    <style>
+      .formulaire {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-4);
+      }
+      .groupe {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-3);
+      }
+      .groupe legend {
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-xl);
+        padding: 0 0 var(--s-2);
+      }
+      .lib-med {
+        display: flex;
+        align-items: center;
+        gap: var(--s-2);
+        font-weight: 600;
+        min-height: 3rem;
+      }
+      .apercu-vide {
+        color: var(--encre-3);
+        font-size: var(--t-sm);
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--s-3);
+      }
+      .micro {
+        font-size: var(--t-xs);
+        color: var(--encre-2);
+      }
+    </style>
+  </head>
+  <body data-defaut="vide">
+    <div class="maquette-barre" role="navigation" aria-label="Etats de la maquette">
+      <b>MAQUETTE</b> TR1 · donnees fictives · <a href="#vide">vide</a
+      ><a href="#invalide">invalide</a><a href="#regle">regle (AS3)</a
+      ><a href="#conflit">conflit (AS2)</a><a href="#chargement">envoi</a
+      ><a href="#succes">succes (AS1)</a><a href="#horsligne">hors ligne</a>
+      <a href="guide-de-revue.html">index</a>
+    </div>
+
+    <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+    <div class="hors-ligne" role="status" data-etats="horsligne">
+      <span data-ic="i-horsligne"></span
+      ><span>Pas de connexion. Rien n'est enregistré tant que vous êtes hors ligne.</span>
+    </div>
+
+    <div class="app">
+      <header class="bandeau-marque bandeau-marque--ardoise">
+        <div class="carte-marque">
+          <a class="marque" href="00-accueil.html"
+            ><img
+              src="assets/dakar2026-emblem-oly-light.svg"
+              alt="Dakar 2026, Jeux Olympiques de la Jeunesse"
+              height="36"
+            /><small>Résultats et médailles · non officiel</small></a
+          >
+          <nav class="nav-haut" aria-label="Navigation principale">
+            <a href="00-accueil.html">Accueil</a> <a href="03-resultats-jour.html">Résultats</a
+            ><a href="02-tableau-medailles.html">Médailles</a>
+          </nav>
+          <span class="lien-pro actif" aria-current="page">Espace journaliste</span>
+        </div>
+        <div class="titre-bandeau page-titre">
+          <span class="surtitre">Espace journaliste</span>
+          <h1 id="titre-page">Enregistrer un podium</h1>
+        </div>
+      </header>
+
+      <main class="page" id="contenu">
+        <p class="chapo">
+          Une épreuve n'a qu'un seul podium. Les trois pays d'un podium sont différents.
+        </p>
+
+        <div class="bandeau bandeau-erreur" role="alert" data-etats="conflit">
+          <span data-ic="i-erreur"></span>
+          <div>
+            <strong>Cette épreuve a déjà un podium.</strong>Le podium enregistré n'a pas changé.
+            Pour le modifier, utilisez la correction.
+            <p style="margin-top: 8px">
+              <a href="03-resultats-jour.html" style="color: inherit; font-weight: 700"
+                >Voir le podium enregistré</a
+              >
+            </p>
+          </div>
+        </div>
+        <div class="bandeau bandeau-erreur" role="alert" data-etats="regle">
+          <span data-ic="i-erreur"></span>
+          <div>
+            <strong>Un pays ne peut pas figurer deux fois.</strong>SEN apparaît en or et en argent.
+            Aucun podium n'a été enregistré pour cette épreuve.
+          </div>
+        </div>
+        <div class="bandeau bandeau-erreur" role="alert" data-etats="invalide">
+          <span data-ic="i-erreur"></span>
+          <div>
+            <strong>2 champs à corriger.</strong>Le nom de l'épreuve est obligatoire, et un pays
+            s'écrit avec trois lettres.
+          </div>
+        </div>
+        <div class="bandeau bandeau-ok" role="status" data-etats="succes">
+          <span data-ic="i-ok"></span>
+          <div><strong>Podium enregistré.</strong>Relisez-le : c'est ce que le public voit.</div>
+        </div>
+
+        <section
+          aria-labelledby="t-lu"
+          data-etats="succes"
+          style="display: flex; flex-direction: column; gap: var(--s-4)"
+        >
+          <h2 id="t-lu" class="visuellement-cache">Podium enregistré</h2>
+          <article class="timbre">
+            <div class="timbre-tete">
+              <div>
+                <h3>Lutte filles 52 kg</h3>
+                <p class="meta">Lutte · jeudi 5 novembre 2026</p>
+              </div>
+            </div>
+            <ol class="podium">
+              <li>
+                <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                ><span class="plaque">SEN</span>
+              </li>
+              <li>
+                <span class="med med-argent" aria-hidden="true">2</span
+                ><span class="mot">Argent</span><span class="plaque">JPN</span>
+              </li>
+              <li>
+                <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                ><span class="mot">Bronze</span><span class="plaque">FRA</span>
+              </li>
+            </ol>
+          </article>
+          <div class="actions">
+            <a class="bouton bouton-plein" href="#vide">Enregistrer un autre podium</a>
+            <a class="bouton bouton-secondaire bouton-plein" href="03-resultats-jour.html"
+              >Voir les résultats du 5 novembre</a
+            >
+          </div>
+        </section>
+
+        <form
+          class="formulaire"
+          data-sauf="succes"
+          novalidate
+          onsubmit="return false;"
+          aria-busy="false"
+          id="f"
+        >
+          <div class="col-saisie">
+            <div class="champ">
+              <label for="nom">Épreuve</label>
+              <input
+                class="saisie"
+                id="nom"
+                name="nom"
+                autocomplete="off"
+                aria-describedby="nom-aide nom-err"
+                maxlength="100"
+              />
+              <span class="aide" id="nom-aide"
+                >Le nom officiel, par exemple « Lutte filles 52 kg ».</span
+              >
+              <span class="msg-erreur" id="nom-err" hidden data-etats="invalide"
+                ><span data-ic="i-erreur" style="width: 1rem; height: 1rem; flex: none"></span
+                >Indiquez le nom de l'épreuve.</span
+              >
+            </div>
+            <div class="champ">
+              <label for="disc">Discipline</label>
+              <input class="saisie" id="disc" name="disc" autocomplete="off" list="disciplines" />
+              <datalist id="disciplines">
+                <option value="Lutte"></option>
+                <option value="Athlétisme"></option>
+                <option value="Natation"></option>
+              </datalist>
+            </div>
+            <div class="champ">
+              <label for="jour">Jour</label>
+              <input
+                class="saisie"
+                id="jour"
+                name="jour"
+                type="date"
+                min="2026-10-31"
+                max="2026-11-13"
+              />
+              <span class="aide">Les Jeux se déroulent du 31 octobre au 13 novembre.</span>
+            </div>
+
+            <fieldset class="groupe">
+              <legend>Podium</legend>
+              <div class="ligne-medaille">
+                <div class="champ">
+                  <span class="etiquette lib-med"
+                    ><span class="med med-or" aria-hidden="true">1</span>Or</span
+                  >
+                </div>
+                <div class="champ">
+                  <label class="visuellement-cache" for="or">Pays de l'or, trois lettres</label>
+                  <input
+                    class="saisie saisie-code"
+                    id="or"
+                    maxlength="3"
+                    autocapitalize="characters"
+                    autocomplete="off"
+                    placeholder="SEN"
+                    aria-describedby="or-err"
+                  />
+                </div>
+              </div>
+              <div class="ligne-medaille">
+                <div class="champ">
+                  <span class="etiquette lib-med"
+                    ><span class="med med-argent" aria-hidden="true">2</span>Argent</span
+                  >
+                </div>
+                <div class="champ">
+                  <label class="visuellement-cache" for="ar">Pays de l'argent, trois lettres</label>
+                  <input
+                    class="saisie saisie-code"
+                    id="ar"
+                    maxlength="3"
+                    autocapitalize="characters"
+                    autocomplete="off"
+                    placeholder="JPN"
+                    aria-describedby="ar-err"
+                  />
+                </div>
+              </div>
+              <div class="ligne-medaille">
+                <div class="champ">
+                  <span class="etiquette lib-med"
+                    ><span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                    >Bronze</span
+                  >
+                </div>
+                <div class="champ">
+                  <label class="visuellement-cache" for="br">Pays du bronze, trois lettres</label>
+                  <input
+                    class="saisie saisie-code"
+                    id="br"
+                    maxlength="3"
+                    autocapitalize="characters"
+                    autocomplete="off"
+                    placeholder="FRA"
+                    aria-describedby="br-err"
+                  />
+                </div>
+              </div>
+              <span class="msg-erreur" id="or-err" hidden data-etats="regle"
+                ><span data-ic="i-erreur" style="width: 1rem; height: 1rem; flex: none"></span>L'or
+                et l'argent sont le même pays : SEN.</span
+              >
+              <span class="msg-erreur" id="br-err" hidden data-etats="invalide"
+                ><span data-ic="i-erreur" style="width: 1rem; height: 1rem; flex: none"></span>« SE
+                » n'est pas un code pays : trois lettres, par exemple SEN.</span
+              >
+              <span class="aide">Code de trois lettres majuscules, comme SEN, JPN, FRA.</span>
+            </fieldset>
+          </div>
+          <div class="col-aside">
+            <section aria-labelledby="t-apercu" class="groupe apercu">
+              <h2 id="t-apercu" style="font-size: var(--t-lg)">Aperçu avant enregistrement</h2>
+              <article class="timbre" aria-live="polite">
+                <div class="timbre-tete">
+                  <div>
+                    <h3 id="ap-nom">Épreuve à saisir</h3>
+                    <p class="meta" id="ap-meta">Discipline · jour</p>
+                  </div>
+                </div>
+                <ol class="podium">
+                  <li>
+                    <span class="med med-or" aria-hidden="true">1</span><span class="mot">Or</span
+                    ><span class="plaque" id="ap-or">···</span>
+                  </li>
+                  <li>
+                    <span class="med med-argent" aria-hidden="true">2</span
+                    ><span class="mot">Argent</span><span class="plaque" id="ap-ar">···</span>
+                  </li>
+                  <li>
+                    <span class="med med-bronze" aria-hidden="true"><span>3</span></span
+                    ><span class="mot">Bronze</span><span class="plaque" id="ap-br">···</span>
+                  </li>
+                </ol>
+              </article>
+            </section>
+            <section class="recents" aria-labelledby="t-rec">
+              <h2 id="t-rec">Déjà enregistrés le 5 novembre</h2>
+              <p class="aide">
+                Vérifiez que l'épreuve n'y figure pas déjà : une épreuve n'a qu'un seul podium.
+              </p>
+              <ul class="liste-compacte">
+                <li>
+                  <b>Lutte garçons 65 kg</b
+                  ><span
+                    ><span class="plaque">EGY</span><span class="plaque">MAR</span
+                    ><span class="plaque">JPN</span></span
+                  >
+                </li>
+                <li>
+                  <b>100 m nage libre filles</b
+                  ><span
+                    ><span class="plaque">FRA</span><span class="plaque">BRA</span
+                    ><span class="plaque">CHN</span></span
+                  >
+                </li>
+                <li>
+                  <b>200 m quatre nages garçons</b
+                  ><span
+                    ><span class="plaque">JPN</span><span class="plaque">ITA</span
+                    ><span class="plaque">SEN</span></span
+                  >
+                </li>
+              </ul>
+            </section>
+          </div>
+          <div class="actions">
+            <button class="bouton bouton-plein" type="submit" id="envoi">
+              Enregistrer le podium
+            </button>
+            <p class="micro">
+              Une fois enregistré, le podium est public. Une erreur se corrige ensuite : l'ancienne
+              version reste consultable.
+            </p>
+          </div>
+        </form>
+      </main>
+
+      <nav class="onglets" aria-label="Navigation principale">
+        <div class="onglets-liste">
+          <a class="onglet" href="00-accueil.html"
+            ><svg><use href="#i-logo" /></svg>Accueil</a
+          >
+          <a class="onglet" href="03-resultats-jour.html"
+            ><svg><use href="#i-jour" /></svg>Résultats</a
+          ><a class="onglet" href="02-tableau-medailles.html"
+            ><svg><use href="#i-medailles" /></svg>Médailles</a
+          ><a class="onglet" href="01-saisie-podium.html" aria-current="page"
+            ><svg><use href="#i-saisie" /></svg>Journaliste</a
+          >
+        </div>
+      </nav>
+    </div>
+
+    <script src="maquette.js"></script>
+    <script>
+      (function () {
+        var E = {
+          vide: { nom: '', disc: '', jour: '2026-11-05', or: '', ar: '', br: '' },
+          invalide: {
+            nom: '',
+            disc: 'Lutte',
+            jour: '2026-11-05',
+            or: 'SEN',
+            ar: 'JPN',
+            br: 'SE',
+            bad: ['nom', 'br'],
+          },
+          regle: {
+            nom: 'Lutte filles 52 kg',
+            disc: 'Lutte',
+            jour: '2026-11-05',
+            or: 'SEN',
+            ar: 'SEN',
+            br: 'FRA',
+            bad: ['or', 'ar'],
+          },
+          conflit: {
+            nom: 'Lutte filles 52 kg',
+            disc: 'Lutte',
+            jour: '2026-11-05',
+            or: 'SEN',
+            ar: 'JPN',
+            br: 'FRA',
+            bad: ['nom'],
+          },
+          chargement: {
+            nom: 'Lutte filles 52 kg',
+            disc: 'Lutte',
+            jour: '2026-11-05',
+            or: 'SEN',
+            ar: 'JPN',
+            br: 'FRA',
+          },
+          succes: {
+            nom: 'Lutte filles 52 kg',
+            disc: 'Lutte',
+            jour: '2026-11-05',
+            or: 'SEN',
+            ar: 'JPN',
+            br: 'FRA',
+          },
+          horsligne: {
+            nom: 'Lutte filles 52 kg',
+            disc: 'Lutte',
+            jour: '2026-11-05',
+            or: 'SEN',
+            ar: 'JPN',
+            br: 'FRA',
+          },
+        };
+        var ids = ['nom', 'disc', 'jour', 'or', 'ar', 'br'];
+        function maj() {
+          var v = {};
+          ids.forEach(function (i) {
+            v[i] = document.getElementById(i).value;
+          });
+          document.getElementById('ap-nom').textContent = v.nom || 'Épreuve à saisir';
+          document.getElementById('ap-meta').textContent =
+            (v.disc || 'Discipline') +
+            ' · ' +
+            (v.jour
+              ? new Date(v.jour + 'T12:00:00').toLocaleDateString('fr-FR', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : 'jour');
+          ['or', 'ar', 'br'].forEach(function (k) {
+            document.getElementById('ap-' + k).textContent = (v[k] || '···').toUpperCase();
+          });
+        }
+        function etat() {
+          var e = (location.hash || '#vide').slice(1),
+            s = E[e] || E.vide;
+          ids.forEach(function (i) {
+            var el = document.getElementById(i);
+            el.value = s[i];
+            var mauvais = (s.bad || []).indexOf(i) > -1;
+            if (mauvais) el.setAttribute('aria-invalid', 'true');
+            else el.removeAttribute('aria-invalid');
+          });
+          var b = document.getElementById('envoi'),
+            f = document.getElementById('f');
+          b.disabled = false;
+          b.removeAttribute('aria-disabled');
+          f.setAttribute('aria-busy', 'false');
+          b.textContent = 'Enregistrer le podium';
+          if (e === 'chargement') {
+            b.disabled = true;
+            f.setAttribute('aria-busy', 'true');
+            b.textContent = 'Enregistrement en cours…';
+          }
+          if (e === 'horsligne') {
+            b.disabled = true;
+            b.textContent = 'Enregistrer (connexion requise)';
+          }
+          maj();
+        }
+        ids.forEach(function (i) {
+          document.getElementById(i).addEventListener('input', function (ev) {
+            if (['or', 'ar', 'br'].indexOf(i) > -1) ev.target.value = ev.target.value.toUpperCase();
+            maj();
+          });
+        });
+        window.addEventListener('hashchange', etat);
+        etat();
+      })();
+    </script>
+  </body>
+</html>
