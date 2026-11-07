@@ -1,0 +1,2 @@
+# Fins de ligne LF partout, y compris sous Windows : sinon oxfmt --check échoue.
+* text=auto eol=lf

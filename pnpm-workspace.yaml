@@ -1,0 +1,17 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm n'exécute pas les scripts d'installation des dépendances, sauf ceux autorisés ici.
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  lefthook: true
+  msw: true
+  # Télémétrie embarquée par une dépendance de NestJS : refusée explicitement.
+  '@scarf/scarf': false
+
+peerDependencyRules:
+  allowedVersions:
+    # @nestjs/cli épingle webpack 5.106 ; on ne s'en sert pas (builder SWC).
+    'schema-utils>webpack': '5'

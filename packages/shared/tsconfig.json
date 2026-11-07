@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Chargé tel quel par Node (type stripping) : seulement de la syntaxe TypeScript effaçable,
+    // et des imports relatifs avec l'extension .ts.
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "types": []
+  },
+  "include": ["src"]
+}

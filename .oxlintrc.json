@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "vitest"],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": ["**/dist/**", "apps/web/src/routeTree.gen.ts", "apps/api/migrations/**"],
+  "overrides": [
+    {
+      "files": ["apps/api/src/modules/*/domain/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@nestjs/*",
+                  "drizzle-orm",
+                  "drizzle-orm/*",
+                  "pg",
+                  "nestjs-*",
+                  "@electric-sql/*"
+                ],
+                "message": "domain/ reste du TypeScript pur : pas de framework ni de persistance."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "env": {
+    "builtin": true
+  }
+}

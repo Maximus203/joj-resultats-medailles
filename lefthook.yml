@@ -1,0 +1,5 @@
+# La même vérification que les skills : format, lint, types et tests liés aux fichiers modifiés.
+pre-commit:
+  jobs:
+    - name: verify
+      run: pnpm -s verify --staged
