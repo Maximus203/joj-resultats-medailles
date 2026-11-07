@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1793025380125,
-      "tag": "0000_create_disciplines",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1794062779848,
-      "tag": "0001_create_slots_and_registrations",
+      "when": 1794068492897,
+      "tag": "0000_create_podiums",
       "breakpoints": true
     }
   ]

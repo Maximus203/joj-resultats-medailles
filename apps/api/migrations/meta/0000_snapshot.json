@@ -1,11 +1,11 @@
 {
-  "id": "20d6c9f1-64c2-4ab8-9d65-1f92f39cb0de",
+  "id": "a003b68f-b654-49b8-888c-1995f6247d04",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.disciplines": {
-      "name": "disciplines",
+    "public.podiums": {
+      "name": "podiums",
       "schema": "",
       "columns": {
         "id": {
@@ -14,15 +14,45 @@
           "primaryKey": true,
           "notNull": true
         },
-        "name": {
-          "name": "name",
+        "event_name": {
+          "name": "event_name",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
-        "category": {
-          "name": "category",
-          "type": "varchar(50)",
+        "event_key": {
+          "name": "event_key",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "discipline": {
+          "name": "discipline",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "day": {
+          "name": "day",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gold": {
+          "name": "gold",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "silver": {
+          "name": "silver",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bronze": {
+          "name": "bronze",
+          "type": "varchar(3)",
           "primaryKey": false,
           "notNull": true
         },
@@ -34,11 +64,11 @@
         }
       },
       "indexes": {
-        "disciplines_name_key": {
-          "name": "disciplines_name_key",
+        "podiums_event_key_key": {
+          "name": "podiums_event_key_key",
           "columns": [
             {
-              "expression": "name",
+              "expression": "event_key",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -54,7 +84,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "podiums_countries_distinct": {
+          "name": "podiums_countries_distinct",
+          "value": "\"podiums\".\"gold\" <> \"podiums\".\"silver\" and \"podiums\".\"gold\" <> \"podiums\".\"bronze\" and \"podiums\".\"silver\" <> \"podiums\".\"bronze\""
+        }
+      },
       "isRLSEnabled": false
     }
   },
