@@ -1,0 +1,1 @@
+ALTER TABLE "podiums" ADD COLUMN "corrected_at" timestamp (3) with time zone;

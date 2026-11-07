@@ -12,7 +12,7 @@ export function toPodium(row: PodiumRow): Podium {
     silver: row.silver,
     bronze: row.bronze,
     createdAt: row.createdAt,
-    correctedAt: null,
+    correctedAt: row.correctedAt,
   });
 }
 
@@ -28,5 +28,6 @@ export function toPodiumRow(podium: Podium): PodiumRow {
     silver: podium.silver,
     bronze: podium.bronze,
     createdAt: podium.createdAt,
+    correctedAt: podium.correctedAt,
   };
 }

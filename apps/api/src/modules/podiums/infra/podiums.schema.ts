@@ -19,6 +19,8 @@ export const podiums = pgTable(
     bronze: varchar('bronze', { length: 3 }).notNull(),
     // Précision milliseconde = celle de Date en JavaScript.
     createdAt: timestamp('created_at', { withTimezone: true, precision: 3 }).notNull(),
+    // La dernière correction ; nul tant que le podium n'a jamais été corrigé.
+    correctedAt: timestamp('corrected_at', { withTimezone: true, precision: 3 }),
   },
   (table) => [
     uniqueIndex(PODIUMS_EVENT_KEY_UNIQUE).on(table.eventKey),

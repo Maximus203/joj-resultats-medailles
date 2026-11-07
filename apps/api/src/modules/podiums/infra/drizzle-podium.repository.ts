@@ -1,3 +1,4 @@
+import { eq } from 'drizzle-orm';
 import { Inject, Injectable } from '@nestjs/common';
 import type { Database } from '../../../core/database/database';
 import { DATABASE } from '../../../core/database/database.module';
@@ -25,7 +26,11 @@ export class DrizzlePodiumRepository extends PodiumRepository {
     }
   }
 
-  async list(): Promise<Podium[]> {
-    return (await this.db.select().from(podiums)).map(toPodium);
+  async list(day?: string): Promise<Podium[]> {
+    const rows = await this.db
+      .select()
+      .from(podiums)
+      .where(day === undefined ? undefined : eq(podiums.day, day));
+    return rows.map(toPodium);
   }
 }
