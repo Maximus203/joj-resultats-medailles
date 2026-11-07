@@ -1,3 +1,4 @@
+import type { PodiumRevision } from './podium-revision';
 import { podiumCountriesNotDistinct } from './podiums.errors';
 
 export interface PodiumProps {
@@ -44,6 +45,29 @@ export class Podium {
   /** Reconstruit un podium depuis la persistance, sans rejouer les règles. */
   static restore(props: PodiumProps): Podium {
     return new Podium({ ...props });
+  }
+
+  /**
+   * Corrige les trois pays. Rend le podium corrigé et la version remplacée ; une correction
+   * identique à la version publiée ne change rien (`revision` vaut `null`).
+   */
+  correct(
+    medals: { gold: string; silver: string; bronze: string },
+    now: Date,
+  ): { podium: Podium; revision: PodiumRevision | null } {
+    if (new Set([medals.gold, medals.silver, medals.bronze]).size < 3) {
+      throw podiumCountriesNotDistinct();
+    }
+    const unchanged =
+      medals.gold === this.gold && medals.silver === this.silver && medals.bronze === this.bronze;
+    if (unchanged) return { podium: this, revision: null };
+    const revision = {
+      gold: this.gold,
+      silver: this.silver,
+      bronze: this.bronze,
+      correctedAt: now,
+    };
+    return { podium: new Podium({ ...this.props, ...medals, correctedAt: now }), revision };
   }
 
   get id(): string {

@@ -6,6 +6,8 @@ const PODIUM_ERROR_KINDS = {
   PODIUM_ALREADY_RECORDED: 'CONFLICT',
   /** Deux des trois médaillés sont le même pays. */
   PODIUM_COUNTRIES_NOT_DISTINCT: 'BUSINESS_RULE',
+  /** Aucun podium ne porte cet identifiant. */
+  PODIUM_NOT_FOUND: 'NOT_FOUND',
 } as const satisfies Record<string, ErrorKind>;
 
 export type PodiumErrorCode = keyof typeof PODIUM_ERROR_KINDS;
@@ -29,4 +31,8 @@ export function podiumCountriesNotDistinct(): PodiumError {
     'PODIUM_COUNTRIES_NOT_DISTINCT',
     'The gold, silver and bronze medallists must be three different countries',
   );
+}
+
+export function podiumNotFound(id: string): PodiumError {
+  return new PodiumError('PODIUM_NOT_FOUND', `No podium has the id ${id}`, { id });
 }
