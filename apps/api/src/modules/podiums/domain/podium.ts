@@ -30,7 +30,12 @@ export class Podium {
     if (new Set([input.gold, input.silver, input.bronze]).size < 3) {
       throw podiumCountriesNotDistinct();
     }
-    return new Podium({ ...input, createdAt: now });
+    return new Podium({
+      ...input,
+      eventName: cleanName(input.eventName),
+      discipline: input.discipline.trim(),
+      createdAt: now,
+    });
   }
 
   /** Reconstruit un podium depuis la persistance, sans rejouer les règles. */
@@ -43,6 +48,10 @@ export class Podium {
   }
   get eventName(): string {
     return this.props.eventName;
+  }
+  /** Le nom en minuscules : deux écritures d'une même épreuve ont la même clé. */
+  get eventKey(): string {
+    return this.props.eventName.toLowerCase();
   }
   get discipline(): string {
     return this.props.discipline;
@@ -62,4 +71,9 @@ export class Podium {
   get createdAt(): Date {
     return this.props.createdAt;
   }
+}
+
+/** Retire les espaces en trop, aux extrémités et entre les mots. */
+function cleanName(name: string): string {
+  return name.trim().replace(/\s+/g, ' ');
 }
