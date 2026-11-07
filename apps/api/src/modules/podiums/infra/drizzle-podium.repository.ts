@@ -5,7 +5,7 @@ import { isUniqueViolation } from '../../../core/database/pg-errors';
 import { PodiumRepository } from '../application/podium.repository';
 import type { Podium } from '../domain/podium';
 import { podiumAlreadyRecorded } from '../domain/podiums.errors';
-import { toPodiumRow } from './podium.mapper';
+import { toPodium, toPodiumRow } from './podium.mapper';
 import { PODIUMS_EVENT_KEY_UNIQUE, podiums } from './podiums.schema';
 
 @Injectable()
@@ -23,5 +23,9 @@ export class DrizzlePodiumRepository extends PodiumRepository {
       }
       throw error;
     }
+  }
+
+  async list(): Promise<Podium[]> {
+    return (await this.db.select().from(podiums)).map(toPodium);
   }
 }

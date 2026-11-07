@@ -11,6 +11,10 @@ export class InMemoryPodiumRepository extends PodiumRepository {
     this.rows.set(podium.eventKey, podium);
   }
 
+  async list(): Promise<Podium[]> {
+    return [...this.rows.values()];
+  }
+
   /** Les podiums enregistrés : sert aux tests à vérifier ce qui a été conservé. */
   all(): readonly Podium[] {
     return [...this.rows.values()];
