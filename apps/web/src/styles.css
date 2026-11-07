@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+/* Le design system « Cachet » passe après Tailwind : ses règles de base l'emportent sur le préflight. */
+@import './styles/cachet.css';
+@import './styles/pages.css';
 
 @custom-variant dark (&:is(.dark *));
 
