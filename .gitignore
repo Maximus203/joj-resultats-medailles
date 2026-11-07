@@ -9,3 +9,4 @@ apps/api/.data/
 .vite/
 .DS_Store
 .claude/settings.local.json
+.test-shots/
