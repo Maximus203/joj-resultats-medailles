@@ -11,8 +11,8 @@ export class InMemoryPodiumRepository extends PodiumRepository {
     this.rows.set(podium.eventKey, podium);
   }
 
-  async list(): Promise<Podium[]> {
-    return [...this.rows.values()];
+  async list(day?: string): Promise<Podium[]> {
+    return this.all().filter((podium) => day === undefined || podium.day === day);
   }
 
   /** Les podiums enregistrés : sert aux tests à vérifier ce qui a été conservé. */

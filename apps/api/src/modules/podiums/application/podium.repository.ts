@@ -8,6 +8,6 @@ export abstract class PodiumRepository {
   /** Enregistre le podium ; lève PODIUM_ALREADY_RECORDED si l'épreuve en a déjà un. */
   abstract add(podium: Podium): Promise<void>;
 
-  /** Tous les podiums enregistrés, dans un ordre quelconque. */
-  abstract list(): Promise<Podium[]>;
+  /** Les podiums enregistrés (ceux d'un jour si `day` est donné), dans un ordre quelconque. */
+  abstract list(day?: string): Promise<Podium[]>;
 }

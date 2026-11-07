@@ -9,6 +9,8 @@ export interface PodiumProps {
   silver: string;
   bronze: string;
   createdAt: Date;
+  /** La date de la dernière correction ; `null` tant que le podium n'a jamais été corrigé. */
+  correctedAt: Date | null;
 }
 
 export interface NewPodium {
@@ -35,6 +37,7 @@ export class Podium {
       eventName: cleanName(input.eventName),
       discipline: input.discipline.trim(),
       createdAt: now,
+      correctedAt: null,
     });
   }
 
@@ -70,6 +73,9 @@ export class Podium {
   }
   get createdAt(): Date {
     return this.props.createdAt;
+  }
+  get correctedAt(): Date | null {
+    return this.props.correctedAt;
   }
 }
 
