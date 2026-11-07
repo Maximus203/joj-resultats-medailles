@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { mockControl } from '@/mocks/control';
@@ -115,6 +115,18 @@ describe('record a podium screen', () => {
     expect(describedByTargetsExist()).toEqual([]);
     expect(writes(seen)).toHaveLength(0);
     expect(axeFindings(await runAxe())).toEqual([]);
+  });
+
+  it('refuses a day outside the Games without calling the server', async () => {
+    const user = userEvent.setup();
+    const seen = trackRequests();
+    await open();
+    await fill(user, wrestling);
+    fireEvent.change(screen.getByLabelText('Jour'), { target: { value: '2026-12-25' } });
+    await submit(user);
+    expect(await screen.findByRole('alert')).toHaveTextContent('1 champ à corriger.');
+    expect(screen.getByLabelText('Jour')).toHaveAttribute('aria-invalid', 'true');
+    expect(writes(seen)).toHaveLength(0);
   });
 
   it('shows the busy state while the podium is being sent', async () => {

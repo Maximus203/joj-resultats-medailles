@@ -1,6 +1,6 @@
 # 001 — Enregistrer le podium d'une épreuve
 
-> Spec : specs/001-podium · Statut : ✅ (6 ✅ [API], 4 ⏭️ [WEB] écran non livré) · Build : journee @60a713d (API démarrée à 17:05 sur 363e428 ; le commit 60a713d, arrivé pendant la campagne, ne touche que deploy/) ; arbre non commité : seul `specs/design/` (non suivi), aucun fichier de apps/ ni packages/ modifié · Testé : 2026-11-07
+> Spec : specs/001-podium · Statut : 🟡 (6 ✅ [API] ; [WEB] : 3 ✅, 1 🟡) · Build : journee @f96f561 (API :3000 et front :5173 déjà lancés, base démo seedée ; arbre : seuls apps/web/.tanstack/ et specs/design/ non suivis) · Testé : 2026-11-07 (campagne [WEB] sur l'application réelle, navigateur intégré, 375 px sombre puis 320 px clair)
 > Surfaces : [API] [WEB] · Profils : journaliste (supporter : constat seulement)
 
 ## Préconditions
@@ -31,8 +31,8 @@
 **Action** : sur l'écran d'enregistrement d'un podium (mobile 375 px), saisir l'épreuve, la discipline, le jour et les trois pays de référence ; valider.
 **Attendu** : un message de succès lisible ; le podium enregistré est montré avec ses trois médaillés (SEN or, JPN argent, FRA bronze).
 **Vérif [BE]** : même ligne en base qu'en 001-AS1.1.
-**Observé** : Écran non livré : l'accueil `/` n'est qu'un gabarit (titre « Jeux Olympiques de la Jeunesse, Dakar 2026 » et « Ton application commence ici. », aucun lien, aucun formulaire) ; `/podiums`, `/podiums/new`, `/podium`, `/enregistrer`, `/saisie`, `/admin` répondent « Page introuvable » (0 champ de saisie). `apps/web/src/features/` n'existe pas. Jumeau [API] : 001-AS1.1 ✅. Vu à 375 px, console sans erreur. Capture : `.test-shots/001-podium-001-AS1.3-375-url-directe-after.jpg`.
-**Verdict** : ⏭️
+**Observé** : Par l'écran `/journaliste` (lien « Espace journaliste » de l'en-tête), saisie réelle au clavier à 375 px, thème sombre : « QA Lutte filles 52 kg », Lutte, 05/11/2026, SEN / JPN / FRA. L'aperçu avant enregistrement se met à jour en direct. Clic sur « Enregistrer le podium » → `POST /api/podiums` `201` (requête vue dans le réseau, pas la fausse API), bandeau vert « Podium enregistré. Relisez-le : c'est ce que le public voit. », puis carte du podium avec SEN or, JPN argent, FRA bronze, boutons « Enregistrer un autre podium » et « Voir les résultats du 5 novembre ». [BE] via `GET /api/podiums` : une seule entrée « QA Lutte filles 52 kg », SEN/JPN/FRA, 2026-11-05. Console sans erreur. Captures : `.test-shots/001-podium-001-AS1.2-journaliste-375-dark-before.jpg`, `...-after.jpg`. Remarque : la capture « après » prise juste après le clic montrait encore le formulaire (rendu en retard de l'outil, pas de l'application).
+**Verdict** : ✅
 **Issue** : —
 
 ### 001-AS2.1 — [API] Un second podium pour la même épreuve est refusé
@@ -66,8 +66,8 @@
 **Technique** : erreur
 **Action** : sur l'écran, enregistrer deux fois « Lutte filles 52 kg ».
 **Attendu** : le second enregistrement est refusé avec un message de conflit en français qui dit que l'épreuve a déjà un podium ; la saisie du journaliste n'est pas effacée ; le premier podium n'a pas changé.
-**Observé** : Écran non livré (voir 001-AS1.2). Jumeau [API] : 001-AS2.1 ✅.
-**Verdict** : ⏭️
+**Observé** : Après AS1.2, nouvelle saisie de « QA Lutte filles 52 kg » avec JPN / SEN / GER → `POST` `409`. L'écran affiche un bandeau « Cette épreuve a déjà un podium. Le podium enregistré n'a pas changé. Pour le modifier, utilisez la correction. » avec deux liens (« Voir le podium enregistré » → `/resultats?day=2026-11-05`, « Corriger ce podium » → `/journaliste/corriger/<id>`) et, sous le champ Épreuve, « Cette épreuve a déjà un podium : utilisez la correction. ». Saisie conservée (six champs intacts). Podium d'origine inchangé en base (SEN/JPN/FRA, `correctedAt` null). Même résultat par le clavier (Entrée dans un champ) et avec casse/espaces différents (`qa DOUBLE CLIC`). Défaut mineur : les deux liens du bandeau sont en gras sans soulignement ni flèche, ils ressemblent à du texte (cibles de 44 px, pas d'indice visuel de lien). Le focus reste dans le champ après l'erreur (le bandeau est `role=alert`). Capture : `.test-shots/001-podium-001-AS2.3-journaliste-375-dark-after.jpg`.
+**Verdict** : ✅
 **Issue** : —
 
 ### 001-AS3.1 — [API] Deux fois le même pays est refusé
@@ -101,8 +101,8 @@
 **Technique** : erreur
 **Action** : sur l'écran, saisir SEN en or et en argent.
 **Attendu** : refus avec un message de règle métier en français qui dit que les trois pays doivent être différents ; la saisie est conservée ; aucun podium créé pour l'épreuve.
-**Observé** : Écran non livré (voir 001-AS1.2). Jumeaux [API] : 001-AS3.1 et 001-AS3.2 ✅.
-**Verdict** : ⏭️
+**Observé** : SEN en or et en argent, FRA en bronze, épreuve « QA Judo mixte 63 kg » → `POST` `422` (réponse du vrai serveur). Bandeau « Un pays ne peut pas figurer deux fois. SEN apparaît en or et en argent. Aucun podium n'a été enregistré pour cette épreuve. » et, sous chaque champ fautif, « SEN est aussi en argent : choisissez un autre pays. » / « SEN est aussi en or : ... », champs en rouge. Saisie conservée. Aucune ligne « QA Judo » en base. Contrôles côté client sans appel réseau (zéro `POST`) : codes vides, 2 lettres, chiffres, accent (`sén`), jour vide, nom d'espaces seuls, tous refusés en français ; les minuscules (`sen`) sont acceptées et passées en majuscules. Capture : `.test-shots/001-podium-001-AS3.3-journaliste-375-dark-after.jpg`.
+**Verdict** : ✅
 **Issue** : —
 
 ### 001-AS3.4 — [API] Une entrée mal formée est refusée comme invalide
@@ -124,9 +124,9 @@
 **Technique** : transition-état
 **Action** : en profil supporter, parcourir l'application depuis l'accueil, puis tenter d'ouvrir l'écran d'enregistrement par son URL.
 **Attendu** : constat seulement (le PRD accepte que rien ne limite la saisie pour la démo) : décrire ce que voit le supporter ; un 🟡 si l'écran de saisie est proposé dans sa navigation.
-**Observé** : Écran non livré : constat du supporter à 375 px depuis l'accueil : un titre et une phrase, aucune navigation ni lien, donc aucun écran de saisie proposé (pas de 🟡). Par URL directe, `/podiums/new` et les autres routes plausibles affichent « Page introuvable » avec un bouton « Retour à l'accueil » (message clair, en français). Le risque du PRD (rien ne limite la saisie) ne peut pas être constaté tant que l'écran n'existe pas. Côté API, `POST /api/podiums` ne demande aucune identité (jamais de 401 observé) : conforme à ce que le PRD accepte pour la démo. Captures : `.test-shots/001-podium-001-AS1.3-375-accueil-after.jpg`, `.test-shots/001-podium-001-AS1.3-375-url-directe-after.jpg`.
-**Verdict** : ⏭️
-**Issue** : —
+**Observé** : Supporter, 375 px, depuis l'accueil `/`. Il voit un bouton noir « Espace journaliste » dans l'en-tête de TOUTES les pages (accueil, /resultats, /medailles, 404), donc l'écran de saisie est proposé dans sa navigation (le 🟡 prévu par l'Attendu). La barre d'onglets basse n'affiche que Accueil / Résultats / Médailles sur les pages publiques ; l'onglet « Journaliste » n'apparaît qu'une fois dans l'espace journaliste. Par URL directe, `/journaliste` et `/journaliste/corriger/<id>` s'ouvrent sans aucun contrôle (pas d'identité, pas de message) : le supporter peut enregistrer et corriger un podium. Constat attendu du PRD, noté tel quel. Un podium créé hors des dates des Jeux (25 décembre) est accepté (voir transverse T9).
+**Verdict** : 🟡
+**Issue** : (non créée) l'entrée « Espace journaliste » est proposée au supporter sur chaque page ; aucune limitation d'accès, conforme au PRD mais à trancher avant la démo publique
 
 ## Session imprévisible
 

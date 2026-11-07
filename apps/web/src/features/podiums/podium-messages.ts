@@ -1,5 +1,6 @@
 import { PODIUM_TEXT_MAX_LENGTH, recordPodiumSchema, correctPodiumSchema } from '@joj/shared';
 import { ApiError } from '@/lib/api';
+import { GAMES_FIRST_DAY, GAMES_LAST_DAY } from '@/lib/dates';
 
 export type CountryField = 'gold' | 'silver' | 'bronze';
 export type RecordField = 'eventName' | 'discipline' | 'day' | CountryField;
@@ -34,7 +35,9 @@ export function fieldMessage(field: RecordField, value: string): string {
         ? `La discipline ne dépasse pas ${PODIUM_TEXT_MAX_LENGTH} caractères.`
         : 'Indiquez la discipline.';
     case 'day':
-      return 'Choisissez le jour de l’épreuve.';
+      return value
+        ? 'Le jour doit être compris entre le 31 octobre et le 13 novembre 2026.'
+        : 'Choisissez le jour de l’épreuve.';
     default:
       return value
         ? `« ${value} » n’est pas un code pays : trois lettres, par exemple SEN.`
@@ -57,11 +60,10 @@ function errorsFromPaths(paths: string[], values: RecordValues): FieldErrors {
 /** Validation de saisie avec le schéma partagé ; le serveur reste l'autorité. */
 export function validateRecord(values: RecordValues): FieldErrors {
   const parsed = recordPodiumSchema.safeParse(values);
-  if (parsed.success) return {};
-  return errorsFromPaths(
-    parsed.error.issues.map((issue) => String(issue.path[0])),
-    values,
-  );
+  const paths = parsed.success ? [] : parsed.error.issues.map((issue) => String(issue.path[0]));
+  const outsideGames = values.day < GAMES_FIRST_DAY || values.day > GAMES_LAST_DAY;
+  if (values.day && outsideGames && !paths.includes('day')) paths.push('day');
+  return errorsFromPaths(paths, values);
 }
 
 export function validateCountries(values: CountryValues): FieldErrors {
