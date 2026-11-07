@@ -82,7 +82,7 @@ Chaque refus de la spec devient une erreur métier (`AppError`) avec un code sta
 
 ## 6. Tâches
 
-- [ ] T01 [001-AS3] Écrire d'abord `apps/api/src/modules/podiums/domain/podium.spec.ts` (« 001-AS3: refuses a podium with a repeated country »), puis `packages/shared/src/podiums.ts`, `domain/podium.ts` et `domain/podiums.errors.ts`
+- [x] T01 [001-AS3] Écrire d'abord `apps/api/src/modules/podiums/domain/podium.spec.ts` (« 001-AS3: refuses a podium with a repeated country »), puis `packages/shared/src/podiums.ts`, `domain/podium.ts` et `domain/podiums.errors.ts`
 - [ ] T02 [001-AS1, AS2] Écrire d'abord `apps/api/src/modules/podiums/application/podiums.application.spec.ts` (« 001-AS1: records a podium », « 001-AS2: refuses a second podium for the same event »), puis `podium.repository.ts`, `in-memory-podium.repository.ts` et `record-podium.ts`
 - [ ] T03 [001-AS2] Écrire d'abord `apps/api/src/modules/podiums/infra/drizzle-podium.repository.int.spec.ts` (« 001-AS2: refuses a duplicate event even written differently »), puis `podiums.schema.ts`, la migration générée, `podium.mapper.ts` et `drizzle-podium.repository.ts`
 - [ ] T04 [001-AS1, AS2, AS3] Écrire d'abord `apps/api/test/podiums.e2e.spec.ts` (« 001-AS1: records a podium (201) », « 001-AS2: refuses a second podium (409) », « 001-AS3: refuses a repeated country (422) »), puis `podiums.controller.ts`, `podiums.module.ts` et l'import dans `app.module.ts`
