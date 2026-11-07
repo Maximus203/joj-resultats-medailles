@@ -1,6 +1,6 @@
 # 001 — Enregistrer le podium d'une épreuve
 
-**Statut** : Validée
+**Statut** : Implémentée
 **PRD** : specs/prd-resultats-medailles.md, TR1
 
 ## Contexte
