@@ -8,6 +8,13 @@ function RootLayout() {
         <Link to="/" className="text-lg font-semibold">
           JOJ Dakar 2026
         </Link>
+        <img
+          src="/senegal-ai-scaling-hub.png"
+          alt="Sénégal AI Scaling Hub"
+          width={480}
+          height={142}
+          className="h-10 w-auto sm:h-12"
+        />
       </header>
       <main className="flex flex-col gap-6">
         <Outlet />
