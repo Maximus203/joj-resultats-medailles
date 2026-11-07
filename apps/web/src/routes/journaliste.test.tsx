@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { mockControl } from '@/mocks/control';
@@ -115,6 +115,16 @@ describe('record a podium screen', () => {
     expect(describedByTargetsExist()).toEqual([]);
     expect(writes(seen)).toHaveLength(0);
     expect(axeFindings(await runAxe())).toEqual([]);
+  });
+
+  it('keeps the typed entry after the page is closed and reopened', async () => {
+    const user = userEvent.setup();
+    await open();
+    await fill(user, { nom: 'Lutte filles 52 kg', or: 'SEN' });
+    cleanup();
+    await open();
+    expect(screen.getByLabelText('Épreuve')).toHaveValue('Lutte filles 52 kg');
+    expect(screen.getByLabelText(/Pays de l’or/)).toHaveValue('SEN');
   });
 
   it('refuses a day outside the Games without calling the server', async () => {

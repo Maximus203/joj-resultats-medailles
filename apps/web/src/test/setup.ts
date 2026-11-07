@@ -29,6 +29,8 @@ afterEach(() => {
   server.events.removeAllListeners();
   // Latence, pannes armées et données d'origine : un test ne dépend jamais d'un autre.
   mockControl.reset();
+  // Le brouillon de saisie vit dans sessionStorage : il ne doit pas passer d'un test à l'autre.
+  window.sessionStorage.clear();
 });
 
 afterAll(() => server.close());

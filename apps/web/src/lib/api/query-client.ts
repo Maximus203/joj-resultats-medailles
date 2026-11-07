@@ -2,13 +2,15 @@ import { QueryClient } from '@tanstack/react-query';
 import { ApiError } from './api-error';
 
 const STALE_TIME_MS = 30_000;
-const MAX_QUERY_RETRIES = 3;
+const MAX_QUERY_RETRIES = 1;
+const RETRY_DELAY_MS = 400;
 
 export function createQueryClient(): QueryClient {
   return new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: STALE_TIME_MS,
+        retryDelay: RETRY_DELAY_MS,
         retry: (failureCount, error) => {
           // Une erreur 4xx ou une réponse non conforme se reproduirait à l'identique.
           if (error instanceof ApiError) {

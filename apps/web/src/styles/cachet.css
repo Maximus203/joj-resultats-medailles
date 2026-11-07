@@ -367,7 +367,8 @@ select {
 .bouton[aria-disabled='true'] {
   background: var(--filet);
   border-color: var(--filet);
-  color: var(--encre-3);
+  color: var(--encre);
+  opacity: 0.72;
   cursor: not-allowed;
 }
 .bouton-secondaire {
@@ -1726,4 +1727,35 @@ span.cachet-corrige {
 }
 .mascotte--petite {
   height: 7rem;
+}
+
+/* ---------- Corrections issues de la campagne de test ---------- */
+.bandeau a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 359px) {
+  .tableau thead th,
+  .tableau td,
+  .tableau th[scope='row'] {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+  .tableau-defil .tableau {
+    min-width: 0;
+  }
+  .tableau .rang {
+    width: 2rem;
+  }
+  .tableau .pays .plaque {
+    margin-right: 0.25rem;
+  }
+  .tableau td,
+  .tableau th[scope='row'] {
+    font-size: var(--t-base);
+  }
 }

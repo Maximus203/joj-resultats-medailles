@@ -21,6 +21,41 @@ const DEFAULT_DISCIPLINES = ['Athlétisme', 'Lutte', 'Natation'];
 const normalize = (name: string) => name.trim().replace(/\s+/g, ' ').toLowerCase();
 const isIsoDay = (day: string) => /^\d{4}-\d{2}-\d{2}$/.test(day);
 
+const DRAFT_KEY = 'joj.brouillon-podium';
+
+/** Le brouillon survit à un rafraîchissement ou à un retour arrière ; il ne sort jamais de l'onglet. */
+function readDraft(): RecordValues | null {
+  try {
+    const raw = window.sessionStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const draft: unknown = JSON.parse(raw);
+    if (typeof draft !== 'object' || draft === null) return null;
+    const read = (key: keyof RecordValues): string => {
+      const value: unknown = Reflect.get(draft, key);
+      return typeof value === 'string' ? value : '';
+    };
+    return {
+      eventName: read('eventName'),
+      discipline: read('discipline'),
+      day: read('day') || defaultDay(),
+      gold: read('gold'),
+      silver: read('silver'),
+      bronze: read('bronze'),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(values: RecordValues | null): void {
+  try {
+    if (values === null) window.sessionStorage.removeItem(DRAFT_KEY);
+    else window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+  } catch {
+    // Stockage indisponible (navigation privée, quota) : la saisie reste en mémoire seulement.
+  }
+}
+
 const emptyValues = (): RecordValues => ({
   eventName: '',
   discipline: '',
@@ -31,7 +66,7 @@ const emptyValues = (): RecordValues => ({
 });
 
 export function RecordPodiumForm() {
-  const [values, setValues] = useState<RecordValues>(emptyValues);
+  const [values, setValues] = useState<RecordValues>(() => readDraft() ?? emptyValues());
   const [errors, setErrors] = useState<FieldErrors>({});
   const [refusal, setRefusal] = useState<Refusal | null>(null);
   const online = useOnlineStatus();
@@ -39,7 +74,11 @@ export function RecordPodiumForm() {
   const podiums = usePodiums();
 
   const set = (field: keyof RecordValues, value: string) => {
-    setValues((current) => ({ ...current, [field]: value }));
+    setValues((current) => {
+      const next = { ...current, [field]: value };
+      writeDraft(next);
+      return next;
+    });
     setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
@@ -68,6 +107,7 @@ export function RecordPodiumForm() {
         bronze: values.bronze,
       },
       {
+        onSuccess: () => writeDraft(null),
         onError: (error) => {
           const described = describeWriteError(error, values, 'record');
           setRefusal(described);
