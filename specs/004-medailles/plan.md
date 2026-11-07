@@ -44,6 +44,6 @@ Aucune erreur métier nouvelle : le tableau se lit sans condition, et un tableau
 
 ## 6. Tâches
 
-- [ ] T01 [004-AS1, AS2, AS3] Écrire d'abord `apps/api/src/modules/podiums/domain/medal-table.spec.ts` (« 004-AS1: counts and sorts medals », « 004-AS2: ranks tied countries together », « 004-AS3: returns an empty table without podiums »), puis `domain/medal-table.ts`
-- [ ] T02 [004-AS1, AS3] Écrire d'abord `apps/api/src/modules/podiums/application/medals.application.spec.ts` (« 004-AS1: builds the table from recorded podiums », « 004-AS3: returns an empty table when nothing is recorded »), puis `list()` du port et du faux repository, et `get-medal-table.ts`
-- [ ] T03 [004-AS1, AS3, AS4] Écrire d'abord `apps/api/test/medals.e2e.spec.ts` (« 004-AS1: serves the sorted table (200) », « 004-AS3: serves an empty table (200) », « 004-AS4: follows newly recorded podiums »), puis `list()` Drizzle, `medals.controller.ts` et `podiums.module.ts`
+- [x] T01 [004-AS1, AS2, AS3] Écrire d'abord `apps/api/src/modules/podiums/domain/medal-table.spec.ts` (« 004-AS1: counts and sorts medals », « 004-AS2: ranks tied countries together », « 004-AS3: returns an empty table without podiums »), puis `domain/medal-table.ts`
+- [x] T02 [004-AS1, AS3] Écrire d'abord `apps/api/src/modules/podiums/application/medals.application.spec.ts` (« 004-AS1: builds the table from recorded podiums », « 004-AS3: returns an empty table when nothing is recorded »), puis `list()` du port et du faux repository, et `get-medal-table.ts`
+- [x] T03 [004-AS1, AS3, AS4] Écrire d'abord `apps/api/test/medals.e2e.spec.ts` (« 004-AS1: serves the sorted table (200) », « 004-AS3: serves an empty table (200) », « 004-AS4: follows newly recorded podiums »), puis `list()` Drizzle, `medals.controller.ts` et `podiums.module.ts`
