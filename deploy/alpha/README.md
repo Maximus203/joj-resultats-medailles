@@ -13,3 +13,8 @@ bash deploy/alpha/deploy.sh --worktree # l'arbre de travail (tests uniquement)
 - Domaine : `API_HOST` (défaut `api-joj.artist-dev.com`) : un enregistrement DNS A vers alpha est requis pour le certificat Let's Encrypt.
 - Retour arrière : `IMAGE_TAG=<sha> docker compose up -d` dans `/opt/joj-api` (les images des déploiements précédents sont conservées).
 - Front : `apps/web/vercel.json` réécrit `/api/*` vers l'API ; sur Vercel, répertoire racine `apps/web`.
+
+## Front sur Vercel
+
+`bash deploy/vercel/deploy.sh` construit `apps/web` et publie `dist` en production sur
+https://joj-resultats-medailles.vercel.app (compte `maximus203`, CLI connectée par `vercel login`).
