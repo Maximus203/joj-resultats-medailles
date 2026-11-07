@@ -9,13 +9,13 @@ Six principes, lus par chaque skill (`/prd`, `/spec`, `/spec-plan`, `/tdd-task`,
    Aucun code de production sans un test vu en échec pour la bonne raison : `pnpm tdd:red <fichier>` le prouve.
 
 3. **Chaque scénario d'acceptation a un test dont le titre commence par son identifiant.**
-   `it('001-AS2: rejects a full slot', …)`. `pnpm spec:check <spec> --trace` le vérifie.
+   `it('001-AS2: rejects a full trip', …)`. `pnpm spec:check <spec> --trace` le vérifie.
 
 4. **`domain/` reste en TypeScript pur ; les controllers sont fins ; toute erreur métier est une `AppError`.**
-   Le module `disciplines` sert de modèle.
+   Le module de référence (voir `CLAUDE.md`) sert de modèle.
 
 5. **Une tâche = un commit Conventional Commits qui cite la tâche et son scénario.**
-   `feat(benevoles): T03 refuse a full slot (001-AS2)`. Jamais de `--no-verify`.
+   `feat(bookings): T03 refuse a full trip (001-AS2)`. Jamais de `--no-verify`.
 
 6. **Celui qui produit ne valide pas.**
    Le sous-agent `relecteur` relit avec un contexte vierge : la base git et le dossier de la spec, rien d'autre.

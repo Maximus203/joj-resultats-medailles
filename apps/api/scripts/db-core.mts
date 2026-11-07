@@ -9,7 +9,7 @@ export interface SeedStatement {
 }
 
 /**
- * `data/disciplines.json` alimente la table `disciplines`. Un préfixe numérique fixe l'ordre de
+ * `data/pays.json` alimente la table `pays`. Un préfixe numérique fixe l'ordre de
  * chargement, utile quand une table en référence une autre : `01-pays.json`, `02-athletes.json`.
  */
 export function tableNameFromFile(fileName: string): string {

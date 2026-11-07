@@ -4,11 +4,21 @@
 
 ## L'objectif
 
-Partir du problème de ta table, imaginer ta solution, la défendre dans un PRD, puis la construire seul avec la méthode de l'atelier B.
+Partir du problème de ta table, imaginer ta solution, la défendre dans un PRD, puis la construire seul avec la méthode des ateliers précédents.
 
 Personne ne te dit quoi construire. Ta table reçoit un problème ; la solution est la tienne. Ce qui est exigé, c'est qu'elle réponde au problème, que tu saches dire pourquoi, et qu'elle soit livrée avec la méthode.
 
-Tu repars du dépôt des ateliers A et B, sur ta branche `journee`, avec ton `CLAUDE.md`. Chacun a son propre dépôt ; les participants d'une même table ont le même problème et peuvent s'entraider (challenger un PRD, relire une spec, débloquer un test), mais chacun construit sa propre application.
+Tu pars de la branche `start-atelier-c` : le socle technique et un `CLAUDE.md` prêt, sans aucun module métier, donc rien à nettoyer. Dans ton dépôt :
+
+```bash
+git fetch upstream
+git switch -c atelier-c upstream/start-atelier-c
+git push -u origin atelier-c
+```
+
+Le module de référence reste lisible sur la branche `main` : Claude le lit quand il planifie (`CLAUDE.md` lui dit comment), sans le copier dans ton projet.
+
+Chacun a son propre dépôt ; les participants d'une même table ont le même problème et peuvent s'entraider (challenger un PRD, relire une spec, débloquer un test), mais chacun construit sa propre application.
 
 **Réussi si**, à la fin de l'atelier :
 
@@ -22,6 +32,14 @@ Tu repars du dépôt des ateliers A et B, sur ta branche `journee`, avec ton `CL
 ### Thème 1 : Résultats et médailles
 
 Pendant les Jeux, les épreuves s'enchaînent sur plusieurs sites. Le public veut savoir qui a gagné aujourd'hui et où en est son pays ; les journalistes doivent publier vite, et vérifient les résultats à la main d'une source à l'autre. Une erreur de podium, une fois publiée, se corrige mal.
+
+### Thème 2 : Guide touristique de Dakar
+
+Des milliers de visiteurs et de supporters sont à Dakar pour les Jeux, souvent pour la première fois. Entre deux épreuves, ils ont quelques heures devant eux et ne savent pas quoi faire, ni où : les animations sont annoncées un peu partout, et rien ne dit ce qui est proche, ce qui se passe maintenant, ou ce qui vaut le détour.
+
+### Thème 3 : Mobilité et covoiturage
+
+Pendant le pic de l'événement, l'accès aux sites olympiques (Dakar, Diamniadio, Saly) est saturé : les navettes sont pleines, les taxis rares et chers. Pourtant, beaucoup de voitures partent vers les mêmes sites avec des places vides, et les supporters ne savent pas qui part, d'où, ni quand.
 
 ## Tes outils, et quand les utiliser
 
@@ -38,7 +56,7 @@ Pendant les Jeux, les épreuves s'enchaînent sur plusieurs sites. Le public veu
 | quand ta vision change                  | `/prd <la modification>`                      | amender le PRD existant                                                        |
 | si ta solution a besoin d'IA            | l'API Claude                                  | résumer, répondre en langage courant, lire un message libre                    |
 
-Le détail de chaque commande est dans l'[atelier B](ATELIER-B.md) et dans la section « Méthode » du [README](../README.md#méthode).
+Le détail de chaque commande est dans la section « Méthode » du [README](../README.md#méthode).
 
 ### Ton PRD : `/prd`
 
@@ -52,7 +70,7 @@ Le PRD est ta vision produit, sur une page. C'est toi qui l'écris : Claude le m
 
 **Le PRD décrit tout ton produit**, découpé en tranches `TR1`, `TR2`… Tu les réalises ensuite une à une, une spec par tranche, dans l'ordre. Seule la tranche 1 doit tenir dans l'atelier : les autres montrent où va ton produit, même si tu ne les construis pas aujourd'hui.
 
-Ton texte pour `/prd` dit tout ça avec tes mots, en quelques phrases. Il n'a pas besoin d'être complet : ce qui manque, Claude te le demandera. Pour la forme, regarde le texte de l'atelier B.
+Ton texte pour `/prd` dit tout ça avec tes mots, en quelques phrases. Il n'a pas besoin d'être complet : ce qui manque, Claude te le demandera.
 
 ### Ta spec : `/spec TRn`
 
@@ -68,7 +86,7 @@ Pour une tranche qui utilise Claude, dis ce que fait l'assistant et les règles 
 /spec TR1 Poser une question en langage courant et recevoir jusqu'à trois animations du jour qui y répondent, avec une phrase d'explication pour chacune. Les explications sont rédigées par un assistant IA. Une question vide est refusée : refus 400 avec le code QUESTION_EMPTY. Seules des animations du jour qui existent sont proposées : une proposition inconnue est écartée. Pas d'écran : seulement l'API.
 ```
 
-Puis `/spec-plan`, `/tdd-task` et `/converge`, comme à l'atelier B. Quand une tranche répond « Converged », passe à la suivante : `/clear`, puis `/spec TR2 …`.
+Puis `/spec-plan`, `/tdd-task` et `/converge`. Quand une tranche répond « Converged », passe à la suivante : `/clear`, puis `/spec TR2 …`.
 
 ### Faire évoluer ton PRD : `/prd <la modification>`
 
@@ -86,7 +104,7 @@ Tu as des crédits pour l'API Claude : ton application peut appeler Claude, par 
 - **Ta tranche garde une règle métier que l'application applique elle-même**, autour de la réponse de Claude (par exemple : on ne propose que des lieux qui existent). La spec teste ces règles, pas ce que Claude doit « bien » répondre.
 - **La clé reste dans `apps/api/.env`** : `ANTHROPIC_API_KEY=sk-ant-…`, que tu colles toi-même. Ce fichier est ignoré par git, et le hook refuse d'écrire une clé ailleurs. Ne la colle jamais dans la conversation avec Claude Code. L'API charge ce fichier au démarrage, et le SDK y lit la clé.
 - **Le SDK officiel** est la seule dépendance ajoutée : `pnpm --filter @joj/api add @anthropic-ai/sdk`. Modèle : `claude-opus-5-5`.
-- **Les tests n'appellent jamais Claude.** L'appel est derrière un port dans `application/`, comme `DisciplineRepository` : une classe abstraite (par exemple `AssistantTouristique`), un faux dans `application/testing/` qui renvoie une réponse fixée par le test, et l'implémentation avec le SDK dans `infra/`. Les tests restent rapides, gratuits et reproductibles ; `pnpm check` tourne sans clé ni réseau.
+- **Les tests n'appellent jamais Claude.** L'appel est derrière un port dans `application/`, comme le repository d'un module : une classe abstraite (par exemple `AssistantTouristique`), un faux dans `application/testing/` qui renvoie une réponse fixée par le test, et l'implémentation avec le SDK dans `infra/`. Les tests restent rapides, gratuits et reproductibles ; `pnpm check` tourne sans clé ni réseau.
 - **Demande une réponse structurée** (du JSON validé par un schéma Zod) plutôt que du texte à découper : ton cas d'usage contrôle ensuite chaque champ comme une donnée venue de l'extérieur.
 - **Ménage tes crédits.** Tu essaies l'appel réel à la main, dans Swagger, quelques fois : pas en boucle, pas dans les tests.
 
@@ -94,7 +112,7 @@ Tu as des crédits pour l'API Claude : ton application peut appeler Claude, par 
 
 - **Une page de PRD et une page de spec au plus** (`pnpm spec:check` le vérifie). La tranche 1 a **une ou deux règles métier**. Une tranche trop ambitieuse ne tient pas en 2 heures de code : c'est l'erreur la plus fréquente.
 - **La spec suit le PRD.** Elle réalise une tranche, et rien d'autre. Une nouvelle idée en cours de route va d'abord dans le PRD, avec `/prd`.
-- **Tu suis le module `disciplines` comme modèle.** Pas de nouvelle dépendance, sauf le SDK Claude.
+- **Tu suis le module de référence comme modèle**, puis ton premier module. Pas de nouvelle dépendance, sauf le SDK Claude.
 - **Une API d'abord.** Un écran seulement quand l'API de ta tranche est verte, et s'il reste du temps.
 
 ## À la fin de l'atelier

@@ -23,7 +23,7 @@ export const mockControl = {
     state.latency = ms;
   },
 
-  /** La prochaine requête vers `path` (`GET /api/disciplines`) échoue, puis tout repart. */
+  /** La prochaine requête vers `path` (`GET /api/…`) échoue, puis tout repart. */
   failNext(path: string, status = 500): void {
     state.failures.set(path, status);
   },

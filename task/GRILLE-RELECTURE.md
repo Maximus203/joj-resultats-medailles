@@ -18,10 +18,10 @@ Le PRD se relit à deux : celui qui l'a écrit le défend, l'autre (un voisin, l
 
 ## La spec (`spec.md`)
 
-6. **Chaque règle de la tranche du PRD a son scénario**, et chaque refus dit son statut et son code d'erreur (`409`, `SLOT_FULL`).
+6. **Chaque règle de la tranche du PRD a son scénario**, et chaque refus dit son statut et son code d'erreur (`409`, `TRIP_FULL`).
 7. **Chaque « Alors » se vérifie par un test** : une valeur, un statut, un code, ce qui reste en base. « Ça fonctionne » ou « l'utilisateur est informé » ne se testent pas.
 8. **Les cas limites ont une réponse** :
-   - la ressource n'existe pas (une discipline ou un créneau inconnus) ;
+   - la ressource n'existe pas (un trajet ou un lieu inconnus) ;
    - l'action est répétée (s'inscrire deux fois, archiver deux fois) ;
    - la valeur est juste à la limite (le dernier inscrit, une capacité de 1, une fin égale au début).
 9. **Rien n'est inventé.** Chaque scénario vient de la tranche du PRD et de ta demande. Ce que l'agent a supposé est dans « Questions ouvertes » : tranche chaque hypothèse, ne la laisse pas passer.
@@ -31,14 +31,14 @@ Le PRD se relit à deux : celui qui l'a écrit le défend, l'autre (un voisin, l
 
 11. **Chaque scénario a au moins un test prévu**, et chaque cas limite retenu aussi. Une « hypothèse » sans test est un trou.
 12. **Les codes d'erreur et les statuts HTTP** sont exactement ceux de la spec.
-13. **Les fichiers suivent le module `disciplines`**, couche par couche, et aucun ne sort du périmètre de la spec.
+13. **Les fichiers suivent le module de référence**, couche par couche, et aucun ne sort du périmètre de la spec.
 
 ## Si une réponse est « non »
 
 Ne valide pas. Dis à Claude ce qui manque, en une phrase par point, puis relis à nouveau. Par exemple :
 
 ```
-Il manque un scénario : inscrire un bénévole sur un créneau qui n'existe pas doit répondre 404 avec le code SLOT_NOT_FOUND. Ajoute-le, puis montre-moi la spec.
+Il manque un scénario : réserver une place sur un trajet qui n'existe pas doit répondre 404 avec le code TRIP_NOT_FOUND. Ajoute-le, puis montre-moi la spec.
 ```
 
 Quand toutes les réponses sont « oui », écris « je valide ». À l'atelier C, le PRD et la spec ne se valident qu'après le coach.

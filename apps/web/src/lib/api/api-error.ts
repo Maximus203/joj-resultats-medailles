@@ -5,7 +5,7 @@ export interface ApiErrorFieldIssue {
 
 export interface ApiErrorInit {
   status: number;
-  /** Code de l'API (`DISCIPLINE_NAME_TAKEN`…) ou code du client : TIMEOUT, NETWORK_ERROR, HTTP_ERROR, INVALID_RESPONSE. */
+  /** Code de l'API (en majuscules, `…_NOT_FOUND`) ou code du client : TIMEOUT, NETWORK_ERROR, HTTP_ERROR, INVALID_RESPONSE. */
   code: string;
   title: string;
   detail: string;

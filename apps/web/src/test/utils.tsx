@@ -51,7 +51,7 @@ export async function renderRoute({ initialEntries }: { initialEntries: string[]
 
 export interface TrackedRequest {
   method: string;
-  /** Le chemin, sans l'origine : `/api/disciplines/…`. */
+  /** Le chemin, sans l'origine : `/api/…`. */
   path: string;
   /** Le corps JSON envoyé, ou `undefined`. */
   body: unknown;

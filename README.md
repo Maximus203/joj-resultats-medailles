@@ -1,8 +1,8 @@
-# JOJ Dakar 2026 : repo de départ du bootcamp Claude Code
+# JOJ Dakar 2026 : point de départ de l'atelier C
 
-Un monorepo pnpm : une API NestJS, un front React et des schémas partagés. Une fonctionnalité d'exemple, **Disciplines**, montre toute la chaîne, du schéma partagé à l'écran.
+Un monorepo pnpm : une API NestJS, un front React et des schémas partagés. Le socle technique est prêt (configuration, base, erreurs, client HTTP, fausse API des tests) ; aucun module métier n'est écrit. Le module de référence, qui montre toute la chaîne du schéma partagé à l'écran, se lit sur la branche `main` (voir `CLAUDE.md`).
 
-Les énoncés de la formation (prise en main, ateliers A, B et C) et la description du projet sont dans [`task/`](task/README.md).
+L'énoncé de l'atelier C est dans [`task/ATELIER-C.md`](task/ATELIER-C.md).
 
 ## Prérequis
 
@@ -25,7 +25,7 @@ Puis ouvrir :
 - l'API : http://localhost:3000/api (santé : `/api/health`)
 - la doc de l'API (Swagger, pour essayer les routes) : http://localhost:3000/api/docs
 
-Pour des données de démo : arrêter `pnpm dev` (Ctrl+C), lancer `pnpm db:seed`, puis relancer `pnpm dev`.
+Pour charger des données de démo (voir [Base de données](#base-de-données)) : arrêter `pnpm dev` (Ctrl+C), lancer `pnpm db:seed`, puis relancer `pnpm dev`.
 
 ## Commandes
 
@@ -64,27 +64,27 @@ apps/
 packages/
   shared/                   schémas Zod et types partagés par l'API et le front
 specs/                      constitution et specs des fonctionnalités (voir Méthode)
-task/                       énoncés de la formation : exercices, ateliers A, B, C, description du projet
+task/                       énoncé de l'atelier C, pistes et grille de relecture
 tools/sdd/                  scripts des skills : spec:check, tdd:red, verify
 .claude/                    hooks, skills et sous-agent relecteur de Claude Code
 ```
 
-Un module de domaine de l'API, par exemple `src/modules/disciplines/` :
+Un module de domaine de l'API, `src/modules/<domaine>/` :
 
 ```
 domain/        entités et règles métier, TypeScript pur (aucun import de Nest ni de Drizzle : vérifié par le lint)
-  discipline.ts            Discipline.create() applique les règles, Discipline.restore() relit la base
-  disciplines.errors.ts    DisciplineError extends AppError : codes stables et catégorie
+  <entité>.ts              <Entité>.create() applique les règles, <Entité>.restore() relit la base
+  <domaine>.errors.ts      <Entité>Error extends AppError : codes stables et catégorie
 application/   cas d'usage, un par classe, méthode execute()
-  discipline.repository.ts port : classe abstraite, ce dont les cas d'usage ont besoin
-  use-cases/               Create, List, Get, Update, DeleteDiscipline
+  <entité>.repository.ts   port : classe abstraite, ce dont les cas d'usage ont besoin
+  use-cases/               un fichier par action : create-<entité>.ts, list-<domaine>.ts…
   testing/                 repository en mémoire, pour tester sans base
 infra/         persistance
-  disciplines.schema.ts    table Drizzle (lue par drizzle-kit)
-  discipline.mapper.ts     toDomain() et toRow()
-  drizzle-discipline.repository.ts
+  <domaine>.schema.ts      table Drizzle (lue par drizzle-kit)
+  <entité>.mapper.ts       toDomain() et toRow()
+  drizzle-<entité>.repository.ts
 http/          controller fin : valider (DTO zod), appeler un cas d'usage, sérialiser
-disciplines.module.ts      relie le port à son implémentation Drizzle
+<domaine>.module.ts        relie le port à son implémentation Drizzle
 ```
 
 Une erreur métier est une `AppError` (code stable + catégorie VALIDATION, NOT_FOUND, CONFLICT ou BUSINESS_RULE). Le `ProblemDetailsFilter` est le seul endroit où elle devient une réponse HTTP (400, 404, 409, 422, au format RFC 9457).
@@ -107,7 +107,7 @@ Le code ne dépend pas du mode : un seul provider Nest fournit l'instance Drizzl
 
 ## Ajouter une fonctionnalité
 
-Dans cet ordre, en écrivant chaque test avant le code et en le voyant échouer. Les titres des tests (`describe`, `it`) s'écrivent en anglais et commencent par l'identifiant du scénario, précédé du numéro de la spec : `it('001-AS2: rejects a full slot', …)`. Modèle : `disciplines`, dont la spec est [`specs/000-disciplines/spec.md`](specs/000-disciplines/spec.md) (`000-AS2:`). Avec Claude Code, la [méthode](#méthode) suit cet ordre pour toi.
+Dans cet ordre, en écrivant chaque test avant le code et en le voyant échouer. Les titres des tests (`describe`, `it`) s'écrivent en anglais et commencent par l'identifiant du scénario, précédé du numéro de la spec : `it('001-AS2: rejects a full trip', …)`. Modèle : le module de référence de la branche `main` (voir `CLAUDE.md`). Avec Claude Code, la [méthode](#méthode) suit cet ordre pour toi.
 
 1. **Schéma partagé** : `packages/shared/src/<nom>.ts` (schémas Zod d'entrée et de réponse), exporté par `index.ts`.
 2. **Entité et son test** : `domain/<entité>.ts`, `domain/<nom>.errors.ts`, `domain/<entité>.spec.ts`.
@@ -122,8 +122,8 @@ Dans cet ordre, en écrivant chaque test avant le code et en le voyant échouer.
 
 Un test s'appelle `<fichier>.test.tsx` et se place à côté de ce qu'il teste. Il commence par un court commentaire qui dit ce qu'il prouve.
 
-- **Une seule fausse API** (`src/mocks/`), servie par MSW à tous les tests. Une requête qu'elle ne connaît pas fait échouer le test. Elle garde ses données en mémoire : un test les prépare en modifiant `fixture` (`fixture.disciplines = []`). `mockControl` simule une latence (`setLatency(50)`) ou une panne (`failNext('GET /api/disciplines')`, `failPersistently(...)`). Tout est remis à zéro après chaque test.
-- **Rendre** (`src/test/utils.tsx`) : `renderRoute({ initialEntries: ['/disciplines'] })` monte l'application à une adresse, comme `main.tsx`. `renderWithProviders(<Composant />)` monte un composant seul, avec Query et un vrai router.
+- **Une seule fausse API** (`src/mocks/`), servie par MSW à tous les tests. Une requête qu'elle ne connaît pas fait échouer le test. Elle garde ses données en mémoire : un test les prépare en modifiant `fixture` (`fixture.trips = []`). `mockControl` simule une latence (`setLatency(50)`) ou une panne (`failNext('GET /api/trips')`, `failPersistently(...)`). Tout est remis à zéro après chaque test.
+- **Rendre** (`src/test/utils.tsx`) : `renderRoute({ initialEntries: ['/trajets'] })` monte l'application à une adresse, comme `main.tsx`. `renderWithProviders(<Composant />)` monte un composant seul, avec Query et un vrai router.
 - **Vérifier ce qui part sur le réseau** : `trackRequests()` enregistre méthode, chemin et corps de chaque requête ; `writes(seen)` ne garde que les écritures.
 - **Hooks** : `renderHook` avec un `QueryClient`, pour vérifier ce qui est invalidé dans le cache.
 - **Accessibilité** : `expect(axeFindings(await runAxe())).toEqual([])` audite toute la page, boîtes de dialogue comprises. Un audit par état de l'écran.
@@ -137,7 +137,7 @@ Un composant shadcn de plus : `pnpm dlx shadcn@latest add <composant>` dans `app
 Configurés dans `.claude/settings.json`, écrits en Node dans `.claude/hooks/` et testés (`pnpm test`) :
 
 - **Fin de tour (Stop)** : vérifie le format, le lint et les types des seuls fichiers changés. En cas d'échec, Claude reprend la main avec l'erreur. Si l'échec persiste au tour suivant, il est seulement signalé, pour ne pas tourner en boucle. Pour le couper le temps d'une session : `STOP_CHECK=off claude` (sous PowerShell : `$env:STOP_CHECK='off'; claude`).
-- **Avant une commande Bash** : refuse un `git commit` dont le message ne suit pas [Conventional Commits](https://www.conventionalcommits.org/fr/) (`feat(api): add disciplines`), ou qui saute la vérification de pré-commit (`--no-verify`, `-n`, `LEFTHOOK=0`), en expliquant pourquoi.
+- **Avant une commande Bash** : refuse un `git commit` dont le message ne suit pas [Conventional Commits](https://www.conventionalcommits.org/fr/) (`feat(api): add bookings`), ou qui saute la vérification de pré-commit (`--no-verify`, `-n`, `LEFTHOOK=0`), en expliquant pourquoi.
 - **Avant une écriture de fichier** : refuse d'écrire un secret probable (clé d'API, token, mot de passe en clair, clé privée). Les vraies valeurs vont dans `apps/api/.env`, ignoré par git.
 
 Le sous-agent **relecteur** (`.claude/agents/relecteur.md`) relit une fonctionnalité dans un contexte vierge. Il ne modifie rien et rend un verdict, preuves à l'appui, selon une grille courte (`relecteur-grille.md`) : chaque scénario a un test, aucune règle métier dans le controller, `domain/` reste pur, les erreurs passent par `AppError`. Dans Claude Code : « relis cette fonctionnalité avec le relecteur ».
@@ -158,7 +158,7 @@ Développement guidé par la spec, en cinq commandes Claude Code et trois valida
 
 - **`/prd <idée>`** : pour qui, quel problème, quelle solution, et le découpage en tranches ; Claude pose des questions et dit où la vision est faible, sans la remplacer.
 - **`/spec TRn`** : le quoi d'une tranche du PRD, sans technique, avec des scénarios `AS1`, `AS2`…
-- **`/spec-plan`** : le comment, sur le modèle du module `disciplines`, un test prévu par scénario.
+- **`/spec-plan`** : le comment, sur le modèle du module de référence, un test prévu par scénario.
 - **`/tdd-task`** : une tâche (`/tdd-task T03`) ou toutes ; `pnpm tdd:red` prouve que le test échoue pour la bonne raison.
 - **`/converge`** : si un manque reste, il devient une tâche ; après deux passages, c'est toi qui tranches.
 

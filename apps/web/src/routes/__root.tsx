@@ -8,15 +8,6 @@ function RootLayout() {
         <Link to="/" className="text-lg font-semibold">
           JOJ Dakar 2026
         </Link>
-        <nav className="flex gap-2">
-          <Link
-            to="/disciplines"
-            className={buttonVariants({ variant: 'ghost' })}
-            activeProps={{ className: 'underline' }}
-          >
-            Disciplines
-          </Link>
-        </nav>
       </header>
       <main className="flex flex-col gap-6">
         <Outlet />
