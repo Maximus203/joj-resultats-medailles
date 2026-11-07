@@ -1,0 +1,66 @@
+# Déploiement de l'API JOJ sur le serveur alpha, derrière le Traefik partagé (réseau `web`).
+# Copié dans /opt/joj-api/ par deploy/alpha/deploy.sh ; les secrets sont dans /opt/joj-api/.env.
+name: joj-api
+
+networks:
+  web:
+    external: true # celui de Traefik : jamais recréé ici
+  internal: {}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: joj-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: joj
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?défini dans .env}
+      POSTGRES_DB: joj
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [internal]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U joj -d joj']
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  # Migrations (et seed idempotent) : étape de déploiement à part, l'API ne migre pas en production.
+  migrate:
+    image: joj-api:${IMAGE_TAG:-latest}
+    container_name: joj-migrate
+    command: ['node', 'scripts/db.mts', 'seed']
+    environment:
+      DATABASE_URL: postgres://joj:${POSTGRES_PASSWORD}@postgres:5432/joj
+    networks: [internal]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    build:
+      context: ${SRC_DIR:-./src}
+      dockerfile: apps/api/Dockerfile
+    image: joj-api:${IMAGE_TAG:-latest}
+    container_name: joj-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      DATABASE_URL: postgres://joj:${POSTGRES_PASSWORD}@postgres:5432/joj
+    networks: [internal, web]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=web'
+      - 'traefik.http.routers.joj-api.rule=Host(`${API_HOST:-api-joj.artist-dev.com}`)'
+      - 'traefik.http.routers.joj-api.entrypoints=websecure'
+      - 'traefik.http.routers.joj-api.tls=true'
+      - 'traefik.http.routers.joj-api.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.joj-api.loadbalancer.server.port=3000'
+
+volumes:
+  postgres-data:
