@@ -52,7 +52,8 @@ const PLAN_SECTIONS = [
   'Tests par scénario',
   'Tâches',
 ];
-const MAX_PRD_LINES = 50;
+// 60 : le formateur ajoute une ligne vide sous chaque titre, ce qui rend 50 lignes intenables à six tranches.
+const MAX_PRD_LINES = 60;
 const MAX_SPEC_LINES = 70;
 const MAX_TASKS = 6;
 

@@ -224,9 +224,11 @@ describe('checkPrd', () => {
     assert.match(messages(checkPrd('prd.md', twice)).join(), /TR1 en double/);
   });
 
-  it('limits the PRD to one page of 50 lines', () => {
-    const long = PRD + '\n'.repeat(20);
-    assert.match(messages(checkPrd('prd.md', long)).join(), /57 lignes \(50 au plus\)/);
+  it('limits the PRD to one page of 60 lines, blank lines under headings included', () => {
+    const long = PRD + '\n'.repeat(30);
+    assert.match(messages(checkPrd('prd.md', long)).join(), /67 lignes \(60 au plus\)/);
+    const formatted = PRD + '\n'.repeat(17);
+    assert.deepEqual(messages(checkPrd('prd.md', formatted)), []);
   });
 });
 
