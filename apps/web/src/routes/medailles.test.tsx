@@ -77,6 +77,27 @@ describe('medal table screen', () => {
     expect(screen.getByRole('cell', { name: /FRA.*\(mon pays\)/ })).toBeVisible();
   });
 
+  it('007-AS8: follows an imported country as Mon pays, by its French name, with both bronzes counted', async () => {
+    seedPodium({ gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'SEN' });
+    await open();
+    await screen.findByRole('table');
+    const select = screen.getByRole('combobox', { name: 'Mon pays' });
+
+    await userEvent.selectOptions(select, 'UKR');
+
+    expect(screen.getByRole('option', { name: 'UKR · Ukraine' })).toBeInTheDocument();
+    expect(window.localStorage.getItem('joj.mon-pays')).toBe('UKR');
+    expect(screen.getByRole('cell', { name: /UKR.*\(mon pays\)/ })).toBeVisible();
+    await userEvent.selectOptions(select, 'SEN');
+    expect(screen.getByRole('cell', { name: /SEN.*\(mon pays\)/ })).toBeVisible();
+    const senRow = screen.getByRole('cell', { name: /SEN.*\(mon pays\)/ }).closest('tr');
+    expect(
+      within(senRow as HTMLElement)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent),
+    ).toContain('1');
+  });
+
   it('shows the offline bar and keeps the last table on screen', async () => {
     seedPodium({ gold: 'SEN', silver: 'JPN', bronze: 'FRA' });
     await open();
