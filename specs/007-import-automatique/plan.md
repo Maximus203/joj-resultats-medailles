@@ -78,6 +78,6 @@ Passage 1 (relecture indépendante). Chaque ligne cite un test écrit d'abord et
 - [x] T08 [007-AS6] Écrire d'abord `scrape-schedule.spec.ts` (« 007-AS6: ignores a late beat … »), puis `dueReason` : seuls le créneau quotidien (dans la tolérance d'un battement) et le rattrapage au démarrage lancent un import, jamais un battement tardif
 - [x] T09 [007-AS7] Renforcer `test/scraping.e2e.spec.ts` (« 007-AS7: … ») : `startedAt` et `finishedAt` assertés par valeur, via l'horloge injectée
 - [x] T10 [007-AS4] Écrire d'abord (« 007-AS4: matches the same event whatever its dashes, case and accents ») dans `official-results.spec.ts` et `run-scrape.application.spec.ts`, puis `normalizeEventKey` pour comparer les épreuves
-- [ ] T11 [007-AS6] Écrire d'abord `infra/scrape-scheduler.spec.ts` (« 007-AS6: … »), puis un verrou contre le chevauchement des battements dans `scrape-scheduler.ts`
+- [x] T11 [007-AS6] Écrire d'abord `infra/scrape-scheduler.spec.ts` (« 007-AS6: … »), puis un verrou contre le chevauchement des battements dans `scrape-scheduler.ts`
 
 Fichiers ajoutés hors du plan initial, acceptés : `apps/api/scripts/fake-official-site.mts` et le script `dev:fake-site` (faux site pour la QA), `apps/api/src/core/config/env-schema.ts` (variables d'environnement lisibles par les scripts Node, hors `AppConfig`), le paramètre `customize` de `apps/api/test/create-test-app.ts` (remplacer le site et l'horloge dans les e2e), `podium_revisions.second_bronze` (T07).

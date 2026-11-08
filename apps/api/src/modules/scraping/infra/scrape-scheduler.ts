@@ -17,9 +17,10 @@ import { RunDueScrape } from '../application/use-cases/run-due-scrape';
 export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(ScrapeScheduler.name);
   private timer: NodeJS.Timeout | null = null;
+  private busy = false;
 
   constructor(
-    private readonly runDue: RunDueScrape,
+    @Inject(RunDueScrape) private readonly runDue: Pick<RunDueScrape, 'execute'>,
     @Inject(SCRAPING_SETTINGS) private readonly settings: ScrapingSettings,
   ) {}
 
@@ -40,11 +41,16 @@ export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShu
     if (this.timer) clearInterval(this.timer);
   }
 
+  /** Un battement qui tombe pendant le précédent ne demande rien : jamais deux ticks à la fois. */
   private async tick(startup: boolean): Promise<void> {
+    if (this.busy) return;
+    this.busy = true;
     try {
       await this.runDue.execute({ startup });
     } catch (error) {
       this.logger.error(error);
+    } finally {
+      this.busy = false;
     }
   }
 }
