@@ -64,3 +64,9 @@ On étend le module `scraping`.
 - [x] T03 [008-AS1, AS3, AS5, AS6, AS7] Écrire d'abord `run-due-scrape.application.spec.ts`, `check-staleness.application.spec.ts` et `test/scraping.e2e.spec.ts` (« 008-AS6: … »), puis `RunDueScrape`, `CheckStaleness`, `GetScrapeStatus`, le planificateur, le schéma partagé et le contrôleur
 - [x] T04 [008-AS8] Écrire d'abord `features/scraping/freshness-banner.test.tsx` (« 008-AS8: … »), puis `FreshnessBanner`, la requête, la fausse API et l'affichage sous l'en-tête
 - [x] T05 [008-AS1] Écrire d'abord `app-config.spec.ts` (« 008-AS1: reads the rhythm settings … »), puis mettre à jour `deploy/alpha/docker-compose.yml`, `deploy/alpha/README.md`, `README.md` et `apps/api/.env.example` avec les nouvelles variables, sans secret
+
+## Corrections
+
+Passage 3 (relectures indépendantes). Chaque ligne cite un test écrit d'abord et vu en échec quand c'est du code.
+
+- [x] T06 [008-AS5] Écrire d'abord (« 008-AS5: traces as skipped a light import … », « … does not lose a full slot … », « … traces a full slot as skipped only when it expires … ») dans `infra/scrape-scheduler.spec.ts`, sur le vrai planificateur, le vrai `RunDueScrape` et le vrai `RunScrape` (horloge et battements simulés), puis la suppression du verrou `busy` du planificateur : le garde de chevauchement est celui de `RunScrape`, l'import léger tombé pendant un autre est tracé `skipped`, le créneau complet dû pendant un import est retenu et retenté, tracé seulement s'il expire

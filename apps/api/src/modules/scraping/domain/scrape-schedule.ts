@@ -27,6 +27,8 @@ export type DueReason = 'catch-up' | 'full-slot' | 'interval';
 export interface Due {
   kind: ScrapeKind;
   reason: DueReason;
+  /** Le créneau complet visé, quand `reason` est `full-slot`. */
+  slot?: Date;
 }
 
 const DAY_MS = 86_400_000;
@@ -158,7 +160,7 @@ export function dueRun(input: DueInput, settings: ScheduleSettings): Due | null 
   const slot = lastFullSlot(now, settings);
   const onTime = slot !== null && now.getTime() - slot.getTime() <= 2 * settings.tickSeconds * 1000;
   if (slot && onTime && (lastFullAt === null || lastFullAt < slot)) {
-    return { kind: 'full', reason: 'full-slot' };
+    return { kind: 'full', reason: 'full-slot', slot };
   }
   const dueByInterval =
     lastAttemptAt === null ||
