@@ -85,3 +85,4 @@ Fichiers ajoutés hors du plan initial, acceptés : `apps/api/scripts/fake-offic
 Passage 2 (QA). Chaque ligne cite un test écrit d'abord et vu en échec.
 
 - [x] T12 [007-AS5] Écrire d'abord (« 007-AS5: fails a day whose calendar is empty … », « … a page of another shape ») dans `official-results.spec.ts` et `run-scrape.application.spec.ts`, puis `hasScheduleStructure` : un calendrier sans structure fait échouer le jour, un jour sans finale reste légitime ; le faux site gagne `/__raw`
+- [x] T13 [007-AS4] Écrire d'abord (« 007-AS4: refuses an event typed with a keyboard hyphen … ») dans `test/scraping.e2e.spec.ts`, puis `normalizeEventKey` déplacée dans `packages/shared/src/event-key.ts` (lue par l'import et par le script) et `RecordPodium` qui refuse la variante d'une épreuve déjà publiée (409 `PODIUM_ALREADY_RECORDED`). Le compte rendu ne signale pas de clé « proche » : même clé normalisée = pas absente, sinon deux épreuves (pas de correspondance floue)

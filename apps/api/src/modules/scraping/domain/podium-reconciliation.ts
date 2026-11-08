@@ -1,4 +1,5 @@
-import { normalizeEventKey, type PodiumDraft, podiumIdOf } from './official-results';
+import { normalizeEventKey } from '@joj/shared';
+import { type PodiumDraft, podiumIdOf } from './official-results';
 import type { PodiumDifference, PodiumMedals, ScrapedEvent } from './scrape-run';
 
 /** Un podium de la base, tel que l'import a besoin de le voir. */

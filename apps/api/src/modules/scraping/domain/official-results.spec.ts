@@ -1,9 +1,9 @@
+import { normalizeEventKey } from '@joj/shared';
 import { describe, expect, it } from 'vitest';
 import {
   collectOfficialPodiums,
   daysBetween,
   eventNameOf,
-  normalizeEventKey,
   type OfficialSource,
   parseFinalUnits,
   parseMedalRows,
