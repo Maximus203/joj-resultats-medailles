@@ -85,3 +85,4 @@ Passe finale.
 Passage 4 (QA rejouée sur 7b4ecfd).
 
 - [x] T14 [008-AS8] Écrire d'abord quatre tests de `freshness-banner.test.tsx` (« … never claims a freshness it cannot check … », « … unreachable from the start », « … silent on … 404 », « … turns into a warning by itself … »), puis `FreshnessBanner` : échec de la lecture de l'état = avertissement « Impossible de vérifier la fraîcheur des données » (sauf 404), heure courante rafraîchie chaque minute et `isImportExpected` pour recompter le retard côté client. Les tests simulent la date (`Date` seule) pour ne pas dépendre du jour
+- [x] T15 [008-AS8] Écrire d'abord « 008-AS8: leaves the freshness to the banner, with no second « Mis à jour le » line » (`routes/medailles.test.tsx`), puis la suppression de la ligne `dataUpdatedAt` de `routes/medailles.tsx` : le bandeau est la seule source de fraîcheur

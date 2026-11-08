@@ -1,6 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
+import { fixture } from '@/mocks/fixture';
 import { mockControl } from '@/mocks/control';
 import { axeFindings, runAxe } from '@/test/axe';
 import { seedPodium, setOnline } from '@/test/seed';
@@ -96,6 +97,20 @@ describe('medal table screen', () => {
         .getAllByRole('cell')
         .map((cell) => cell.textContent),
     ).toContain('1');
+  });
+
+  it('008-AS8: leaves the freshness to the banner, with no second « Mis à jour le » line', async () => {
+    seedPodium({ gold: 'SEN', silver: 'JPN', bronze: 'FRA' });
+    fixture.scraping = {
+      ...fixture.scraping,
+      enabled: true,
+      lastSuccessAt: new Date().toISOString(),
+    };
+    await open();
+    await screen.findByRole('table');
+
+    expect(await screen.findByText(/Données à jour à/)).toBeVisible();
+    expect(screen.queryByText(/Mis à jour le/)).toBeNull();
   });
 
   it('shows the offline bar and keeps the last table on screen', async () => {

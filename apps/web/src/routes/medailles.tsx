@@ -1,11 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { BrandBand } from '@/components/cachet/brand-band';
-import { Icon } from '@/components/cachet/icons';
 import { EmptyState, LoadError, Skeletons } from '@/components/cachet/states';
 import { useMedals } from '@/features/medals/api/medals';
 import { MedalTable } from '@/features/medals/components/medal-table';
 import { MyCountrySelect } from '@/features/medals/components/my-country';
-import { formatDateTime } from '@/lib/dates';
 import { describeLoadError } from '@/lib/error-messages';
 import { useMyCountry } from '@/lib/use-my-country';
 
@@ -59,10 +57,6 @@ function MedalsPage() {
                     onChange={setMyCountry}
                     presentCodes={rows.map((row) => row.country)}
                   />
-                  <p className="maj">
-                    <Icon name="historique" />
-                    Mis à jour le {formatDateTime(medals.dataUpdatedAt)}
-                  </p>
                 </div>
                 <p className="note">
                   Tableau calculé à partir des podiums enregistrés dans cette application. Il peut
