@@ -3,6 +3,7 @@ import { BrandBand } from '@/components/cachet/brand-band';
 import { IconSprite } from '@/components/cachet/icons';
 import { EmptyState, OfflineBar } from '@/components/cachet/states';
 import { AppTabs } from '@/components/cachet/tabs';
+import { FreshnessBanner } from '@/features/scraping/components/freshness-banner';
 import { useOnlineStatus } from '@/lib/use-online-status';
 
 /** Lien d'évitement : place le focus sur le contenu sans toucher à l'adresse de la page. */
@@ -34,6 +35,7 @@ function RootLayout() {
         </OfflineBar>
       )}
       <div className="app">
+        <FreshnessBanner />
         <Outlet />
         <AppTabs />
       </div>

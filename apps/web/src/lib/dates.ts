@@ -109,3 +109,13 @@ export function formatDateTime(iso: string | number): string {
   const date = typeof iso === 'number' ? new Date(iso).toISOString() : iso;
   return `${formatShortDate(date)}, ${formatTime(date)}`;
 }
+
+/** L'heure (HH:MM) d'un instant dans un fuseau donné, par exemple celui de Dakar. */
+export function formatClockTime(iso: string, timeZone: string): string {
+  return new Intl.DateTimeFormat('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone,
+  }).format(new Date(iso));
+}

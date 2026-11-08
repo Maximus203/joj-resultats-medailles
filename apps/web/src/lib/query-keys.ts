@@ -5,3 +5,4 @@ export const podiumKeys = {
   revisions: (id: string) => ['podiums', 'revisions', id] as const,
 };
 export const medalKeys = { all: ['medals'] as const };
+export const scrapingKeys = { status: ['scraping', 'status'] as const };

@@ -1768,3 +1768,8 @@ span.cachet-corrige {
     font-size: var(--t-base);
   }
 }
+
+/* Bandeau de fraîcheur des données, au-dessus de l'en-tête : même gouttière que les pages. */
+.fraicheur:not(:empty) {
+  padding: var(--s-2) var(--gouttiere) 0;
+}

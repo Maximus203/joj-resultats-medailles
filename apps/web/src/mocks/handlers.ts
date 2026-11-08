@@ -153,6 +153,12 @@ export const handlers: RequestHandler[] = [
     return HttpResponse.json(current);
   }),
 
+  http.get('*/api/scraping', async () => {
+    const failure = await gate('GET', '/api/scraping');
+    if (failure) return failure;
+    return HttpResponse.json(fixture.scraping);
+  }),
+
   http.get('*/api/podiums/:id/revisions', async ({ params }) => {
     const failure = await gate('GET', '/api/podiums/:id/revisions');
     if (failure) return failure;
