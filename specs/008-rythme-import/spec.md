@@ -17,7 +17,7 @@ Un import par soir laisse les podiums du jour invisibles jusqu'à 23 h. Cherif v
 
 - **Étant donné** l'import activé, un fuseau de Dakar et un jour des Jeux
 - **Quand** l'heure passe de 07:59 à 08:00, puis chaque quart d'heure, jusqu'à 23:00 puis 23:01
-- **Alors** un import léger part à 08:00 et toutes les 15 minutes jusqu'à 23:00 compris, pas à 07:59 ni à 23:01, jamais hors des Jeux
+- **Alors** un import léger part à 08:00 puis tous les quarts d'heure jusqu'à 22:45 compris, pas à 07:59 ; à 23:00 l'import complet prend le créneau (il couvre un léger) ; rien à 23:01 ni hors des Jeux
 
 ### AS2 — Le léger ne lit que le nécessaire
 

@@ -63,6 +63,23 @@ describe('RunDueScrape', () => {
     expect(runs.runs.map((run) => run.kind)).toEqual(['incremental', 'incremental']);
   });
 
+  it('008-AS1: lets the light imports run until 22:45, gives 23:00 to the full import, and stops at 23:01', async () => {
+    const { due, clock } = setup();
+    clock.set('2026-11-03T22:30:00Z');
+    await due.execute(beat);
+
+    clock.set('2026-11-03T22:45:00Z');
+    const lastLight = await due.execute(beat);
+    clock.set('2026-11-03T23:00:00Z');
+    const slot = await due.execute(beat);
+    clock.set('2026-11-03T23:01:00Z');
+    const after = await due.execute(beat);
+
+    expect(lastLight).toMatchObject({ kind: 'incremental' });
+    expect(slot).toMatchObject({ kind: 'full', trigger: 'scheduled' });
+    expect(after).toBeNull();
+  });
+
   it('008-AS3: runs a full import at 07:00 and at 23:00, once each, reading every day so far', async () => {
     const { due, clock, runs, source } = setup();
     clock.set('2026-11-02T23:00:05Z');

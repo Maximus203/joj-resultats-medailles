@@ -92,6 +92,29 @@ describe('dueRun', () => {
     ).toBeNull();
   });
 
+  it('008-AS1: lets the light imports run until 22:45, gives 23:00 to the full import, and stops at 23:01', () => {
+    const base = { lastFullAt: at('2026-11-03T07:00:10Z') };
+    const light = dueRun(
+      input('2026-11-03T22:45:00Z', { ...base, lastAttemptAt: at('2026-11-03T22:30:00Z') }),
+      DAKAR,
+    );
+    const slot = dueRun(
+      input('2026-11-03T23:00:00Z', { ...base, lastAttemptAt: at('2026-11-03T22:45:00Z') }),
+      DAKAR,
+    );
+    const after = dueRun(
+      input('2026-11-03T23:01:00Z', {
+        lastFullAt: at('2026-11-03T23:00:05Z'),
+        lastAttemptAt: at('2026-11-03T23:00:05Z'),
+      }),
+      DAKAR,
+    );
+
+    expect(light).toMatchObject({ kind: 'incremental' });
+    expect(slot).toMatchObject({ kind: 'full', reason: 'full-slot' });
+    expect(after).toBeNull();
+  });
+
   it('008-AS1: never runs outside the Games, except the day after the last one', () => {
     const never = { lastAttemptAt: null, lastFullAt: null, lastSucceededAt: null };
     expect(dueRun(input('2026-10-31T10:00:00Z', never), DAKAR)).toBeNull();
