@@ -244,13 +244,21 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
 describe('GET /api/scraping, freshness (e2e, import switched on, clock injected)', () => {
   let app: INestApplication;
   let clock: FixedClock;
+  let source: FakeResultsSource;
   const status = async () =>
     scrapeStatusSchema.parse((await request(app.getHttpServer()).get('/api/scraping')).body);
 
   beforeEach(async () => {
-    const source = new FakeResultsSource();
-    source.schedules.set('2026-11-01', quietDay);
+    source = new FakeResultsSource();
+    source.schedules.set(
+      '2026-11-01',
+      scheduleItem('medal-match gold', 'J66-FNL', 'Judo', 'Men -66 kg Final'),
+    );
     source.schedules.set('2026-11-02', quietDay);
+    source.medalLists.set(
+      'J66-FNL',
+      medalPage(['Gold', 'UKR'], ['Silver', 'CAN'], ['Bronze', 'ARG']),
+    );
     clock = new FixedClock(new Date('2026-11-02T10:00:00.000Z'));
     app = await createTestApp((builder) =>
       builder
@@ -271,16 +279,40 @@ describe('GET /api/scraping, freshness (e2e, import switched on, clock injected)
 
   afterEach(() => app?.close());
 
-  it('008-AS6: tells the kind, the duration and the time of the last success of each run', async () => {
+  it('008-AS6: tells the kind, a real duration and the counts of a light and of a full import', async () => {
+    source.onRead = () => clock.set(new Date(clock.now().getTime() + 500));
     await request(app.getHttpServer()).post('/api/scraping/runs').expect(202);
     await app.get(RunScrape).whenIdle();
+    clock.set('2026-11-02T10:15:00.000Z');
+    await app.get(RunScrape).execute('scheduled', 'incremental');
 
     const view = await status();
 
-    expect(view.lastSuccessAt).toBe('2026-11-02T10:00:00.000Z');
-    expect(view.lastRun).toMatchObject({ kind: 'full', durationMs: 0, status: 'success' });
-    expect(view.lastFullRun?.id).toBe(view.lastRun?.id);
-    expect(view.recentRuns[0]).toMatchObject({ kind: 'full', durationMs: 0 });
+    // Complet : 2 calendriers + 1 page de médaillés = 3 lectures de 500 ms. Léger : 2 calendriers.
+    expect(view.recentRuns.map((run) => [run.kind, run.durationMs])).toEqual([
+      ['incremental', 1000],
+      ['full', 1500],
+    ]);
+    expect(view.recentRuns[0]?.counts).toEqual({
+      imported: 0,
+      updated: 0,
+      identical: 0,
+      kept: 0,
+      absent: 0,
+      ignored: 0,
+      errors: 0,
+    });
+    expect(view.lastFullRun).toMatchObject({
+      kind: 'full',
+      durationMs: 1500,
+      counts: { imported: 1, ignored: 0, errors: 0 },
+    });
+    expect(view.lastRun?.report.exhaustiveness).toMatchObject({
+      finalsSeen: 1,
+      finalsKnown: 1,
+      finalsWithPodium: 0,
+    });
+    expect(view.lastSuccessAt).toBe('2026-11-02T10:15:00.000Z');
     expect(view.nextFullRunAt).toBe('2026-11-02T23:00:00.000Z');
   });
 

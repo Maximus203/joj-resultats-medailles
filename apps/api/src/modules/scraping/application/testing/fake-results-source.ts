@@ -8,6 +8,8 @@ export class FakeResultsSource extends ResultsSource {
   /** Si défini, chaque lecture attend cette promesse : sert à garder une exécution « en cours ». */
   gate: Promise<void> | null = null;
   readonly requests: string[] = [];
+  /** Appelé à chaque lecture : un test y fait avancer l'horloge pour donner une durée à l'import. */
+  onRead: (() => void) | null = null;
 
   async schedule(day: string): Promise<string> {
     return this.read(`schedule:${day}`, this.schedules.get(day));
@@ -19,6 +21,7 @@ export class FakeResultsSource extends ResultsSource {
 
   private async read(request: string, page: string | undefined): Promise<string> {
     this.requests.push(request);
+    this.onRead?.();
     await this.gate;
     if (this.failing.has(request) || page === undefined) throw new Error(`HTTP 500 sur ${request}`);
     return page;
