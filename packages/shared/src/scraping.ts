@@ -92,6 +92,8 @@ export const scrapeRunSummarySchema = z.object({
   finishedAt: z.iso.datetime(),
   durationMs: z.number().int().min(0),
   counts: scrapeCountsSchema,
+  /** Pourquoi l'exécution a été sautée ; absent sinon. Servi aussi dans la liste des dernières exécutions. */
+  skippedReason: z.string().optional(),
 });
 export type ScrapeRunSummary = z.infer<typeof scrapeRunSummarySchema>;
 

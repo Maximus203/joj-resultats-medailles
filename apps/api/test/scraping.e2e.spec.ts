@@ -361,6 +361,34 @@ describe('GET /api/scraping, freshness (e2e, import switched on, clock injected)
     expect(view.nextFullRunAt).toBe('2026-11-02T23:00:00.000Z');
   });
 
+  it('008-AS5: serves the reason of a skipped run, in the recent runs, for a light and for an expired full slot', async () => {
+    const runScrape = app.get(RunScrape);
+    await runScrape.recordSkipped('scheduled', 'incremental', 'un autre import est en cours');
+    await runScrape.recordSkipped(
+      'scheduled',
+      'full',
+      'le créneau complet de 23:00 est perdu : un autre import était en cours',
+    );
+
+    const view = await status();
+
+    expect(view.recentRuns).toMatchObject([
+      {
+        kind: 'full',
+        status: 'skipped',
+        skippedReason: 'le créneau complet de 23:00 est perdu : un autre import était en cours',
+      },
+      {
+        kind: 'incremental',
+        status: 'skipped',
+        skippedReason: 'un autre import est en cours',
+      },
+    ]);
+    // Une exécution sautée n'a rien lu : elle n'est ni le dernier compte rendu, ni un succès.
+    expect(view.lastRun).toBeNull();
+    expect(view.lastSuccessAt).toBeNull();
+  });
+
   it('008-AS7: is stale after 2 hours without a success inside the window, fresh again after one', async () => {
     expect((await status()).stale).toBe(true);
 

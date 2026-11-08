@@ -71,6 +71,7 @@ function toSummary(run: ScrapeRun): ScrapeRunSummary {
     finishedAt: run.finishedAt.toISOString(),
     durationMs: durationMsOf(run),
     counts: countsOf(run.report),
+    ...(run.report.skippedReason ? { skippedReason: run.report.skippedReason } : {}),
   };
 }
 
