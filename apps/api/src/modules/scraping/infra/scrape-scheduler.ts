@@ -34,7 +34,8 @@ export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShu
       `Import automatique actif : complet à ${this.settings.fullTimes.join(', ')}, léger toutes les ${this.settings.intervalMinutes} min de ${this.settings.windowStart} à ${this.settings.windowEnd} (${this.settings.timeZone}), du ${this.settings.firstDay} au ${this.settings.lastDay}`,
     );
     void this.tick(true);
-    void this.watchStaleness();
+    // Pas de contrôle de fraîcheur au démarrage même : le battement de démarrage n'a pas encore décidé
+    // s'il lance un import, et conclure « périmé » avant lui serait un faux départ.
     this.timer = setInterval(() => {
       void this.tick(false);
       void this.watchStaleness();

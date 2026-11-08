@@ -31,6 +31,8 @@ const success = (startedAt: string): ScrapeRun => ({
   },
 });
 
+const idle = { running: false };
+
 describe('CheckStaleness', () => {
   let warn: ReturnType<typeof vi.spyOn>;
   beforeEach(() => {
@@ -42,7 +44,7 @@ describe('CheckStaleness', () => {
   it('008-AS7: logs one warning per stale episode, and a new one only after a return to fresh', async () => {
     const runs = new InMemoryScrapeRunRepository();
     const clock = new FixedClock(new Date('2026-11-03T09:00:00Z'));
-    const check = new CheckStaleness(runs, clock, testSettings());
+    const check = new CheckStaleness(runs, clock, testSettings(), idle);
     await runs.add(success('2026-11-03T08:00:00Z'));
 
     expect(await check.execute()).toBe(false);
@@ -66,11 +68,11 @@ describe('CheckStaleness', () => {
     const runs = new InMemoryScrapeRunRepository();
     const clock = new FixedClock(new Date('2026-11-03T23:30:00Z'));
 
-    expect(await new CheckStaleness(runs, clock, testSettings()).execute()).toBe(false);
+    expect(await new CheckStaleness(runs, clock, testSettings(), idle).execute()).toBe(false);
     clock.set('2026-11-03T12:00:00Z');
-    expect(await new CheckStaleness(runs, clock, testSettings({ enabled: false })).execute()).toBe(
-      false,
-    );
+    expect(
+      await new CheckStaleness(runs, clock, testSettings({ enabled: false }), idle).execute(),
+    ).toBe(false);
     expect(warn).not.toHaveBeenCalled();
   });
 });

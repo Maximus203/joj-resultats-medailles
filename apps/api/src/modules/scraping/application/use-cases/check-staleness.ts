@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { isStale } from '../../domain/scrape-schedule';
 import { Clock } from '../clock';
 import { ScrapeRunRepository } from '../scrape-run.repository';
+import { RunScrape } from './run-scrape';
 import { SCRAPING_SETTINGS, type ScrapingSettings } from '../scraping-settings';
 
 /**
@@ -17,9 +18,12 @@ export class CheckStaleness {
     private readonly runs: ScrapeRunRepository,
     private readonly clock: Clock,
     @Inject(SCRAPING_SETTINGS) private readonly settings: ScrapingSettings,
+    @Inject(RunScrape) private readonly runScrape: Pick<RunScrape, 'running'>,
   ) {}
 
   async execute(): Promise<boolean> {
+    // Un import en cours (le premier du démarrage, souvent) peut encore réussir : on ne conclut rien.
+    if (this.runScrape.running) return this.stale;
     const lastSucceededAt = await this.runs.lastSucceededAt();
     const stale =
       this.settings.enabled && isStale({ now: this.clock.now(), lastSucceededAt }, this.settings);

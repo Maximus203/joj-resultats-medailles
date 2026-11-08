@@ -69,7 +69,7 @@ describe('ScrapeScheduler', () => {
     expect(on.execute).toHaveBeenCalledTimes(1);
   });
 
-  it('008-AS7: asks and checks staleness on every beat, even while an import is still running', async () => {
+  it('008-AS7: asks on every beat, and checks staleness on every beat after the startup one, even while an import is still running', async () => {
     const { execute, staleness, scheduler } = setup();
     execute.mockImplementationOnce(() => new Promise<null>(() => undefined));
 
@@ -78,7 +78,7 @@ describe('ScrapeScheduler', () => {
 
     // Le chevauchement est l'affaire de RunScrape : chaque battement demande, la décision se trace.
     expect(execute).toHaveBeenCalledTimes(4);
-    expect(staleness).toHaveBeenCalledTimes(4);
+    expect(staleness).toHaveBeenCalledTimes(3);
     scheduler.onApplicationShutdown();
   });
 });
@@ -107,7 +107,7 @@ describe('ScrapeScheduler with the real use cases', () => {
     const runDue = new RunDueScrape(runScrape, runs, clock, settings);
     const scheduler = new ScrapeScheduler(
       runDue,
-      new CheckStaleness(runs, clock, settings),
+      new CheckStaleness(runs, clock, settings, runScrape),
       settings,
     );
     let release: () => void = () => undefined;
@@ -234,22 +234,34 @@ describe('ScrapeScheduler with the real use cases', () => {
     expect(skipped[0]?.report.skippedReason).toMatch(/23:00.*perdu/);
   });
 
-  it('008-AS7: logs the stale warning once for the whole episode, over many beats', async () => {
+  it('008-AS7: says nothing while the first import of the startup runs, then warns once for a real episode', async () => {
     const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    const log = vi.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
     const { clock, runScrape, scheduler, hold, release } = wire('2026-11-03T10:00:00Z');
     hold();
+    const stale = () =>
+      warn.mock.calls.filter(([message]) => String(message).includes('périmées')).length;
 
     scheduler.onApplicationBootstrap();
     for (const at of ['10:01', '10:02', '10:03', '10:04', '10:05']) {
       await beat(clock, `2026-11-03T${at}:00Z`);
     }
+    expect(stale()).toBe(0);
     release();
     await runScrape.whenIdle();
+    await beat(clock, '2026-11-03T10:06:00Z');
+    expect(stale()).toBe(0);
+    expect(log.mock.calls.some(([message]) => String(message).includes('de nouveau à jour'))).toBe(
+      false,
+    );
+
+    for (const at of ['12:07', '12:08', '12:09']) {
+      await beat(clock, `2026-11-03T${at}:00Z`);
+    }
     scheduler.onApplicationShutdown();
 
-    expect(
-      warn.mock.calls.filter(([message]) => String(message).includes('périmées')),
-    ).toHaveLength(1);
+    expect(stale()).toBe(1);
     warn.mockRestore();
+    log.mockRestore();
   });
 });

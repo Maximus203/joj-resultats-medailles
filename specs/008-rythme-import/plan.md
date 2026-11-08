@@ -95,3 +95,4 @@ Passage 4 (QA rejouée sur 7b4ecfd).
 Passage 5 (3e campagne QA).
 
 - [x] T21 [008-AS8] Écrire d'abord « 008-AS8: goes back to the real state right after a successful retry … » (`freshness-banner.test.tsx`), puis la relecture immédiate de l'état dans `FreshnessBanner` quand une autre lecture de la page réussit alors que la lecture de l'état était en échec
+- [x] T22 [008-AS7] Écrire d'abord « 008-AS7: says nothing while the first import of the startup runs, then warns once for a real episode » (`infra/scrape-scheduler.spec.ts`, vrai planificateur, horloge simulée), puis `CheckStaleness` qui ne conclut rien tant qu'un import tourne (ni avertissement, ni « de nouveau à jour »)
