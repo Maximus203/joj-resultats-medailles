@@ -43,7 +43,7 @@ Un résumé rédigé par un assistant IA pour une journée, avec la liste des é
 
 ### TR6 — Import automatique des résultats officiels
 
-Chaque jour à heure fixe, l'application lit les podiums publiés par le site officiel des résultats et les enregistre seule, sans doublon ; un podium corrigé ou saisi par le journaliste n'est jamais écrasé, et chaque exécution laisse un compte rendu lisible (ce qui a été trouvé, importé, ignoré, et pourquoi). Prérequis : TR1, TR4.
+Toutes les 15 minutes de 08:00 à 23:00 (import léger : seulement les finales nouvelles) et à 07:00 et 23:00 (import complet), l'application lit les podiums publiés par le site officiel des résultats et les enregistre seule, sans doublon ; un podium corrigé ou saisi par le journaliste n'est jamais écrasé, et chaque exécution laisse un compte rendu lisible, avec l'heure de la dernière mise à jour affichée aux lecteurs (ce qui a été trouvé, importé, ignoré, et pourquoi). Prérequis : TR1, TR4.
 
 ## Hors périmètre
 
