@@ -28,10 +28,18 @@ export function createOfficialSiteSource(options: OfficialSiteOptions): Official
     options.sleep ?? ((ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)));
 
   async function get(url: string): Promise<string> {
-    const response = await fetchFn(url, {
-      headers: { 'User-Agent': options.userAgent },
-      signal: AbortSignal.timeout(options.requestTimeoutMs),
-    });
+    let response: Response;
+    try {
+      response = await fetchFn(url, {
+        headers: { 'User-Agent': options.userAgent },
+        signal: AbortSignal.timeout(options.requestTimeoutMs),
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        throw new Error(`délai de ${options.requestTimeoutMs} ms dépassé sur ${url}`);
+      }
+      throw error;
+    }
     if (!response.ok) throw new Error(`HTTP ${response.status} sur ${url}`);
     const body = await response.text();
     await sleep(options.requestDelayMs);

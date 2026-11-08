@@ -58,4 +58,18 @@ describe('createOfficialSiteSource', () => {
     await expect(source.schedule('2026-11-05')).rejects.toThrow(/HTTP 503/);
     expect(pauses).toEqual([]);
   });
+
+  it('007-AS5: reports a timeout in French, with the page and the limit', async () => {
+    const source = createOfficialSiteSource({
+      ...OPTIONS,
+      requestTimeoutMs: 1500,
+      fetchFn: async () => {
+        throw new DOMException('The operation was aborted due to timeout', 'TimeoutError');
+      },
+    });
+
+    await expect(source.schedule('2026-11-05')).rejects.toThrow(
+      /délai de 1500 ms dépassé sur https:\/\/site\.test/,
+    );
+  });
 });

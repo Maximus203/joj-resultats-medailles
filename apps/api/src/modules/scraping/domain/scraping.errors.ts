@@ -17,6 +17,6 @@ export class ScrapingError extends AppError<ScrapingErrorCode> {
 export function scrapeAlreadyRunning(): ScrapingError {
   return new ScrapingError(
     'SCRAPE_ALREADY_RUNNING',
-    'A scrape is already running, wait for it to finish',
+    'Un import est déjà en cours : attends qu’il se termine avant d’en lancer un autre.',
   );
 }

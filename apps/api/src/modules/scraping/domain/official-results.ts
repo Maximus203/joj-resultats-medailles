@@ -185,7 +185,12 @@ export function toPodiumDraft(unit: FinalUnit, rows: MedalRow[]): DraftResult {
   });
   if (rows.length === 0) return fail('NO_MEDALS', 'aucune médaille publiée');
   if (golds.length > 1 || silvers.length > 1) {
-    return fail('TIED_PLACES', `égalité : or ${golds.join('+')}, argent ${silvers.join('+')}`);
+    const tied = [
+      golds.length > 1 ? `à l’or (${golds.join(', ')})` : '',
+      silvers.length > 1 ? `à l’argent (${silvers.join(', ')})` : '',
+    ].filter(Boolean);
+    const missing = silvers.length === 0 ? ', pas d’argent' : '';
+    return fail('TIED_PLACES', `égalité ${tied.join(' et ')}${missing}`);
   }
   const [gold, silver, bronze, secondBronze] = [golds[0], silvers[0], bronzes[0], bronzes[1]];
   if (!gold || !silver || !bronze) {

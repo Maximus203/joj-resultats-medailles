@@ -143,7 +143,11 @@ describe('toPodiumDraft', () => {
       { medal: 'gold' as const, noc: 'POR' },
       { medal: 'bronze' as const, noc: 'BEL' },
     ];
-    expect(toPodiumDraft(unit, tie)).toMatchObject({ ok: false, reason: 'TIED_PLACES' });
+    expect(toPodiumDraft(unit, tie)).toMatchObject({
+      ok: false,
+      reason: 'TIED_PLACES',
+      detail: 'égalité à l’or (GRE, POR), pas d’argent',
+    });
   });
 
   it('007-AS3: refuses an event without a full podium of distinct countries', () => {

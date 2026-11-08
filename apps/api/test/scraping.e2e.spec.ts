@@ -211,7 +211,10 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     release();
     await app.get(RunScrape).whenIdle();
 
-    expect(refused.body).toMatchObject({ code: 'SCRAPE_ALREADY_RUNNING' });
+    expect(refused.body).toMatchObject({
+      code: 'SCRAPE_ALREADY_RUNNING',
+      detail: 'Un import est déjà en cours : attends qu’il se termine avant d’en lancer un autre.',
+    });
     await runAndWait();
     expect((await status()).recentRuns).toHaveLength(2);
   });

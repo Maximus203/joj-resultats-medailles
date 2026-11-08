@@ -62,4 +62,27 @@ describe('AppConfig', () => {
       AppConfig.fromEnv({ SCRAPING_FIRST_DAY: '2026-11-05', SCRAPING_LAST_DAY: '2026-11-05' }),
     ).not.toThrow();
   });
+
+  it('007-AS6: explains an invalid value in French, variable by variable', () => {
+    const message = (env: Record<string, string>) => {
+      try {
+        AppConfig.fromEnv(env);
+        return '';
+      } catch (error) {
+        return (error as Error).message;
+      }
+    };
+
+    expect(message({ SCRAPING_DAILY_TIME: '7h30' })).toMatch(/heure HH:MM.*SCRAPING_DAILY_TIME/s);
+    expect(message({ SCRAPING_ENABLED: 'maybe' })).toMatch(/true ou false.*SCRAPING_ENABLED/s);
+    expect(message({ SCRAPING_FIRST_DAY: '2026-02-31' })).toMatch(
+      /AAAA-MM-JJ.*SCRAPING_FIRST_DAY/s,
+    );
+    expect(message({ SCRAPING_TICK_SECONDS: '0' })).toMatch(
+      /entier positif.*SCRAPING_TICK_SECONDS/s,
+    );
+    expect(message({ SCRAPING_SOURCE_URL: 'pas-une-url' })).toMatch(/URL.*SCRAPING_SOURCE_URL/s);
+    expect(message({ PORT: 'abc' })).toMatch(/entier positif.*PORT/s);
+    expect(message({ SCRAPING_TIMEZONE: 'Mars/Phobos' })).toMatch(/fuseau horaire/);
+  });
 });
