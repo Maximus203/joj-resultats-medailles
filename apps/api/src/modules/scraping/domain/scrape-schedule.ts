@@ -9,6 +9,8 @@ export interface ScheduleSettings {
   timeZone: string;
   /** Exécution supplémentaire toutes les N minutes, ou `null`. */
   intervalMinutes: number | null;
+  /** Pas de l'horloge : le créneau quotidien se prend dans les deux battements qui suivent son heure. */
+  tickSeconds: number;
 }
 
 /** `catch-up` : serveur démarré après plus de 24 h sans import réussi ; `daily` : heure fixe ; `interval` : complément. */
@@ -111,7 +113,11 @@ export function dueReason(input: DueInput, settings: ScheduleSettings): DueReaso
   const staleSuccess =
     lastSucceededAt === null || now.getTime() - lastSucceededAt.getTime() > CATCH_UP_AFTER_MS;
   if (startup && staleSuccess) return 'catch-up';
-  if (lastAttemptAt === null || lastAttemptAt < lastDailySlot(now, settings)) return 'daily';
+  const slot = lastDailySlot(now, settings);
+  const onTime = now.getTime() - slot.getTime() <= 2 * settings.tickSeconds * 1000;
+  // Un battement tardif ne lance rien : seul le créneau lui-même, ou le démarrage, déclenche.
+  if (onTime && (lastAttemptAt === null || lastAttemptAt < slot)) return 'daily';
+  if (lastAttemptAt === null) return null;
   const interval = settings.intervalMinutes;
   if (interval && now.getTime() - lastAttemptAt.getTime() >= interval * 60_000) return 'interval';
   return null;

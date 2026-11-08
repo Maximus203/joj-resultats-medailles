@@ -8,6 +8,7 @@ const DAKAR = {
   dailyTime: '23:00',
   timeZone: 'Africa/Dakar',
   intervalMinutes: null,
+  tickSeconds: 60,
 };
 const at = (iso: string) => new Date(iso);
 
@@ -73,12 +74,19 @@ describe('dueReason', () => {
       lastSucceededAt: at('2026-11-02T23:00:30Z'),
     });
     expect(dueReason(fresh, DAKAR)).toBeNull();
-    expect(dueReason(input('2026-11-04T07:00:00Z', { lastSucceededAt: null }), DAKAR)).toBe(
-      'daily',
-    );
     expect(
       dueReason(input('2026-11-03T05:00:00Z', { startup: true, lastSucceededAt: null }), DAKAR),
     ).toBe('catch-up');
+  });
+
+  it('007-AS6: ignores a late beat: no import at 07:00 after a missed 23:00, unless the server starts', () => {
+    const missed = { lastAttemptAt: at('2026-11-02T23:00:30Z'), lastSucceededAt: null };
+    expect(dueReason(input('2026-11-04T07:00:00Z', missed), DAKAR)).toBeNull();
+    expect(dueReason(input('2026-11-03T23:05:00Z', missed), DAKAR)).toBeNull();
+    expect(dueReason(input('2026-11-03T23:01:59Z', missed), DAKAR)).toBe('daily');
+    expect(dueReason(input('2026-11-04T07:00:00Z', { ...missed, startup: true }), DAKAR)).toBe(
+      'catch-up',
+    );
   });
 
   it('007-AS6: adds an interval run when one is configured', () => {
