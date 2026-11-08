@@ -765,6 +765,15 @@ fieldset {
   border-radius: 99px;
   padding: 1px var(--s-2);
   vertical-align: middle;
+  white-space: nowrap;
+}
+/* Sous 380 px la pastille passe sous le pays, sur sa propre ligne, au lieu de se casser en deux. */
+@media (max-width: 23.75rem) {
+  .tableau tr.mon-pays .pays::after {
+    display: block;
+    width: fit-content;
+    margin: var(--s-1) 0 var(--s-1);
+  }
 }
 .tableau tr.vient-de-changer {
   animation: signal var(--d-signal) var(--ease) 1;
