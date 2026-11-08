@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { Logger } from '@nestjs/common';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { podiumIdOf } from '../domain/official-results';
 import type { StoredPodium } from '../domain/podium-reconciliation';
 import { RunScrape } from './use-cases/run-scrape';
@@ -80,6 +81,9 @@ function setup(initial: StoredPodium[] = []) {
     run: new RunScrape(source, podiums, runs, clock, SETTINGS),
   };
 }
+
+// Les journaux de l'import sont vérifiés en e2e et au playbook : ici, silence.
+beforeAll(() => Logger.overrideLogger(false));
 
 describe('RunScrape', () => {
   it('007-AS1: imports the finished finals once, and a second run changes nothing', async () => {

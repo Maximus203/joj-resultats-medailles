@@ -61,6 +61,12 @@ services:
       NODE_ENV: production
       PORT: '3000'
       DATABASE_URL: postgres://joj:${POSTGRES_PASSWORD}@postgres:5432/joj
+      # Import automatique des résultats officiels (module scraping) : chaque soir à l'heure fixe,
+      # pendant les Jeux, et rattrapé au démarrage. Les autres réglages SCRAPING_* gardent leur défaut.
+      SCRAPING_ENABLED: ${SCRAPING_ENABLED:-true}
+      SCRAPING_DAILY_TIME: ${SCRAPING_DAILY_TIME:-23:00}
+      SCRAPING_TIMEZONE: ${SCRAPING_TIMEZONE:-Africa/Dakar}
+      SCRAPING_INTERVAL_MINUTES: ${SCRAPING_INTERVAL_MINUTES:-}
     networks: [internal, web]
     depends_on:
       migrate:

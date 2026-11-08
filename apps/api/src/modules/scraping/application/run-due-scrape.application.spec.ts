@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { Logger } from '@nestjs/common';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { RunDueScrape } from './use-cases/run-due-scrape';
 import { RunScrape } from './use-cases/run-scrape';
 import type { ScrapingSettings } from './scraping-settings';
@@ -39,6 +40,9 @@ function setup(settings: ScrapingSettings = SETTINGS, now = '2026-11-03T10:00:00
     due: new RunDueScrape(runScrape, runs, clock, settings),
   };
 }
+
+// Les journaux de l'import sont vérifiés en e2e et au playbook : ici, silence.
+beforeAll(() => Logger.overrideLogger(false));
 
 describe('RunDueScrape', () => {
   it('007-AS6: runs once at 23:00 Dakar time, not before, not twice in the same minute', async () => {

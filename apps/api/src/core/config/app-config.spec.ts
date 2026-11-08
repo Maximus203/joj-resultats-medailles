@@ -45,4 +45,10 @@ describe('AppConfig', () => {
       /SCRAPING_TIMEZONE/,
     );
   });
+
+  it('007-AS6: treats an empty interval, as a compose file passes it, as no interval', () => {
+    expect(
+      AppConfig.fromEnv({ SCRAPING_INTERVAL_MINUTES: '' }).get('SCRAPING_INTERVAL_MINUTES'),
+    ).toBeUndefined();
+  });
 });

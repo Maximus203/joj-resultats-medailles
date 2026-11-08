@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate",
     "db:seed": "node scripts/db.mts seed",
     "db:reset": "node scripts/db.mts reset",
-    "db:scrape": "node scripts/scrape-results.mts"
+    "db:scrape": "node scripts/scrape-results.mts",
+    "dev:fake-site": "node scripts/fake-official-site.mts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.12",

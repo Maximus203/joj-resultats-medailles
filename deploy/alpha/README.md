@@ -35,6 +35,15 @@ bash deploy/vercel/deploy.sh           # front : build local publié en producti
 - Accès : lecture (`GET`) publique ; écritures et Swagger (`/api/docs`) derrière une authentification
   basique Traefik, utilisateur `WRITE_USER`, mot de passe `WRITE_PASSWORD` du `.env`, en attendant
   l'authentification applicative.
+- Import automatique des résultats officiels : l'API lit seule le site officiel chaque soir à
+  23:00 (Africa/Dakar, UTC+0) du 1er au 14 novembre, et rattrape au démarrage une exécution
+  manquée (dernier import réussi vieux de plus de 24 h). Réglages dans le `.env`, tous facultatifs,
+  sans secret : `SCRAPING_ENABLED` (défaut `true` ici), `SCRAPING_DAILY_TIME` (`23:00`),
+  `SCRAPING_TIMEZONE` (`Africa/Dakar`), `SCRAPING_INTERVAL_MINUTES` (vide : seulement l'heure
+  fixe). Suivi : `curl https://api-joj.artist-dev.com/api/scraping` (dernière exécution, écarts,
+  finales ignorées avec leur raison). Lancement à la demande, derrière l'authentification basique :
+  `curl -u "$WRITE_USER:$WRITE_PASSWORD" -X POST https://api-joj.artist-dev.com/api/scraping/runs`
+  (202, puis relire l'état ; 409 si une exécution tourne). Logs : `docker logs joj-api | grep RunScrape`.
 - Sauvegarde : `joj-api-backup.timer`, chaque nuit à 03h45 UTC, `pg_dump` relu puis gardé 14 jours
   dans `backups/`. Échec → alerte Telegram. Restauration :
   `docker exec -i joj-postgres pg_restore -U joj -d joj --clean --if-exists < backups/<fichier>.dump`

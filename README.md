@@ -29,20 +29,21 @@ Pour charger des données de démo (voir [Base de données](#base-de-données)) 
 
 ## Commandes
 
-| Commande           | Effet                                                                |
-| ------------------ | -------------------------------------------------------------------- |
-| `pnpm dev`         | API (port 3000) et front (port 5173) en parallèle                    |
-| `pnpm test`        | tous les tests (Vitest), sans Docker ni réseau                       |
-| `pnpm test:watch`  | les tests en continu                                                 |
-| `pnpm lint`        | oxlint                                                               |
-| `pnpm format`      | formate tout (oxfmt) ; `pnpm format:check` vérifie seulement         |
-| `pnpm typecheck`   | TypeScript sur tout le repo                                          |
-| `pnpm build`       | build de l'API (SWC) et du front (Vite)                              |
-| `pnpm check`       | tout le dépôt : format, lint, types, tous les tests, build           |
-| `pnpm verify`      | les seuls fichiers modifiés : format, lint, types, tests liés        |
-| `pnpm db:generate` | génère une migration après un changement de schéma Drizzle           |
-| `pnpm db:seed`     | applique les migrations et charge `apps/api/data/*.json`             |
-| `pnpm db:reset`    | vide la base locale, applique les migrations et recharge les données |
+| Commande           | Effet                                                                               |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| `pnpm dev`         | API (port 3000) et front (port 5173) en parallèle                                   |
+| `pnpm test`        | tous les tests (Vitest), sans Docker ni réseau                                      |
+| `pnpm test:watch`  | les tests en continu                                                                |
+| `pnpm lint`        | oxlint                                                                              |
+| `pnpm format`      | formate tout (oxfmt) ; `pnpm format:check` vérifie seulement                        |
+| `pnpm typecheck`   | TypeScript sur tout le repo                                                         |
+| `pnpm build`       | build de l'API (SWC) et du front (Vite)                                             |
+| `pnpm check`       | tout le dépôt : format, lint, types, tous les tests, build                          |
+| `pnpm verify`      | les seuls fichiers modifiés : format, lint, types, tests liés                       |
+| `pnpm db:generate` | génère une migration après un changement de schéma Drizzle                          |
+| `pnpm db:seed`     | applique les migrations et charge `apps/api/data/*.json`                            |
+| `pnpm db:reset`    | vide la base locale, applique les migrations et recharge les données                |
+| `pnpm db:scrape`   | lit le site officiel et écrit `apps/api/data/podiums.json` (même code que l'import) |
 
 ## Structure
 
@@ -104,6 +105,8 @@ Puis créer `apps/api/.env` à partir de `apps/api/.env.example` et y décomment
 Le code ne dépend pas du mode : un seul provider Nest fournit l'instance Drizzle (`src/core/database/`). Les tests utilisent toujours PGlite en mémoire.
 
 **Données de démo** : un fichier `apps/api/data/<table>.json` par table, qui contient un tableau de lignes dont les clés sont les noms des colonnes en base (`created_at`). Un préfixe fixe l'ordre de chargement si une table en référence une autre (`01-pays.json`, `02-athletes.json`). Relancer `db:seed` ignore les lignes déjà présentes.
+
+**Import automatique des résultats officiels** (module `scraping`) : l'API lit elle-même le site officiel des résultats (calendrier, puis page « Medallists » de chaque finale terminée) et enregistre les podiums sans doublon. Éteint par défaut en développement et en test (`SCRAPING_ENABLED=false`) ; en production il tourne chaque soir à 23:00 (Africa/Dakar) du 1er au 14 novembre 2026 et rattrape au démarrage une exécution manquée. Règle de conflit : un podium saisi à la main ou corrigé par le journaliste n'est jamais écrasé, l'écart est seulement listé. Variables `SCRAPING_*` : voir `apps/api/.env.example` ; déploiement : `deploy/alpha/README.md`. `GET /api/scraping` montre la dernière exécution (importés, mis à jour, identiques, écarts, absents de la source, finales ignorées et pourquoi) ; `POST /api/scraping/runs` en lance une à la demande (écriture : protégée en production). Les tests simulent le site : aucun appel réseau.
 
 ## Ajouter une fonctionnalité
 

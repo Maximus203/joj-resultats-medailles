@@ -29,7 +29,10 @@ export const envSchema = z.object({
     .refine(isTimeZone, 'fuseau horaire IANA inconnu')
     .default('Africa/Dakar'),
   /** En plus de l'heure fixe : une exécution toutes les N minutes pendant les Jeux (facultatif). */
-  SCRAPING_INTERVAL_MINUTES: z.coerce.number().int().positive().optional(),
+  SCRAPING_INTERVAL_MINUTES: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.coerce.number().int().positive().optional(),
+  ),
   /** Fréquence à laquelle l'horloge regarde si une exécution est due. */
   SCRAPING_TICK_SECONDS: z.coerce.number().int().positive().default(60),
   /** Politesse envers le site officiel : pause après chaque requête, délai maximal d'une requête. */
