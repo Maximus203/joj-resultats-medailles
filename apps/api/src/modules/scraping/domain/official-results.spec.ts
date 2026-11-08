@@ -3,6 +3,7 @@ import {
   collectOfficialPodiums,
   daysBetween,
   eventNameOf,
+  normalizeEventKey,
   type OfficialSource,
   parseFinalUnits,
   parseMedalRows,
@@ -207,5 +208,29 @@ describe('daysBetween', () => {
       '2026-11-02',
       '2026-11-03',
     ]);
+  });
+});
+
+describe('normalizeEventKey', () => {
+  it('007-AS4: matches the same event whatever its dashes, case, spaces and accents', () => {
+    const official = normalizeEventKey('Judo – Men -66 kg');
+    for (const typed of [
+      'Judo - Men -66 kg',
+      'judo — men -66 kg',
+      '  JUDO  –  Men  -66 kg ',
+      'Judo ‒ Men −66 kg',
+    ]) {
+      expect(normalizeEventKey(typed)).toBe(official);
+    }
+    expect(normalizeEventKey('Natation – Dames 50 m nage libre')).toBe(
+      normalizeEventKey('natation - dàmes 50 m nage libre'),
+    );
+  });
+
+  it('007-AS4: keeps two different events apart', () => {
+    expect(normalizeEventKey('Judo – Men -66 kg')).not.toBe(normalizeEventKey('Judo – Men -60 kg'));
+    expect(normalizeEventKey('Judo – Men -66 kg')).not.toBe(
+      normalizeEventKey('Wrestling – Men -66 kg'),
+    );
   });
 });

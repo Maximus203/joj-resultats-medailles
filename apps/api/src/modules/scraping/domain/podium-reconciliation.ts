@@ -1,4 +1,4 @@
-import { type PodiumDraft, podiumIdOf } from './official-results';
+import { normalizeEventKey, type PodiumDraft, podiumIdOf } from './official-results';
 import type { PodiumDifference, PodiumMedals, ScrapedEvent } from './scrape-run';
 
 /** Un podium de la base, tel que l'import a besoin de le voir. */
@@ -45,10 +45,10 @@ export function reconcile({
   eventKeysSeen,
   daysRead,
 }: ReconciliationInput): Reconciliation {
-  const byKey = new Map(existing.map((podium) => [podium.eventKey, podium]));
+  const byKey = new Map(existing.map((podium) => [normalizeEventKey(podium.eventName), podium]));
   const result: Reconciliation = { inserts: [], updates: [], kept: [], identical: 0, absent: [] };
   for (const draft of drafts) {
-    const stored = byKey.get(draft.eventKey);
+    const stored = byKey.get(normalizeEventKey(draft.eventName));
     if (!stored) {
       result.inserts.push(draft);
     } else if (sameMedals(stored, draft)) {
@@ -67,10 +67,10 @@ export function reconcile({
       else result.updates.push({ draft, current: stored, difference });
     }
   }
-  const seen = new Set(eventKeysSeen);
+  const seen = new Set(eventKeysSeen.map(normalizeEventKey));
   const read = new Set(daysRead);
   result.absent = existing
-    .filter((podium) => read.has(podium.day) && !seen.has(podium.eventKey))
+    .filter((podium) => read.has(podium.day) && !seen.has(normalizeEventKey(podium.eventName)))
     .map(({ eventName, day }) => ({ eventName, day }));
   return result;
 }

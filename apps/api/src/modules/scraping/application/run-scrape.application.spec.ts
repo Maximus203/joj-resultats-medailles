@@ -157,6 +157,24 @@ describe('RunScrape', () => {
     ]);
   });
 
+  it('007-AS4: does not duplicate an event typed by hand with a plain hyphen or another case', async () => {
+    const { run, podiums } = setup([
+      {
+        ...stored('judo - men -66 KG', { gold: 'USA', silver: 'CAN', bronze: 'ARG' }),
+        id: 'typed-by-hand',
+      },
+    ]);
+
+    const result = await run.execute('manual');
+
+    const all = await podiums.findAll();
+    expect(all.filter((podium) => /judo/i.test(podium.eventName))).toHaveLength(1);
+    expect(all.find((podium) => /judo/i.test(podium.eventName))).toMatchObject({ gold: 'USA' });
+    expect(result.report.kept).toMatchObject([{ reason: 'MANUAL', source: { gold: 'UKR' } }]);
+    expect(result.report.imported.map((event) => event.eventName)).not.toContain(JUDO);
+    expect(result.report.absentFromSource).toEqual([]);
+  });
+
   it('007-AS4: keeps the replaced second bronze when only the second bronze changes', async () => {
     const { run, podiums, clock } = setup([
       stored(JUDO, { gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'FRA' }),

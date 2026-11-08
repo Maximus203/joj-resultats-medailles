@@ -132,6 +132,21 @@ export function eventKeyOf(unit: Pick<FinalUnit, 'discipline' | 'competition'>):
   return eventLabelOf(unit).toLowerCase();
 }
 
+/**
+ * La clé de comparaison d'une épreuve : sans casse, sans accent, avec un seul tiret et des
+ * espaces simples. Une saisie « Judo - Men -66 kg » retrouve l'épreuve importée « Judo – Men -66 kg ».
+ * Aucune correspondance floue : deux noms qui diffèrent autrement restent deux épreuves.
+ */
+export function normalizeEventKey(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/\p{M}+/gu, '')
+    .replace(/[‐-―−]/g, '-')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 /** Les lignes de médaille de la page « Medallists » ; les lignes de détail (équipiers) n'en ont pas. */
 export function parseMedalRows(medalListHtml: string): MedalRow[] {
   const rows: MedalRow[] = [];
