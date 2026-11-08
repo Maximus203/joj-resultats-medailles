@@ -132,10 +132,15 @@ export class RunScrape {
         errors.push(`${draft.eventName} : écriture impossible (${messageOf(error)})`);
       }
     }
-    for (const { draft, current, difference, replacesPlaces } of plan.updates) {
-      const revision = replacesPlaces
-        ? { gold: current.gold, silver: current.silver, bronze: current.bronze, correctedAt: now }
-        : null;
+    for (const { draft, current, difference } of plan.updates) {
+      // Tout changement de médaillés, second bronze compris, garde l'ancienne version consultable.
+      const revision = {
+        gold: current.gold,
+        silver: current.silver,
+        bronze: current.bronze,
+        ...(current.secondBronze ? { secondBronze: current.secondBronze } : {}),
+        correctedAt: now,
+      };
       try {
         await this.podiums.update(current.id, draft, revision);
         updated.push(difference);

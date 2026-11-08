@@ -91,7 +91,7 @@ describe('Scraping repositories (in-memory PGlite, migrations applied)', () => {
     ]);
   });
 
-  it('007-AS4: replaces the medals and keeps the replaced version, both or neither', async () => {
+  it('007-AS4: replaces the medals and keeps each replaced version', async () => {
     const event = draft('Judo – Men -81 kg', { secondBronze: null });
     await imported.insert(event, new Date());
     const correctedAt = new Date('2026-11-02T22:00:00.000Z');
@@ -106,7 +106,16 @@ describe('Scraping repositories (in-memory PGlite, migrations applied)', () => {
         correctedAt,
       },
     );
-    await imported.update(event.id, { ...event, gold: 'FRA', secondBronze: 'SEN' }, null);
+    await imported.update(
+      event.id,
+      { ...event, gold: 'FRA', secondBronze: 'SEN' },
+      {
+        gold: 'FRA',
+        silver: 'CAN',
+        bronze: 'ARG',
+        correctedAt: new Date('2026-11-02T23:00:00.000Z'),
+      },
+    );
 
     expect((await imported.findAll()).find((podium) => podium.id === event.id)).toMatchObject({
       gold: 'FRA',
@@ -114,7 +123,35 @@ describe('Scraping repositories (in-memory PGlite, migrations applied)', () => {
       correctedAt: null,
     });
     expect(await podiums.revisionsOf(event.id)).toEqual([
+      {
+        gold: 'FRA',
+        silver: 'CAN',
+        bronze: 'ARG',
+        correctedAt: new Date('2026-11-02T23:00:00.000Z'),
+      },
       { gold: 'UKR', silver: 'CAN', bronze: 'ARG', correctedAt },
+    ]);
+  });
+
+  it('007-AS4: keeps the replaced second bronze in the revision', async () => {
+    const event = draft('Judo – Women -48 kg', { secondBronze: 'SEN' });
+    await imported.insert(event, new Date());
+    const correctedAt = new Date('2026-11-03T22:00:00.000Z');
+
+    await imported.update(
+      event.id,
+      { ...event, secondBronze: 'ITA' },
+      {
+        gold: 'UKR',
+        silver: 'CAN',
+        bronze: 'ARG',
+        secondBronze: 'SEN',
+        correctedAt,
+      },
+    );
+
+    expect(await podiums.revisionsOf(event.id)).toEqual([
+      { gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'SEN', correctedAt },
     ]);
   });
 

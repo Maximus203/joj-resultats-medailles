@@ -59,6 +59,8 @@ export const podiumRevisions = pgTable(
     gold: varchar('gold', { length: 3 }).notNull(),
     silver: varchar('silver', { length: 3 }).notNull(),
     bronze: varchar('bronze', { length: 3 }).notNull(),
+    // Le second bronze de la version remplacée ; nul quand elle n'en avait pas.
+    secondBronze: varchar('second_bronze', { length: 3 }),
     // Le moment où cette version a cessé d'être publiée.
     correctedAt: timestamp('corrected_at', { withTimezone: true, precision: 3 }).notNull(),
   },

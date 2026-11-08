@@ -36,6 +36,7 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 - **http** : `GET /api/scraping` rend l'état et le dernier compte rendu complet (200) ; `POST /api/scraping/runs` lance une exécution (202), 409 si une tourne. Le POST est protégé en production par l'authentification de Traefik (écritures).
 - **podiums** : `podiums.schema.ts` gagne `secondBronze` ; `Podium` et le tableau des médailles comptent le second bronze.
 - **config** : `core/config/app-config.ts` gagne les variables `SCRAPING_*` ; `scripts/scrape-results.mts` devient un mince appel à `collectOfficialPodiums`.
+- **outillage** : `apps/api/scripts/fake-official-site.mts` (script `dev:fake-site`, faux site officiel pour la QA), `core/config/env-schema.ts` (variables d'environnement, lisibles par les scripts Node), paramètre `customize` de `test/create-test-app.ts` (remplace le site et l'horloge dans les e2e).
 - **web** : rien : l'écran est hors périmètre.
 
 ## 3. Données
@@ -68,3 +69,15 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 - [x] T04 [007-AS4, AS5, AS7] Écrire d'abord `infra/drizzle-imported-podium.repository.int.spec.ts` (« 007-AS4: … »), puis `scraping.schema.ts`, la migration générée, les dépôts Drizzle et `http-results-source.ts`
 - [x] T05 [007-AS6, AS7, AS1] Écrire d'abord `domain/scrape-schedule.spec.ts` (« 007-AS6: … »), `application/run-due-scrape.application.spec.ts` et `test/scraping.e2e.spec.ts` (« 007-AS7: … »), puis horloge, `RunDueScrape`, `GetScrapeStatus`, contrôleur, schémas partagés, configuration, module
 - [x] T06 [007-AS6] Écrire d'abord `app-config.spec.ts` (« 007-AS6: treats an empty interval … » ; le reste du test est écrit en T01), puis variables de `deploy/alpha/docker-compose.yml`, `deploy/alpha/README.md`, `README.md`, `.env.example` et `exhaustivite.md`
+
+## Corrections
+
+Passage 1 (relecture indépendante). Chaque ligne cite un test écrit d'abord et vu en échec.
+
+- [x] T07 [007-AS4] Écrire d'abord (« 007-AS4: keeps the replaced second bronze … ») dans `run-scrape.application.spec.ts`, `drizzle-imported-podium.repository.int.spec.ts` et `test/scraping.e2e.spec.ts`, puis `second_bronze` dans `podium_revisions` (migration générée `add_revision_second_bronze`), toute mise à jour de l'import garde l'ancienne version, second bronze compris
+- [ ] T08 [007-AS6] Écrire d'abord `scrape-schedule.spec.ts` (« 007-AS6: ignores a late beat … »), puis `dueReason` : seuls le créneau quotidien (dans la tolérance d'un battement) et le rattrapage au démarrage lancent un import, jamais un battement tardif
+- [ ] T09 [007-AS7] Renforcer `test/scraping.e2e.spec.ts` (« 007-AS7: … ») : `startedAt` et `finishedAt` assertés par valeur, via l'horloge injectée
+- [ ] T10 [007-AS4] Écrire d'abord (« 007-AS4: matches the same event whatever its dashes, case and accents ») dans `official-results.spec.ts` et `run-scrape.application.spec.ts`, puis `normalizeEventKey` pour comparer les épreuves
+- [ ] T11 [007-AS6] Écrire d'abord `infra/scrape-scheduler.spec.ts` (« 007-AS6: … »), puis un verrou contre le chevauchement des battements dans `scrape-scheduler.ts`
+
+Fichiers ajoutés hors du plan initial, acceptés : `apps/api/scripts/fake-official-site.mts` et le script `dev:fake-site` (faux site pour la QA), `apps/api/src/core/config/env-schema.ts` (variables d'environnement lisibles par les scripts Node, hors `AppConfig`), le paramètre `customize` de `apps/api/test/create-test-app.ts` (remplacer le site et l'horloge dans les e2e), `podium_revisions.second_bronze` (T07).

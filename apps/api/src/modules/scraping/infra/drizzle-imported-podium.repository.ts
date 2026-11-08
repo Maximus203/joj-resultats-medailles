@@ -45,7 +45,7 @@ export class DrizzleImportedPodiumRepository extends ImportedPodiumRepository {
     });
   }
 
-  async update(id: string, draft: PodiumDraft, revision: PodiumRevision | null): Promise<void> {
+  async update(id: string, draft: PodiumDraft, revision: PodiumRevision): Promise<void> {
     await this.db.transaction(async (tx) => {
       await tx
         .update(podiums)
@@ -56,7 +56,7 @@ export class DrizzleImportedPodiumRepository extends ImportedPodiumRepository {
           secondBronze: draft.secondBronze,
         })
         .where(eq(podiums.id, id));
-      if (revision) await tx.insert(podiumRevisions).values({ podiumId: id, ...revision });
+      await tx.insert(podiumRevisions).values({ podiumId: id, ...revision });
     });
   }
 }

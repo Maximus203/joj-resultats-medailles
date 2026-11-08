@@ -69,6 +69,7 @@ export class Podium {
       gold: this.gold,
       silver: this.silver,
       bronze: this.bronze,
+      ...(this.secondBronze ? { secondBronze: this.secondBronze } : {}),
       correctedAt: now,
     };
     return { podium: new Podium({ ...this.props, ...medals, correctedAt: now }), revision };

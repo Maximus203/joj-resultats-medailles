@@ -12,6 +12,6 @@ export abstract class ImportedPodiumRepository {
   /** Insère le podium de la source avec son identifiant stable. */
   abstract insert(draft: PodiumDraft, now: Date): Promise<void>;
 
-  /** Remplace les médaillés du podium ; garde la version remplacée si `revision` est donnée, ensemble. */
-  abstract update(id: string, draft: PodiumDraft, revision: PodiumRevision | null): Promise<void>;
+  /** Remplace les médaillés du podium et garde la version remplacée, ensemble. */
+  abstract update(id: string, draft: PodiumDraft, revision: PodiumRevision): Promise<void>;
 }

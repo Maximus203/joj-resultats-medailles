@@ -42,6 +42,8 @@ export const podiumRevisionSchema = z.object({
   gold: countryCodeSchema,
   silver: countryCodeSchema,
   bronze: countryCodeSchema,
+  /** Le second bronze de la version remplacée, quand elle en avait un. */
+  secondBronze: countryCodeSchema.nullable().optional(),
   correctedAt: z.iso.datetime(),
 });
 export type PodiumRevision = z.infer<typeof podiumRevisionSchema>;

@@ -1,0 +1,1 @@
+ALTER TABLE "podium_revisions" ADD COLUMN "second_bronze" varchar(3);

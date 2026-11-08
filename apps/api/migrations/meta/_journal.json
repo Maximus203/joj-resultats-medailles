@@ -43,6 +43,13 @@
       "when": 1794146861431,
       "tag": "0005_create_scrape_runs",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794147909830,
+      "tag": "0006_add_revision_second_bronze",
+      "breakpoints": true
     }
   ]
 }

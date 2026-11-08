@@ -65,10 +65,11 @@ export class DrizzlePodiumRepository extends PodiumRepository {
       .from(podiumRevisions)
       .where(eq(podiumRevisions.podiumId, id))
       .orderBy(desc(podiumRevisions.correctedAt));
-    return rows.map(({ gold, silver, bronze, correctedAt }) => ({
+    return rows.map(({ gold, silver, bronze, secondBronze, correctedAt }) => ({
       gold,
       silver,
       bronze,
+      ...(secondBronze ? { secondBronze } : {}),
       correctedAt,
     }));
   }

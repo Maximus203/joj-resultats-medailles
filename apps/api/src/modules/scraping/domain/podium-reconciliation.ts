@@ -10,12 +10,11 @@ export interface StoredPodium extends PodiumMedals {
   correctedAt: Date | null;
 }
 
-/** La version de la source remplace celle de la base ; `replacesPlaces` : l'or, l'argent ou le bronze changent. */
+/** La version de la source remplace celle de la base ; l'ancienne reste consultable (révision). */
 export interface PlannedUpdate {
   draft: PodiumDraft;
   current: StoredPodium;
   difference: PodiumDifference;
-  replacesPlaces: boolean;
 }
 
 export interface Reconciliation {
@@ -65,16 +64,7 @@ export function reconcile({
         source: medalsOf(draft),
       };
       if (reason) result.kept.push(difference);
-      else {
-        const replacesPlaces = !sameMedals(
-          { ...stored, secondBronze: null },
-          {
-            ...draft,
-            secondBronze: null,
-          },
-        );
-        result.updates.push({ draft, current: stored, difference, replacesPlaces });
-      }
+      else result.updates.push({ draft, current: stored, difference });
     }
   }
   const seen = new Set(eventKeysSeen);

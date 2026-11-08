@@ -157,6 +157,31 @@ describe('RunScrape', () => {
     ]);
   });
 
+  it('007-AS4: keeps the replaced second bronze when only the second bronze changes', async () => {
+    const { run, podiums, clock } = setup([
+      stored(JUDO, { gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'FRA' }),
+    ]);
+    clock.set('2026-11-02T22:00:00.000Z');
+
+    const result = await run.execute('scheduled');
+
+    expect(result.report.updated).toMatchObject([
+      { eventName: JUDO, current: { secondBronze: 'FRA' }, source: { secondBronze: 'SEN' } },
+    ]);
+    expect(podiums.revisions).toEqual([
+      {
+        podiumId: podiumIdOf(JUDO.toLowerCase()),
+        revision: {
+          gold: 'UKR',
+          silver: 'CAN',
+          bronze: 'ARG',
+          secondBronze: 'FRA',
+          correctedAt: new Date('2026-11-02T22:00:00.000Z'),
+        },
+      },
+    ]);
+  });
+
   it('007-AS5: a bad day or page stops nothing, keeps the stored data, and lists its errors', async () => {
     const { run, podiums, source, runs } = setup([stored(JUDO, { gold: 'FRA' })]);
     source.failing.add('schedule:2026-11-02');

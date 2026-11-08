@@ -67,6 +67,7 @@ export class PodiumsController {
         gold: revision.gold,
         silver: revision.silver,
         bronze: revision.bronze,
+        ...(revision.secondBronze ? { secondBronze: revision.secondBronze } : {}),
         correctedAt: revision.correctedAt.toISOString(),
       })),
     };

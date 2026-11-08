@@ -22,7 +22,7 @@ export class InMemoryImportedPodiumRepository extends ImportedPodiumRepository {
     this.rows.set(draft.eventKey, { ...draft, correctedAt: null });
   }
 
-  async update(id: string, draft: PodiumDraft, revision: PodiumRevision | null): Promise<void> {
+  async update(id: string, draft: PodiumDraft, revision: PodiumRevision): Promise<void> {
     const current = [...this.rows.values()].find((podium) => podium.id === id);
     if (!current) throw new Error(`podium inconnu ${id}`);
     this.rows.set(current.eventKey, {
@@ -32,6 +32,6 @@ export class InMemoryImportedPodiumRepository extends ImportedPodiumRepository {
       bronze: draft.bronze,
       secondBronze: draft.secondBronze,
     });
-    if (revision) this.revisions.push({ podiumId: id, revision });
+    this.revisions.push({ podiumId: id, revision });
   }
 }

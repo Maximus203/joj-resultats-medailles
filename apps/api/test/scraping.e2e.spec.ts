@@ -151,6 +151,30 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     expect(after).toMatchObject({ gold: 'CAN', silver: 'UKR' });
   });
 
+  it('007-AS4: follows an official change of the second bronze and keeps the replaced version', async () => {
+    await runAndWait();
+    const judo = (await http().get('/api/podiums').expect(200)).body.items.find(
+      (item: { eventName: string }) => item.eventName === 'Judo – Men -66 kg',
+    );
+    source.medalLists.set(
+      'J66-FNL',
+      medalPage(['Gold', 'UKR'], ['Silver', 'CAN'], ['Bronze', 'ARG'], ['Bronze', 'FRA']),
+    );
+
+    await runAndWait();
+
+    const { lastRun } = await status();
+    expect(lastRun?.report.updated).toMatchObject([
+      { current: { secondBronze: 'SEN' }, source: { secondBronze: 'FRA' } },
+    ]);
+    const revisions = (await http().get(`/api/podiums/${judo.id}/revisions`).expect(200)).body;
+    expect(revisions.items).toMatchObject([{ gold: 'UKR', bronze: 'ARG', secondBronze: 'SEN' }]);
+    const after = (await http().get('/api/podiums').expect(200)).body.items.find(
+      (item: { id: string }) => item.id === judo.id,
+    );
+    expect(after).toMatchObject({ secondBronze: 'FRA', correctedAt: null });
+  });
+
   it('007-AS5: refuses a run requested while another is in progress (409), then recovers', async () => {
     let release: () => void = () => undefined;
     source.gate = new Promise<void>((resolve) => (release = resolve));
