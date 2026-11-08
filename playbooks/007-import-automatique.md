@@ -154,7 +154,7 @@
 **Profil** : journaliste
 **Priorité** : critique
 **Technique** : transition-état
-**Action** : base neuve ; lancer l'API avec `SCRAPING_ENABLED=true SCRAPING_TIMEZONE=Africa/Dakar SCRAPING_TICK_SECONDS=5 SCRAPING_DAILY_TIME=<HH:MM dans 2 minutes, heure de Dakar = UTC>` ; observer l'état au démarrage puis après le passage de l'heure.
+**Action** : base neuve ; lancer l'API avec `SCRAPING_ENABLED=true SCRAPING_TIMEZONE=Africa/Dakar SCRAPING_TICK_SECONDS=5 SCRAPING_FULL_TIMES=<HH:MM dans 2 minutes, heure de Dakar = UTC>,23:00 (SCRAPING_DAILY_TIME n’existe plus : voir 008-AS3.1 ; s’il est encore posé, l’API le dit au démarrage)` ; observer l'état au démarrage puis après le passage de l'heure.
 **Attendu** : au démarrage, une exécution `trigger: startup` (aucun import réussi : rattrapage) ; à l'heure réglée, une seule exécution `trigger: scheduled` ; rien de plus les minutes suivantes ; `nextRunAt` rend le créneau du lendemain à la même heure.
 **Observé** : Le réglage `SCRAPING_DAILY_TIME` n'existe plus (spec 008) : rejoué avec `SCRAPING_FULL_TIMES=<HH:MM dans 2 min>,23:00` (voir 008-AS3.1 et 008-AS4.1) : au démarrage une exécution `full` `startup` ; à l'heure réglée une seule `full` `scheduled` ; `nextFullRunAt` rend le créneau suivant. Le champ s'appelle `nextFullRunAt` et non `nextRunAt`.
 **Verdict** : ✅
@@ -165,7 +165,7 @@
 **Profil** : journaliste
 **Priorité** : normal
 **Technique** : valeurs-limites
-**Action** : lancer l'API avec `SCRAPING_DAILY_TIME=25:00`, puis `SCRAPING_DAILY_TIME=7h30`, puis `SCRAPING_TIMEZONE=Mars/Phobos`.
+**Action** : lancer l'API avec `SCRAPING_FULL_TIMES=25:00`, puis `SCRAPING_FULL_TIMES=7h30`, puis `SCRAPING_TIMEZONE=Mars/Phobos`.
 **Attendu** : chaque démarrage échoue avec « Configuration invalide » qui nomme la variable fautive ; jamais de démarrage avec un réglage faux.
 **Observé** : Les refus sont maintenant en français et nomment la variable : `SCRAPING_FULL_TIMES=25:00` ou `7h30` → « Configuration invalide : ✖ doit être une heure HH:MM entre 00:00 et 23:59 (par exemple 23:00) → at SCRAPING_FULL_TIMES[0] » ; `Mars/Phobos` → « fuseau horaire inconnu (par exemple Africa/Dakar) → at SCRAPING_TIMEZONE » ; sortie `1`, aucun démarrage. MAIS l'Action du playbook cite `SCRAPING_DAILY_TIME=25:00` : cette variable est supprimée et, posée, elle est ignorée sans un mot (le serveur démarre, « Import automatique actif : complet à 07:00, 23:00 … »). Playbook à mettre à jour par son auteur ; l'oubli silencieux d'une ancienne variable est noté en 008-AS3.4.
 **Verdict** : 🟡

@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { Logger } from '@nestjs/common';
+import { describe, expect, it, vi } from 'vitest';
 import { AppConfig } from './app-config';
 
 describe('AppConfig', () => {
@@ -118,5 +119,27 @@ describe('AppConfig', () => {
     expect(attempt('15', '15')).toThrow(/SCRAPING_STALE_AFTER_MINUTES/);
     expect(attempt('10', '15')).toThrow(/doit être supérieur à SCRAPING_INTERVAL_MINUTES/);
     expect(attempt('16', '15')).not.toThrow();
+  });
+
+  it('008-AS1: bounds the beat of the clock, a huge value would make Node beat every millisecond', () => {
+    expect(AppConfig.fromEnv({ SCRAPING_TICK_SECONDS: '300' }).get('SCRAPING_TICK_SECONDS')).toBe(
+      300,
+    );
+    const attempt = () => AppConfig.fromEnv({ SCRAPING_TICK_SECONDS: '3000000' });
+
+    expect(attempt).toThrow(/SCRAPING_TICK_SECONDS/);
+    expect(attempt).toThrow(/entier entre 1 et 300/);
+  });
+
+  it('008-AS1: warns at startup that a removed setting is ignored, and says what replaces it', () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+
+    AppConfig.fromEnv({ SCRAPING_DAILY_TIME: '23:00' });
+
+    expect(warn).toHaveBeenCalledWith('SCRAPING_DAILY_TIME est ignoré : voir SCRAPING_FULL_TIMES');
+    warn.mockClear();
+    AppConfig.fromEnv({});
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

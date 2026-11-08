@@ -5,6 +5,9 @@
 import { z } from 'zod';
 
 const NOT_POSITIVE_INT = 'doit être un entier positif';
+/** Au-delà, Node ramène le minuteur à 1 ms, et un créneau complet (2 battements de tolérance) serait trop flou. */
+const MAX_TICK_SECONDS = 300;
+const TICK_RANGE = `doit être un entier entre 1 et ${MAX_TICK_SECONDS} (secondes)`;
 const NOT_COUNT = 'doit être un entier supérieur ou égal à 0';
 const positiveInt = () =>
   z.coerce.number({ error: NOT_POSITIVE_INT }).int(NOT_POSITIVE_INT).positive(NOT_POSITIVE_INT);
@@ -66,7 +69,7 @@ const baseSchema = z.object({
   /** Sans import réussi depuis ce nombre de minutes, dans la fenêtre, les données sont périmées. */
   SCRAPING_STALE_AFTER_MINUTES: positiveInt().default(120),
   /** Fréquence à laquelle l'horloge regarde si une exécution est due. */
-  SCRAPING_TICK_SECONDS: positiveInt().default(60),
+  SCRAPING_TICK_SECONDS: positiveInt().max(MAX_TICK_SECONDS, TICK_RANGE).default(60),
   /** Politesse envers le site officiel : pause après chaque requête, délai maximal d'une requête. */
   SCRAPING_REQUEST_DELAY_MS: z.coerce
     .number({ error: NOT_COUNT })
@@ -104,5 +107,10 @@ function isTimeZone(value: string): boolean {
     return false;
   }
 }
+
+/** Réglages retirés, avec ce qui les remplace : présents dans l'environnement, ils seraient ignorés sans un mot. */
+export const REMOVED_SETTINGS: Readonly<Record<string, string>> = {
+  SCRAPING_DAILY_TIME: 'SCRAPING_FULL_TIMES',
+};
 
 export type Env = z.infer<typeof envSchema>;
