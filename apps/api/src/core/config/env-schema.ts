@@ -86,6 +86,11 @@ export const envSchema = baseSchema
     path: ['SCRAPING_FIRST_DAY'],
     error: 'doit être le même jour que SCRAPING_LAST_DAY ou un jour avant',
   })
+  .refine((env) => env.SCRAPING_STALE_AFTER_MINUTES > env.SCRAPING_INTERVAL_MINUTES, {
+    path: ['SCRAPING_STALE_AFTER_MINUTES'],
+    error:
+      'doit être supérieur à SCRAPING_INTERVAL_MINUTES, sinon les données seraient « en retard » entre deux imports légers',
+  })
   .refine((env) => env.SCRAPING_WINDOW_START < env.SCRAPING_WINDOW_END, {
     path: ['SCRAPING_WINDOW_START'],
     error: 'doit être avant SCRAPING_WINDOW_END',

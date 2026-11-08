@@ -107,4 +107,16 @@ describe('AppConfig', () => {
     expect(message({ PORT: 'abc' })).toMatch(/entier positif.*PORT/s);
     expect(message({ SCRAPING_TIMEZONE: 'Mars/Phobos' })).toMatch(/fuseau horaire/);
   });
+
+  it('008-AS7: refuses a stale threshold that is not above the light import interval', () => {
+    const attempt = (stale: string, interval: string) => () =>
+      AppConfig.fromEnv({
+        SCRAPING_STALE_AFTER_MINUTES: stale,
+        SCRAPING_INTERVAL_MINUTES: interval,
+      });
+
+    expect(attempt('15', '15')).toThrow(/SCRAPING_STALE_AFTER_MINUTES/);
+    expect(attempt('10', '15')).toThrow(/doit être supérieur à SCRAPING_INTERVAL_MINUTES/);
+    expect(attempt('16', '15')).not.toThrow();
+  });
 });
