@@ -11,7 +11,7 @@ import {
 import { createZodDto, ZodSerializerDto } from 'nestjs-zod';
 import { GetScrapeStatus } from '../application/use-cases/get-scrape-status';
 import { StartScrape } from '../application/use-cases/start-scrape';
-import { type ScrapeRun, countsOf } from '../domain/scrape-run';
+import { type ScrapeRun, countsOf, durationMsOf } from '../domain/scrape-run';
 
 class ScrapeStatusDto extends createZodDto(scrapeStatusSchema) {}
 class StartScrapeResponseDto extends createZodDto(startScrapeResponseSchema) {}
@@ -69,7 +69,7 @@ function toSummary(run: ScrapeRun): ScrapeRunSummary {
     status: run.status,
     startedAt: run.startedAt.toISOString(),
     finishedAt: run.finishedAt.toISOString(),
-    durationMs: run.finishedAt.getTime() - run.startedAt.getTime(),
+    durationMs: durationMsOf(run),
     counts: countsOf(run.report),
   };
 }

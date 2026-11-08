@@ -75,6 +75,11 @@ export interface ScrapeCounts {
   errors: number;
 }
 
+/** La durée d'une exécution, en millisecondes : de son début à sa fin. */
+export function durationMsOf(run: Pick<ScrapeRun, 'startedAt' | 'finishedAt'>): number {
+  return run.finishedAt.getTime() - run.startedAt.getTime();
+}
+
 export function countsOf(report: ScrapeReport): ScrapeCounts {
   return {
     imported: report.imported.length,

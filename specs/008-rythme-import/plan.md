@@ -76,3 +76,7 @@ Passage 3 (relectures indépendantes). Chaque ligne cite un test écrit d'abord 
 - [x] T09 [008-AS6] Renforcer `test/scraping.e2e.spec.ts` (« 008-AS6: tells the kind, a real duration … ») : un import léger et un complet, durées non nulles obtenues en faisant avancer l'horloge injectée à chaque lecture de la source simulée (`onRead`), compteurs assertés par valeur
 - [x] T10 [008-AS8] Corriger l'assertion négative de `freshness-banner.test.tsx` (« 008-AS8: says when the data was last updated … ») pour qu'elle puisse échouer (le texte réel est « n’ont pas été mis à jour »), et écrire dans la spec que « à jour » vaut l'heure de lancement du dernier import réussi (`lastSuccessAt`)
 - [x] T11 [008-AS7] Ajouter l'outillage (`fake-official-site.mts`, route `/__final`, script `dev:fake-site`) à « Fichiers par couche » ; l'avertissement de retard est journalisé une seule fois par épisode : prouvé par `check-staleness.application.spec.ts` et, sur le vrai planificateur, par « 008-AS7: logs the stale warning once for the whole episode, over many beats » (`infra/scrape-scheduler.spec.ts`, Logger espionné)
+
+Passe finale.
+
+- [x] T12 [008-AS6] Écrire d'abord `domain/scrape-run.spec.ts` (« 008-AS6: gives the duration of a run … »), puis `durationMsOf` dans `scrape-run.ts` : le contrôleur ne fait plus que sérialiser
