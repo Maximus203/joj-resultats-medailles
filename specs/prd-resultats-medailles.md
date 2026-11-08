@@ -41,10 +41,14 @@ Le journaliste corrige un podium déjà publié ; l'ancienne version reste consu
 
 Un résumé rédigé par un assistant IA pour une journée, avec la liste des épreuves sur lesquelles il s'appuie. Une journée sans résultat n'a pas de résumé. Prérequis : TR3.
 
+### TR6 — Import automatique des résultats officiels
+
+Chaque jour à heure fixe, l'application lit les podiums publiés par le site officiel des résultats et les enregistre seule, sans doublon ; un podium corrigé ou saisi par le journaliste n'est jamais écrasé, et chaque exécution laisse un compte rendu lisible (ce qui a été trouvé, importé, ignoré, et pourquoi). Prérequis : TR1, TR4.
+
 ## Hors périmètre
 
 - Scores, chronos, phases de qualification, comptes et droits d'accès, billetterie, programme.
 
 ## Hypothèses et risques
 
-- Hypothèses : dates, 25 sports et environ 153 épreuves viennent de la presse (151 ou 153, non confirmé) ; pas de classement officiel des médailles aux JOJ, notre tableau est informatif ; le journaliste saisit à la main d'après la source officielle, TR4 est le filet. Risques : les équipes mixtes de plusieurs pays, non classées aux JOJ, manqueraient au tableau ; rien ne limite la saisie aux journalistes (accepté pour la démo, à lever avant tout usage réel).
+- Hypothèses : dates, 25 sports et environ 153 épreuves viennent de la presse (151 ou 153, non confirmé) ; pas de classement officiel des médailles aux JOJ, notre tableau est informatif ; le journaliste saisit à la main d'après la source officielle ou laisse l'import automatique (TR6) le faire, TR4 est le filet ; le tableau ne compte qu'un podium par épreuve : une égalité à l'or n'y entre pas. Risques : les équipes mixtes de plusieurs pays, non classées aux JOJ, manqueraient au tableau ; rien ne limite la saisie aux journalistes (accepté pour la démo, à lever avant tout usage réel).
