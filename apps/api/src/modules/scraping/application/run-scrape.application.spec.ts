@@ -8,7 +8,7 @@ import { FakeResultsSource } from './testing/fake-results-source';
 import { FixedClock } from './testing/fixed-clock';
 import { InMemoryImportedPodiumRepository } from './testing/in-memory-imported-podium.repository';
 import { InMemoryScrapeRunRepository } from './testing/in-memory-scrape-run.repository';
-import { medalPage, scheduleItem } from './testing/official-pages';
+import { medalPage, quietDay, scheduleItem } from './testing/official-pages';
 
 const SETTINGS: ScrapingSettings = {
   enabled: true,
@@ -57,7 +57,7 @@ function setup(initial: StoredPodium[] = []) {
       scheduleItem('medal-match gold', 'LATER-FNL', 'Badminton', 'Men Final', 'Scheduled'),
     ].join(''),
   );
-  source.schedules.set('2026-11-02', scheduleItem('', 'X-QFNL', 'Judo', 'Quarterfinals'));
+  source.schedules.set('2026-11-02', quietDay);
   source.medalLists.set(
     'J66-FNL',
     medalPage(['Gold', 'UKR'], ['Silver', 'CAN'], ['Bronze', 'ARG'], ['Bronze', 'SEN']),
@@ -229,6 +229,20 @@ describe('RunScrape', () => {
     const result = await run.execute('manual');
 
     expect(result.status).toBe('failed');
+    expect(result.report.absentFromSource).toEqual([]);
+    expect(await podiums.findAll()).toMatchObject([{ eventName: JUDO, gold: 'FRA' }]);
+  });
+
+  it('007-AS5: reports a failed run, not a success, when the site answers with a page of another shape', async () => {
+    const { run, podiums, source } = setup([stored(JUDO, { gold: 'FRA' })]);
+    source.schedules.set('2026-11-01', '<html>Maintenance</html>');
+    source.schedules.set('2026-11-02', '');
+
+    const result = await run.execute('manual');
+
+    expect(result.status).toBe('failed');
+    expect(result.report.errors).toHaveLength(2);
+    expect(result.report.errors[0]).toMatch(/structure/);
     expect(result.report.absentFromSource).toEqual([]);
     expect(await podiums.findAll()).toMatchObject([{ eventName: JUDO, gold: 'FRA' }]);
   });

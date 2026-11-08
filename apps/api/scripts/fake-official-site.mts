@@ -6,6 +6,7 @@
  * Réglages à chaud (GET, pour un testeur ou un curl) :
  *   /__set?code=J66-FNL&medals=gold:UKR,silver:CAN,bronze:ARG   remplace les médaillés d'une unité
  *   /__fail?match=ScheduleDatePartial&day=02112026               toute URL contenant ces morceaux répond 500
+ *   /__raw?body=Maintenance                                       les calendriers répondent 200 avec ce corps
  *   /__heal                                                       lève toutes les pannes
  */
 import { createServer } from 'node:http';
@@ -93,6 +94,9 @@ const MEDALS = new Map<string, [string, string][]>([
 ]);
 
 const failing: string[][] = [];
+let rawCalendar: string | null = null;
+/** Un jour sans finale garde la structure du calendrier : une épreuve non finale. */
+const QUIET_DAY = scheduleItem('', 'X-QFNL', 'Judo', 'Quarterfinals');
 
 createServer((request, response) => {
   const url = new URL(request.url ?? '/', 'http://fake');
@@ -103,6 +107,11 @@ createServer((request, response) => {
   };
   if (url.pathname === '/__heal') {
     failing.length = 0;
+    rawCalendar = null;
+    return text(200, 'ok');
+  }
+  if (url.pathname === '/__raw') {
+    rawCalendar = url.searchParams.get('body') ?? '';
     return text(200, 'ok');
   }
   if (url.pathname === '/__fail') {
@@ -127,7 +136,8 @@ createServer((request, response) => {
       (url.searchParams.get('day') ?? '').slice(2, 4),
       (url.searchParams.get('day') ?? '').slice(4),
     ];
-    return text(200, (SCHEDULES[`${year}-${month}-${date}`] ?? []).join('\n'));
+    if (rawCalendar !== null) return text(200, rawCalendar);
+    return text(200, (SCHEDULES[`${year}-${month}-${date}`] ?? [QUIET_DAY]).join('\n'));
   }
   if (url.pathname.endsWith('/ListPartial')) {
     return text(200, medalPage(...(MEDALS.get(url.searchParams.get('rsc') ?? '') ?? [])));

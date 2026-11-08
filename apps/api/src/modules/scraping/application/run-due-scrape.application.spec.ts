@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { RunDueScrape } from './use-cases/run-due-scrape';
 import { RunScrape } from './use-cases/run-scrape';
 import type { ScrapingSettings } from './scraping-settings';
+import { quietDay } from './testing/official-pages';
 import { FakeResultsSource } from './testing/fake-results-source';
 import { FixedClock } from './testing/fixed-clock';
 import { InMemoryImportedPodiumRepository } from './testing/in-memory-imported-podium.repository';
@@ -21,7 +22,7 @@ const SETTINGS: ScrapingSettings = {
 function setup(settings: ScrapingSettings = SETTINGS, now = '2026-11-03T10:00:00Z') {
   const source = new FakeResultsSource();
   for (const day of ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-04']) {
-    source.schedules.set(day, '');
+    source.schedules.set(day, quietDay);
   }
   const runs = new InMemoryScrapeRunRepository();
   const clock = new FixedClock(new Date(now));

@@ -10,7 +10,7 @@ import {
   podiumIdOf,
   toPodiumDraft,
 } from './official-results';
-import { medalPage, medalRow, scheduleItem } from '../application/testing/official-pages';
+import { medalPage, medalRow, quietDay, scheduleItem } from '../application/testing/official-pages';
 
 describe('parseFinalUnits', () => {
   const html = [
@@ -198,6 +198,34 @@ describe('collectOfficialPodiums', () => {
     expect(result.ignored).toMatchObject([{ code: 'TIE-FNL-000100--', reason: 'TIED_PLACES' }]);
     expect(result.daysRead).toEqual(['2026-11-01']);
     expect(result.daysFailed).toEqual(['2026-11-02']);
+  });
+});
+
+describe('collectOfficialPodiums, calendar structure', () => {
+  const sourceOf = (calendar: string): OfficialSource => ({
+    schedule: async () => calendar,
+    medalList: async () => '',
+  });
+
+  it('007-AS5: fails a day whose calendar is empty, a maintenance page or JSON, and says why', async () => {
+    for (const calendar of ['', '<html><body>Maintenance en cours</body></html>', '{"ok":true}']) {
+      const result = await collectOfficialPodiums(sourceOf(calendar), ['2026-11-01']);
+
+      expect(result.daysRead).toEqual([]);
+      expect(result.daysFailed).toEqual(['2026-11-01']);
+      expect(result.errors).toEqual([expect.stringMatching(/2026-11-01.*structure/)]);
+    }
+  });
+
+  it('007-AS5: reads a day without any final as a quiet day, not as a failure', async () => {
+    const result = await collectOfficialPodiums(sourceOf(quietDay), ['2026-11-01']);
+
+    expect(result).toMatchObject({
+      daysRead: ['2026-11-01'],
+      daysFailed: [],
+      errors: [],
+      finalsSeen: 0,
+    });
   });
 });
 

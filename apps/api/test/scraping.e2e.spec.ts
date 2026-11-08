@@ -8,6 +8,7 @@ import { FakeResultsSource } from '../src/modules/scraping/application/testing/f
 import { FixedClock } from '../src/modules/scraping/application/testing/fixed-clock';
 import {
   medalPage,
+  quietDay,
   scheduleItem,
 } from '../src/modules/scraping/application/testing/official-pages';
 import { RunScrape } from '../src/modules/scraping/application/use-cases/run-scrape';
@@ -33,7 +34,7 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
         scheduleItem('medal-match gold', 'FLY-FNL', 'Swimming', 'Men 50m Butterfly Final'),
       ].join(''),
     );
-    source.schedules.set('2026-11-02', '');
+    source.schedules.set('2026-11-02', quietDay);
     source.medalLists.set(
       'J66-FNL',
       medalPage(['Gold', 'UKR'], ['Silver', 'CAN'], ['Bronze', 'ARG'], ['Bronze', 'SEN']),

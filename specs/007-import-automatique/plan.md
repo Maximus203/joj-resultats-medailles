@@ -81,3 +81,7 @@ Passage 1 (relecture indépendante). Chaque ligne cite un test écrit d'abord et
 - [x] T11 [007-AS6] Écrire d'abord `infra/scrape-scheduler.spec.ts` (« 007-AS6: … »), puis un verrou contre le chevauchement des battements dans `scrape-scheduler.ts`
 
 Fichiers ajoutés hors du plan initial, acceptés : `apps/api/scripts/fake-official-site.mts` et le script `dev:fake-site` (faux site pour la QA), `apps/api/src/core/config/env-schema.ts` (variables d'environnement lisibles par les scripts Node, hors `AppConfig`), le paramètre `customize` de `apps/api/test/create-test-app.ts` (remplacer le site et l'horloge dans les e2e), `podium_revisions.second_bronze` (T07).
+
+Passage 2 (QA). Chaque ligne cite un test écrit d'abord et vu en échec.
+
+- [x] T12 [007-AS5] Écrire d'abord (« 007-AS5: fails a day whose calendar is empty … », « … a page of another shape ») dans `official-results.spec.ts` et `run-scrape.application.spec.ts`, puis `hasScheduleStructure` : un calendrier sans structure fait échouer le jour, un jour sans finale reste légitime ; le faux site gagne `/__raw`

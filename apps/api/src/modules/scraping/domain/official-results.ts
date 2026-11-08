@@ -92,6 +92,11 @@ function decode(text: string): string {
   return text.replace(/&#39;|&amp;|&quot;|&lt;|&gt;/g, (entity) => ENTITIES[entity] ?? entity);
 }
 
+/** Le calendrier contient des lignes d'épreuves : la page a bien la structure attendue. */
+export function hasScheduleStructure(scheduleHtml: string): boolean {
+  return scheduleHtml.includes('<div class="scheduleItem');
+}
+
 /**
  * Les finales terminées d'une journée du calendrier officiel : celles marquées « or », et celles
  * que le site ne marque pas (wushu combiné, équitation) mais dont le code dit « finale ».
@@ -257,7 +262,13 @@ export async function collectOfficialPodiums(
   const events = new Map<string, FinalUnit[]>();
   for (const day of days) {
     try {
-      for (const unit of parseFinalUnits(await source.schedule(day), day)) {
+      const calendar = await source.schedule(day);
+      // Un calendrier sans aucune ligne n'est pas « un jour sans finale » : c'est un site en
+      // maintenance ou modifié. Un jour calme garde ses lignes d'épreuves non finales.
+      if (!hasScheduleStructure(calendar)) {
+        throw new Error('structure du calendrier absente : page vide, en maintenance ou modifiée');
+      }
+      for (const unit of parseFinalUnits(calendar, day)) {
         events.set(eventKeyOf(unit), [...(events.get(eventKeyOf(unit)) ?? []), unit]);
       }
       result.daysRead.push(day);
