@@ -18,30 +18,41 @@ async function retype(user: ReturnType<typeof userEvent.setup>, label: RegExp, v
   await user.type(input, value);
 }
 
+/**
+ * Le premier test du fichier paie le premier rendu de toute l'application : 2,9 s seul, plus de
+ * 5 s quand `pnpm check` lance l'API, le web et les outils en parallèle. Délai explicite pour lui
+ * seul, comme pour 001-AS1 dans `journaliste.test.tsx` ; pas de relèvement global.
+ */
+const SLOW_FIRST_RENDER_MS = 20_000;
+
 describe('correct a podium screen', () => {
-  it('006-AS1: corrects the silver and bronze, then offers the history behind the dated stamp', async () => {
-    const user = userEvent.setup();
-    const podium = seedWrestling();
-    const seen = trackRequests();
-    await open(podium.id);
-    const submit = await screen.findByRole('button', { name: 'Aucun changement à publier' });
-    expect(submit).toBeDisabled();
-    await retype(user, /Pays de l’argent/, 'JPN');
-    await retype(user, /Pays du bronze/, 'FRA');
-    expect(screen.getByText('Était : FRA')).toBeVisible();
-    expect(screen.getByText('Était : JPN')).toBeVisible();
-    await user.click(screen.getByRole('button', { name: 'Publier la correction' }));
-    expect(await screen.findByText('Correction publiée.')).toBeVisible();
-    expect(writes(seen)[0]).toMatchObject({
-      method: 'PUT',
-      path: `/api/podiums/${podium.id}`,
-      body: { gold: 'SEN', silver: 'JPN', bronze: 'FRA' },
-    });
-    const stamp = await screen.findByRole('button', { name: /Corrigé le/ });
-    await user.click(stamp);
-    const dialog = await screen.findByRole('dialog', { name: 'Lutte filles 52 kg' });
-    expect(await within(dialog).findByText(/Version remplacée le/)).toBeVisible();
-  });
+  it(
+    '006-AS1: corrects the silver and bronze, then offers the history behind the dated stamp',
+    async () => {
+      const user = userEvent.setup();
+      const podium = seedWrestling();
+      const seen = trackRequests();
+      await open(podium.id);
+      const submit = await screen.findByRole('button', { name: 'Aucun changement à publier' });
+      expect(submit).toBeDisabled();
+      await retype(user, /Pays de l’argent/, 'JPN');
+      await retype(user, /Pays du bronze/, 'FRA');
+      expect(screen.getByText('Était : FRA')).toBeVisible();
+      expect(screen.getByText('Était : JPN')).toBeVisible();
+      await user.click(screen.getByRole('button', { name: 'Publier la correction' }));
+      expect(await screen.findByText('Correction publiée.')).toBeVisible();
+      expect(writes(seen)[0]).toMatchObject({
+        method: 'PUT',
+        path: `/api/podiums/${podium.id}`,
+        body: { gold: 'SEN', silver: 'JPN', bronze: 'FRA' },
+      });
+      const stamp = await screen.findByRole('button', { name: /Corrigé le/ });
+      await user.click(stamp);
+      const dialog = await screen.findByRole('dialog', { name: 'Lutte filles 52 kg' });
+      expect(await within(dialog).findByText(/Version remplacée le/)).toBeVisible();
+    },
+    SLOW_FIRST_RENDER_MS,
+  );
 
   it('006-AS2: refuses a repeated country and names it', async () => {
     const user = userEvent.setup();
