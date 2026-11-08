@@ -19,6 +19,12 @@ describe('AppConfig', () => {
     expect(() => AppConfig.fromEnv({ DATABASE_URL: 'mysql://localhost' })).toThrow(/DATABASE_URL/);
   });
 
+  it('007-AS6: keeps the automatic import off by default and reads it as on only when asked', () => {
+    expect(AppConfig.fromEnv({}).get('SCRAPING_ENABLED')).toBe(false);
+    expect(AppConfig.fromEnv({ SCRAPING_ENABLED: 'false' }).get('SCRAPING_ENABLED')).toBe(false);
+    expect(AppConfig.fromEnv({ SCRAPING_ENABLED: 'true' }).get('SCRAPING_ENABLED')).toBe(true);
+  });
+
   it('008-AS1: keeps the automatic import off by default, with the rhythm of the Games', () => {
     const config = AppConfig.fromEnv({});
     expect(config.get('SCRAPING_ENABLED')).toBe(false);

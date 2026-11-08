@@ -51,16 +51,16 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 
 ## 5. Tests par scénario
 
-| Scénario | Fichier de test                                                                                      | Niveau                   | Ce que le test vérifie                                                               |
-| -------- | ---------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
-| AS1      | `application/run-scrape.application.spec.ts`                                                         | application              | trois podiums, seconde exécution sans effet ; `test/scraping.e2e.spec.ts` sur PGlite |
-| AS2      | `domain/official-results.spec.ts`, `domain/medal-table.spec.ts`                                      | unitaire                 | finale non marquée or lue ; deux bronzes comptés                                     |
-| AS3      | `domain/official-results.spec.ts`                                                                    | unitaire                 | deux ors : ignorée, raison `TIED_PLACES`                                             |
-| AS4      | `application/run-scrape.application.spec.ts`, `infra/drizzle-imported-podium.repository.int.spec.ts` | application, intégration | podium corrigé ou manuel intact, écart listé, pas de doublon                         |
-| AS5      | `application/run-scrape.application.spec.ts`                                                         | application              | jour et page en échec, reste importé ; seconde exécution refusée (409)               |
-| AS6      | `domain/scrape-schedule.spec.ts`, `application/run-due-scrape.application.spec.ts`                   | unitaire, application    | 23:00 une fois, rattrapage, fenêtre, désactivé                                       |
-| AS7      | `test/scraping.e2e.spec.ts`                                                                          | e2e                      | POST 202 puis GET : compteurs, écarts, exhaustivité, ignorées                        |
-| AS8      | `apps/web/src/lib/countries.test.ts`, `apps/web/src/routes/resultats.test.tsx`                       | unitaire, écran          | chaque pays vu à l'import a un nom ; la carte montre les deux bronzes                |
+| Scénario | Fichier de test                                                                                      | Niveau                   | Ce que le test vérifie                                                                                           |
+| -------- | ---------------------------------------------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| AS1      | `application/run-scrape.application.spec.ts`                                                         | application              | trois podiums, seconde exécution sans effet ; `test/scraping.e2e.spec.ts` sur PGlite                             |
+| AS2      | `domain/official-results.spec.ts`, `domain/medal-table.spec.ts`                                      | unitaire                 | finale non marquée or lue ; deux bronzes comptés                                                                 |
+| AS3      | `domain/official-results.spec.ts`                                                                    | unitaire                 | deux ors : ignorée, raison `TIED_PLACES`                                                                         |
+| AS4      | `application/run-scrape.application.spec.ts`, `infra/drizzle-imported-podium.repository.int.spec.ts` | application, intégration | podium corrigé ou manuel intact, écart listé, pas de doublon                                                     |
+| AS5      | `application/run-scrape.application.spec.ts`                                                         | application              | jour et page en échec, reste importé ; seconde exécution refusée (409)                                           |
+| AS6      | `src/core/config/app-config.spec.ts`, `application/run-due-scrape.application.spec.ts`               | unitaire, application    | éteint par défaut, rien hors des Jeux, réglage invalide refusé en français ; le rythme est testé par la spec 008 |
+| AS7      | `test/scraping.e2e.spec.ts`                                                                          | e2e                      | POST 202 puis GET : compteurs, écarts, exhaustivité, ignorées                                                    |
+| AS8      | `apps/web/src/lib/countries.test.ts`, `apps/web/src/routes/resultats.test.tsx`                       | unitaire, écran          | chaque pays vu à l'import a un nom ; la carte montre les deux bronzes                                            |
 
 ## 6. Tâches
 
@@ -94,3 +94,7 @@ Passage 2 (QA). Chaque ligne cite un test écrit d'abord et vu en échec.
 - [x] T18 [007-AS8] Écrire d'abord `routes/resultats.test.tsx` (« 007-AS8: shows both bronzes … ») et `mocks/handlers.test.ts` (« 007-AS8: counts a second bronze … »), puis la ligne de second bronze dans `PodiumLines`/`PodiumCard` et le comptage dans `mocks/medal-table.ts`
 - [x] T19 [007-AS5, AS6] Écrire d'abord (« 007-AS6: explains an invalid value in French … », « 007-AS5: reports a timeout in French … », 409 en français dans `scraping.e2e.spec.ts`, détail de l'égalité) puis les messages en français : variables d'environnement, refus `SCRAPE_ALREADY_RUNNING`, délai dépassé, texte de l'égalité sans espace traînant. Les codes restent stables, en majuscules
 - [x] T20 [007-AS7] Écrire d'abord `apps/api/scripts/scrape-output-core.spec.mts` (« 007-AS7: tells in French … », « … refuses to shrink the file without --force »), puis `planWrite` et son usage dans `scrape-results.mts` : remplacés et écrits annoncés en français, refus d'un fichier plus petit sans `--force`
+
+Passage 3 (relectures indépendantes).
+
+- [x] T21 [007-AS6] Amender `007-AS6` : l'horaire de 23:00 seul est remplacé par la spec 008 ; la 007 garde l'activation (éteint par défaut), la fenêtre des Jeux et la configuration validée en français, chacune sous un test `007-AS6` (`app-config.spec.ts`, `run-due-scrape.application.spec.ts`)

@@ -43,11 +43,11 @@ Le journaliste recopie à la main les podiums du site officiel, et le supporter 
 - **Quand** l'import tourne, ou qu'on en lance une seconde en même temps
 - **Alors** les autres épreuves sont importées et les données existantes restent intactes, les erreurs sont listées ; la seconde exécution est refusée (refus 409, code SCRAPE_ALREADY_RUNNING)
 
-### AS6 — Chaque soir à 23 h de Dakar
+### AS6 — L'import s'active, se limite aux Jeux et se configure (rythme : spec 008)
 
-- **Étant donné** l'import activé, réglé sur 23:00 à Dakar, pendant les Jeux
-- **Quand** l'heure passe à 23:00 puis dans la minute suivante, ou que le serveur démarre après plus de 24 h sans import réussi
-- **Alors** une seule exécution part à 23:00, une exécution de rattrapage part au démarrage ; jamais avant l'ouverture des Jeux ni après le lendemain de la clôture, et jamais si l'import est désactivé (c'est le cas par défaut)
+- **Étant donné** l'import éteint (c'est le cas par défaut), ou activé, et des réglages dont un est invalide
+- **Quand** le serveur démarre et que l'horloge bat, pendant les Jeux, avant leur ouverture ou après le lendemain de leur clôture
+- **Alors** rien ne tourne tant que l'import est éteint ni hors des Jeux ; un réglage invalide arrête le démarrage avec un message français qui nomme la variable ; quand et à quel rythme l'import tourne est dit par la spec 008
 
 ### AS7 — Un compte rendu lisible
 
