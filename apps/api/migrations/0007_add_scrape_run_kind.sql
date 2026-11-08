@@ -1,0 +1,1 @@
+ALTER TABLE "scrape_runs" ADD COLUMN "kind" varchar(11) DEFAULT 'full' NOT NULL;

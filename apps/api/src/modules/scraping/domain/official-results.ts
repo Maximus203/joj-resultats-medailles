@@ -70,6 +70,8 @@ export interface Collection {
   ignored: IgnoredFinal[];
   /** Les épreuves (finales terminées candidates) vues sur le site, importées ou non. */
   finalsSeen: number;
+  /** Celles déjà connues, que l'on n'a pas relues (import léger). */
+  finalsKnown: number;
   /** Les clés de ces épreuves : sert à repérer ce que la base a et que le site n'a plus. */
   eventKeysSeen: string[];
   daysRead: string[];
@@ -239,11 +241,13 @@ export function daysBetween(first: string, last: string): string[] {
 export async function collectOfficialPodiums(
   source: OfficialSource,
   days: readonly string[],
+  options: { isKnown?: (eventKey: string) => boolean } = {},
 ): Promise<Collection> {
   const result: Collection = {
     drafts: [],
     ignored: [],
     finalsSeen: 0,
+    finalsKnown: 0,
     eventKeysSeen: [],
     daysRead: [],
     daysFailed: [],
@@ -270,6 +274,11 @@ export async function collectOfficialPodiums(
   for (const [eventKey, units] of events) {
     result.finalsSeen += 1;
     result.eventKeysSeen.push(eventKey);
+    // L'import léger n'ouvre pas la page des médaillés d'une épreuve déjà en base.
+    if (options.isKnown?.(eventKey)) {
+      result.finalsKnown += 1;
+      continue;
+    }
     const failure = await firstPodium(source, units, result);
     if (failure) result.ignored.push(failure);
   }

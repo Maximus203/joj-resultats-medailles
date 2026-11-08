@@ -37,6 +37,8 @@ export interface Exhaustiveness {
   finalsSeen: number;
   /** Celles qui ont donné un podium (importé, mis à jour, identique ou laissé tel quel). */
   finalsWithPodium: number;
+  /** Celles déjà en base que l'import léger n'a pas rouvertes (toujours 0 pour un import complet). */
+  finalsKnown: number;
   ignored: IgnoredFinal[];
 }
 
@@ -49,11 +51,14 @@ export interface ScrapeReport {
   absentFromSource: ScrapedEvent[];
   exhaustiveness: Exhaustiveness;
   errors: string[];
+  /** Pourquoi l'exécution a été sautée ; absent sinon. */
+  skippedReason?: string;
 }
 
 export interface ScrapeRun {
   id: string;
   trigger: ScrapeTrigger;
+  kind: ScrapeKind;
   status: ScrapeStatus;
   startedAt: Date;
   finishedAt: Date;

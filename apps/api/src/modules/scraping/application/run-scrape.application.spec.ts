@@ -85,7 +85,7 @@ describe('RunScrape', () => {
     const first = await run.execute('manual');
     const second = await run.execute('manual');
 
-    expect(first.status).toBe('success');
+    expect(first).toMatchObject({ kind: 'full', status: 'success' });
     expect(first.report.imported.map((event) => event.eventName).sort()).toEqual(
       [JUDO, SWIM, WRESTLING].sort(),
     );
@@ -191,6 +191,60 @@ describe('RunScrape', () => {
         },
       },
     ]);
+  });
+
+  it('008-AS2: a light run reads only yesterday and today, and opens only the new finals', async () => {
+    const { run, podiums, source, clock } = setup([
+      stored(JUDO, { gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'SEN' }),
+    ]);
+    clock.set('2026-11-02T10:00:00.000Z');
+
+    const result = await run.execute('scheduled', 'incremental');
+
+    expect(source.requests.filter((request) => request.startsWith('schedule:'))).toEqual([
+      'schedule:2026-11-01',
+      'schedule:2026-11-02',
+    ]);
+    expect(source.requests).not.toContain('medals:J66-FNL');
+    expect(result).toMatchObject({ kind: 'incremental', status: 'success' });
+    expect(result.report.imported.map((event) => event.eventName).sort()).toEqual(
+      [SWIM, WRESTLING].sort(),
+    );
+    expect(result.report.exhaustiveness).toMatchObject({
+      finalsSeen: 3,
+      finalsKnown: 1,
+      finalsWithPodium: 2,
+    });
+    expect(result.report).toMatchObject({ updated: [], kept: [], absentFromSource: [] });
+    expect(await podiums.findAll()).toHaveLength(3);
+  });
+
+  it('008-AS2: a light run does not read the older days', async () => {
+    const { run, source, clock } = setup();
+    source.schedules.set('2026-11-03', quietDay);
+    clock.set('2026-11-03T10:00:00.000Z');
+
+    await run.execute('scheduled', 'incremental');
+
+    expect(source.requests).toEqual(['schedule:2026-11-02', 'schedule:2026-11-03']);
+  });
+
+  it('008-AS5: records a skipped run, without reading anything, when told so', async () => {
+    const { run, source, runs } = setup();
+
+    const skipped = await run.recordSkipped(
+      'scheduled',
+      'incremental',
+      'un import complet est en cours',
+    );
+
+    expect(skipped).toMatchObject({ kind: 'incremental', status: 'skipped', trigger: 'scheduled' });
+    expect(skipped.report).toMatchObject({
+      errors: [],
+      skippedReason: 'un import complet est en cours',
+    });
+    expect(runs.runs[0]).toBe(skipped);
+    expect(source.requests).toEqual([]);
   });
 
   it('007-AS5: a bad day or page stops nothing, keeps the stored data, and lists its errors', async () => {

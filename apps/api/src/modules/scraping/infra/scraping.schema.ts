@@ -9,7 +9,9 @@ export const scrapeRuns = pgTable(
     id: uuid('id').primaryKey(),
     // scheduled | manual | startup
     trigger: varchar('trigger', { length: 10 }).notNull(),
-    // success | partial | failed
+    // full | incremental
+    kind: varchar('kind', { length: 11 }).notNull().default('full'),
+    // success | partial | failed | skipped
     status: varchar('status', { length: 10 }).notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, precision: 3 }).notNull(),
     finishedAt: timestamp('finished_at', { withTimezone: true, precision: 3 }).notNull(),

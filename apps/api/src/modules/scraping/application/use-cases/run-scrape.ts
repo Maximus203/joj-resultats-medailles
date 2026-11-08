@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { normalizeEventKey } from '@joj/shared';
 import {
   type Collection,
   collectOfficialPodiums,
@@ -9,6 +10,7 @@ import { type StoredPodium, reconcile } from '../../domain/podium-reconciliation
 import {
   type PodiumDifference,
   type ScrapedEvent,
+  type ScrapeKind,
   type ScrapeReport,
   type ScrapeRun,
   type ScrapeTrigger,
@@ -51,25 +53,65 @@ export class RunScrape {
   }
 
   /** Lance l'exécution ; lève SCRAPE_ALREADY_RUNNING tout de suite si une autre tourne. */
-  execute(trigger: ScrapeTrigger): Promise<ScrapeRun> {
+  execute(trigger: ScrapeTrigger, kind: ScrapeKind = 'full'): Promise<ScrapeRun> {
     if (this.current) throw scrapeAlreadyRunning();
-    const run = this.perform(trigger).finally(() => {
+    const run = this.perform(trigger, kind).finally(() => {
       this.current = null;
     });
     this.current = run;
     return run;
   }
 
-  private async perform(trigger: ScrapeTrigger): Promise<ScrapeRun> {
-    const startedAt = this.clock.now();
-    const days = daysBetween(this.settings.firstDay, this.settings.lastDay).filter(
-      (day) => day <= localDay(startedAt, this.settings.timeZone),
-    );
-    const collection = await this.collect(days);
-    const report = await this.apply(collection, startedAt);
+  /** Trace un import sauté (un autre tournait) : aucune lecture, aucune erreur. */
+  async recordSkipped(
+    trigger: ScrapeTrigger,
+    kind: ScrapeKind,
+    reason: string,
+  ): Promise<ScrapeRun> {
+    const now = this.clock.now();
     const run: ScrapeRun = {
       id: randomUUID(),
       trigger,
+      kind,
+      status: 'skipped',
+      startedAt: now,
+      finishedAt: now,
+      report: {
+        imported: [],
+        updated: [],
+        kept: [],
+        identical: 0,
+        absentFromSource: [],
+        exhaustiveness: {
+          daysRead: [],
+          daysFailed: [],
+          finalsSeen: 0,
+          finalsWithPodium: 0,
+          finalsKnown: 0,
+          ignored: [],
+        },
+        errors: [],
+        skippedReason: reason,
+      },
+    };
+    await this.remember(run);
+    this.logger.log(`Import ${kind} ${trigger} sauté : ${reason}`);
+    return run;
+  }
+
+  private async perform(trigger: ScrapeTrigger, kind: ScrapeKind): Promise<ScrapeRun> {
+    const startedAt = this.clock.now();
+    const days = this.daysToRead(startedAt, kind);
+    const existing = await this.existingPodiums();
+    const known = new Set((existing ?? []).map((podium) => normalizeEventKey(podium.eventName)));
+    const isKnown =
+      kind === 'incremental' ? (key: string) => known.has(normalizeEventKey(key)) : undefined;
+    const collection = await this.collect(days, isKnown);
+    const report = await this.apply(collection, startedAt, existing, kind);
+    const run: ScrapeRun = {
+      id: randomUUID(),
+      trigger,
+      kind,
       status: statusOf(report, days.length),
       startedAt,
       finishedAt: this.clock.now(),
@@ -77,21 +119,40 @@ export class RunScrape {
     };
     await this.remember(run);
     this.logger.log(
-      `Import ${trigger} ${run.status} : ${JSON.stringify(countsOf(report))}, jours lus ${report.exhaustiveness.daysRead.length}/${days.length}`,
+      `Import ${kind} ${trigger} ${run.status} en ${run.finishedAt.getTime() - startedAt.getTime()} ms : ${JSON.stringify(countsOf(report))}, jours lus ${report.exhaustiveness.daysRead.length}/${days.length}`,
     );
     for (const error of report.errors) this.logger.warn(error);
     return run;
   }
 
-  private async collect(days: string[]): Promise<Collection> {
+  /** Complet : tous les jours des Jeux jusqu'à aujourd'hui ; léger : hier et aujourd'hui seulement. */
+  private daysToRead(now: Date, kind: ScrapeKind): string[] {
+    const today = localDay(now, this.settings.timeZone);
+    const yesterday = new Date(Date.parse(today) - 86_400_000).toISOString().slice(0, 10);
+    return daysBetween(this.settings.firstDay, this.settings.lastDay).filter(
+      (day) => day <= today && (kind === 'full' || day >= yesterday),
+    );
+  }
+
+  private async existingPodiums(): Promise<StoredPodium[] | null> {
     try {
-      return await collectOfficialPodiums(this.source, days);
+      return await this.podiums.findAll();
+    } catch (error) {
+      this.logger.error(`base de données illisible : ${messageOf(error)}`);
+      return null;
+    }
+  }
+
+  private async collect(days: string[], isKnown?: (key: string) => boolean): Promise<Collection> {
+    try {
+      return await collectOfficialPodiums(this.source, days, isKnown ? { isKnown } : {});
     } catch (error) {
       this.logger.error(error);
       return {
         drafts: [],
         ignored: [],
         finalsSeen: 0,
+        finalsKnown: 0,
         eventKeysSeen: [],
         daysRead: [],
         daysFailed: days,
@@ -101,15 +162,17 @@ export class RunScrape {
   }
 
   /** Compare la collecte à la base et écrit insertions et mises à jour, une par une. */
-  private async apply(collection: Collection, now: Date): Promise<ScrapeReport> {
+  private async apply(
+    collection: Collection,
+    now: Date,
+    existing: StoredPodium[] | null,
+    kind: ScrapeKind,
+  ): Promise<ScrapeReport> {
     const errors = [...collection.errors];
     const imported: ScrapedEvent[] = [];
     const updated: PodiumDifference[] = [];
-    let existing: StoredPodium[] = [];
-    try {
-      existing = await this.podiums.findAll();
-    } catch (error) {
-      errors.push(`base de données illisible, rien n'est écrit (${messageOf(error)})`);
+    if (existing === null) {
+      errors.push("base de données illisible, rien n'est écrit");
       return this.report(collection, errors, {
         imported,
         updated,
@@ -122,7 +185,8 @@ export class RunScrape {
       existing,
       drafts: collection.drafts,
       eventKeysSeen: collection.eventKeysSeen,
-      daysRead: collection.daysRead,
+      // Le léger ne confronte rien : « absent de la source » est l'affaire du complet.
+      daysRead: kind === 'full' ? collection.daysRead : [],
     });
     for (const draft of plan.inserts) {
       try {
@@ -179,6 +243,7 @@ export class RunScrape {
         daysFailed: collection.daysFailed,
         finalsSeen: collection.finalsSeen,
         finalsWithPodium: collection.drafts.length,
+        finalsKnown: collection.finalsKnown,
         ignored: collection.ignored,
       },
       errors,

@@ -50,6 +50,13 @@
       "when": 1794147909830,
       "tag": "0006_add_revision_second_bronze",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794150316084,
+      "tag": "0007_add_scrape_run_kind",
+      "breakpoints": true
     }
   ]
 }

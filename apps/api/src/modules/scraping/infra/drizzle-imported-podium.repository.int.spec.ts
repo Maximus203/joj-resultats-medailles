@@ -25,6 +25,7 @@ const draft = (eventName: string, patch: Partial<PodiumDraft> = {}): PodiumDraft
 const run = (startedAt: string, status: ScrapeRun['status']): ScrapeRun => ({
   id: randomUUID(),
   trigger: 'scheduled',
+  kind: 'full',
   status,
   startedAt: new Date(startedAt),
   finishedAt: new Date(startedAt),
@@ -39,6 +40,7 @@ const run = (startedAt: string, status: ScrapeRun['status']): ScrapeRun => ({
       daysFailed: [],
       finalsSeen: 3,
       finalsWithPodium: 3,
+      finalsKnown: 0,
       ignored: [
         {
           day: '2026-11-01',
@@ -204,5 +206,26 @@ describe('Scraping repositories (in-memory PGlite, migrations applied)', () => {
     expect(await repository.lastSucceededAt()).toBeNull();
     expect(await repository.latest(5)).toEqual([]);
     await empty.close();
+  });
+
+  it('008-AS5: tells full from light runs, and a skipped run from one that really ran', async () => {
+    const fresh = openDatabase({ pgliteDataDir: 'memory://' });
+    await fresh.migrate();
+    const repository = new DrizzleScrapeRunRepository(fresh.db);
+    const full = { ...run('2026-11-03T07:00:00.000Z', 'success'), kind: 'full' as const };
+    const light = { ...run('2026-11-03T08:00:00.000Z', 'success'), kind: 'incremental' as const };
+    const skipped = { ...run('2026-11-03T08:15:00.000Z', 'skipped'), kind: 'incremental' as const };
+    for (const item of [full, light, skipped]) await repository.add(item);
+
+    expect(await repository.lastAttemptAt()).toEqual(skipped.startedAt);
+    expect(await repository.lastStartedAt('incremental')).toEqual(light.startedAt);
+    expect(await repository.lastStartedAt('full')).toEqual(full.startedAt);
+    expect(await repository.lastSucceededAt()).toEqual(light.startedAt);
+    expect((await repository.latestFull())?.id).toBe(full.id);
+    expect((await repository.latest(1))[0]).toMatchObject({
+      kind: 'incremental',
+      status: 'skipped',
+    });
+    await fresh.close();
   });
 });
