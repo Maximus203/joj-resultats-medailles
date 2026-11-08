@@ -260,7 +260,11 @@ export async function collectOfficialPodiums(
       // Un calendrier sans aucune ligne n'est pas « un jour sans finale » : c'est un site en
       // maintenance ou modifié. Un jour calme garde ses lignes d'épreuves non finales.
       if (!hasScheduleStructure(calendar)) {
-        throw new Error('structure du calendrier absente : page vide, en maintenance ou modifiée');
+        result.daysFailed.push(day);
+        result.errors.push(
+          `${day} : calendrier illisible (structure du calendrier absente : page vide, en maintenance ou modifiée)`,
+        );
+        continue;
       }
       for (const unit of parseFinalUnits(calendar, day)) {
         events.set(eventKeyOf(unit), [...(events.get(eventKeyOf(unit)) ?? []), unit]);

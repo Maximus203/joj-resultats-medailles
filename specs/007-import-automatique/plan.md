@@ -98,3 +98,4 @@ Passage 2 (QA). Chaque ligne cite un test écrit d'abord et vu en échec.
 Passage 3 (relectures indépendantes).
 
 - [x] T21 [007-AS6] Amender `007-AS6` : l'horaire de 23:00 seul est remplacé par la spec 008 ; la 007 garde l'activation (éteint par défaut), la fenêtre des Jeux et la configuration validée en français, chacune sous un test `007-AS6` (`app-config.spec.ts`, `run-due-scrape.application.spec.ts`)
+- [x] T22 [007-AS5] Remplacer le `throw` du calendrier sans structure (`official-results.ts`) par un retour explicite : le jour est noté en échec avec son motif, sans exception. Comportement inchangé, couvert par « 007-AS5: fails a day whose calendar is empty … » : refactorisation, pas de rouge possible
