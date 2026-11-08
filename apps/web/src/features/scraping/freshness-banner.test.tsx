@@ -20,7 +20,7 @@ describe('freshness banner', () => {
     await renderRoute({ initialEntries: ['/medailles'] });
 
     expect(await screen.findByText('Données à jour à 14:07')).toBeVisible();
-    expect(screen.queryByText(/pas été mises à jour/)).toBeNull();
+    expect(screen.queryByText(/n’ont pas été mis à jour/)).toBeNull();
   });
 
   it('008-AS8: reads the hour in Dakar time, not in the browser time', async () => {
