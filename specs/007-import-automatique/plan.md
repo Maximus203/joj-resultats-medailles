@@ -101,3 +101,9 @@ Passage 3 (relectures indépendantes).
 - [x] T22 [007-AS5] Remplacer le `throw` du calendrier sans structure (`official-results.ts`) par un retour explicite : le jour est noté en échec avec son motif, sans exception. Comportement inchangé, couvert par « 007-AS5: fails a day whose calendar is empty … » : refactorisation, pas de rouge possible
 - [x] T23 [007-AS8] Écrire « 007-AS8: follows an imported country as Mon pays, by its French name, with both bronzes counted » dans `routes/medailles.test.tsx` : choix de UKR puis de SEN dans « Mon pays » sur un podium à deux bronzes. Le comportement existait (T16, T18) : le test ne pouvait pas être vu en échec
 - [x] T24 [007-AS6] Relever la limite du PRD de 50 à 60 lignes dans `tools/sdd/lib/spec-format.mts` (test « limits the PRD to one page of 60 lines … », rouge d'abord) : le formateur met une ligne vide sous chaque titre, le PRD à six tranches en fait 54 ; resserrer TR6 ne pouvait pas le ramener sous 50
+
+## Autres changements livrés avec cette tranche
+
+Pour que la trace dise la vérité : `tools/sdd/lib/spec-format.mts` (limite du PRD relevée de 50 à 60 lignes, avec son test) et `.claude/skills/prd/SKILL.md` (le texte de la limite), le renvoi de 007-AS6 vers la spec 008 pour le rythme, le PRD (tranche TR6) et la spec 008 elle-même (`specs/008-rythme-import/`), séparée parce que la 007 atteint les 70 lignes.
+
+- [x] T25 [007-AS6, AS3] Ajouter « 007-AS6: sends nothing before the Games open, even at startup (2026-10-31T23:59) » (`run-due-scrape.application.spec.ts`) et « 007-AS3: serves the tie in French in the report of GET /api/scraping » (`test/scraping.e2e.spec.ts`). Comportements existants : tests non rouges possibles

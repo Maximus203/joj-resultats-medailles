@@ -111,6 +111,21 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     });
   });
 
+  it('007-AS3: serves the tie in French in the report of GET /api/scraping', async () => {
+    await runAndWait();
+
+    const { lastRun } = await status();
+
+    expect(lastRun?.report.exhaustiveness.ignored).toEqual([
+      expect.objectContaining({
+        code: 'FLY-FNL',
+        reason: 'TIED_PLACES',
+        detail: 'égalité à l’or (GRE, POR), pas d’argent',
+      }),
+    ]);
+    expect((await http().get('/api/podiums').expect(200)).body.items).toHaveLength(2);
+  });
+
   it('007-AS2: serves the imported podiums and counts the second bronze in the medal table', async () => {
     await runAndWait();
 

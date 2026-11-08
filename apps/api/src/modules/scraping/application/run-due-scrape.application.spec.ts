@@ -216,6 +216,15 @@ describe('RunDueScrape', () => {
     expect(source.requests).toEqual([]);
   });
 
+  it('007-AS6: sends nothing before the Games open, even at startup (2026-10-31T23:59)', async () => {
+    const { due, source, runs } = setup(testSettings(), '2026-10-31T23:59:00Z');
+
+    expect(await due.execute({ startup: true })).toBeNull();
+    expect(await due.execute(beat)).toBeNull();
+    expect(source.requests).toEqual([]);
+    expect(runs.runs).toEqual([]);
+  });
+
   it('007-AS6: does not run outside the Games', async () => {
     const { due, source } = setup(testSettings(), '2026-11-16T23:00:00Z');
 
