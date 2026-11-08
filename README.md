@@ -29,21 +29,21 @@ Pour charger des données de démo (voir [Base de données](#base-de-données)) 
 
 ## Commandes
 
-| Commande           | Effet                                                                               |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| `pnpm dev`         | API (port 3000) et front (port 5173) en parallèle                                   |
-| `pnpm test`        | tous les tests (Vitest), sans Docker ni réseau                                      |
-| `pnpm test:watch`  | les tests en continu                                                                |
-| `pnpm lint`        | oxlint                                                                              |
-| `pnpm format`      | formate tout (oxfmt) ; `pnpm format:check` vérifie seulement                        |
-| `pnpm typecheck`   | TypeScript sur tout le repo                                                         |
-| `pnpm build`       | build de l'API (SWC) et du front (Vite)                                             |
-| `pnpm check`       | tout le dépôt : format, lint, types, tous les tests, build                          |
-| `pnpm verify`      | les seuls fichiers modifiés : format, lint, types, tests liés                       |
-| `pnpm db:generate` | génère une migration après un changement de schéma Drizzle                          |
-| `pnpm db:seed`     | applique les migrations et charge `apps/api/data/*.json`                            |
-| `pnpm db:reset`    | vide la base locale, applique les migrations et recharge les données                |
-| `pnpm db:scrape`   | lit le site officiel et écrit `apps/api/data/podiums.json` (même code que l'import) |
+| Commande           | Effet                                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`         | API (port 3000) et front (port 5173) en parallèle                                                        |
+| `pnpm test`        | tous les tests (Vitest), sans Docker ni réseau                                                           |
+| `pnpm test:watch`  | les tests en continu                                                                                     |
+| `pnpm lint`        | oxlint                                                                                                   |
+| `pnpm format`      | formate tout (oxfmt) ; `pnpm format:check` vérifie seulement                                             |
+| `pnpm typecheck`   | TypeScript sur tout le repo                                                                              |
+| `pnpm build`       | build de l'API (SWC) et du front (Vite)                                                                  |
+| `pnpm check`       | tout le dépôt : format, lint, types, tous les tests, build                                               |
+| `pnpm verify`      | les seuls fichiers modifiés : format, lint, types, tests liés                                            |
+| `pnpm db:generate` | génère une migration après un changement de schéma Drizzle                                               |
+| `pnpm db:seed`     | applique les migrations et charge `apps/api/data/*.json`                                                 |
+| `pnpm db:reset`    | vide la base locale, applique les migrations et recharge les données                                     |
+| `pnpm db:scrape`   | lit le site officiel et écrit `apps/api/data/podiums.json` ; refuse un fichier plus petit sans `--force` |
 
 ## Structure
 
