@@ -59,6 +59,33 @@ describe('day results screen', () => {
     expect(await screen.findByRole('link', { name: 'Aller au 6 novembre' })).toBeVisible();
   });
 
+  it('007-AS8: shows both bronzes of a combat event on the podium card', async () => {
+    seedPodium({
+      eventName: 'Judo – Men -66 kg',
+      discipline: 'Judo',
+      gold: 'UKR',
+      silver: 'CAN',
+      bronze: 'ARG',
+      secondBronze: 'SEN',
+    });
+    await open();
+
+    const card = (await screen.findByRole('heading', { name: 'Judo – Men -66 kg' })).closest(
+      'article',
+    );
+
+    expect(card).not.toBeNull();
+    const lines = within(card as HTMLElement).getAllByRole('listitem');
+    expect(lines.map((line) => line.textContent)).toEqual([
+      expect.stringContaining('UKR'),
+      expect.stringContaining('CAN'),
+      expect.stringContaining('ARG'),
+      expect.stringContaining('SEN'),
+    ]);
+    expect(within(lines[2] as HTMLElement).getByText('Bronze')).toBeVisible();
+    expect(within(lines[3] as HTMLElement).getByText('Bronze')).toBeVisible();
+  });
+
   it('005-AS2: filters by discipline and tells an empty filter from an empty day', async () => {
     seedPodium({ eventName: 'Lutte filles 52 kg', discipline: 'Lutte' });
     seedPodium({ eventName: '100 m nage libre filles', discipline: 'Natation' });

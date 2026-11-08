@@ -14,6 +14,7 @@ export function computeMedalTable(podiums: readonly PublishedPodium[]): MedalRow
     entry(podium.gold).gold += 1;
     entry(podium.silver).silver += 1;
     entry(podium.bronze).bronze += 1;
+    if (podium.secondBronze) entry(podium.secondBronze).bronze += 1;
   }
   const sorted = [...counts]
     .map(([country, medals]) => ({ country, ...medals }))

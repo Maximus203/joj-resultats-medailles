@@ -3,6 +3,7 @@
  * passent contre une API qui n'existe pas. Ces tests l'appellent avec `fetch`, sans React.
  */
 import { describe, expect, it } from 'vitest';
+import { seedPodium } from '@/test/seed';
 
 const call = (path: string, init: RequestInit = {}) =>
   fetch(`http://localhost${path}`, {
@@ -95,6 +96,17 @@ describe('mock medals API', () => {
       { rank: 3, country: 'FRA', gold: 0, silver: 1, bronze: 1 },
       { rank: 4, country: 'USA', gold: 0, silver: 0, bronze: 1 },
     ]);
+  });
+
+  it('007-AS8: counts a second bronze like the real API', async () => {
+    seedPodium({ gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'SEN' });
+    const { items } = await (await get('/api/medals')).json();
+    expect(items.find((row: { country: string }) => row.country === 'SEN')).toMatchObject({
+      bronze: 1,
+    });
+    expect(items.find((row: { country: string }) => row.country === 'ARG')).toMatchObject({
+      bronze: 1,
+    });
   });
 
   it('004-AS2: gives two countries on equal medals the same rank, then skips', async () => {

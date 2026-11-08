@@ -26,7 +26,12 @@ export function PodiumCard({
         </div>
         <CorrectionStamp podium={podium} />
       </div>
-      <PodiumLines gold={podium.gold} silver={podium.silver} bronze={podium.bronze} />
+      <PodiumLines
+        gold={podium.gold}
+        silver={podium.silver}
+        bronze={podium.bronze}
+        secondBronze={podium.secondBronze}
+      />
     </article>
   );
 }
