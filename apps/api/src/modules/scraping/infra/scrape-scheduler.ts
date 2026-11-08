@@ -30,7 +30,7 @@ export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShu
       return;
     }
     this.logger.log(
-      `Import automatique actif : ${this.settings.dailyTime} (${this.settings.timeZone}), du ${this.settings.firstDay} au ${this.settings.lastDay}`,
+      `Import automatique actif : complet à ${this.settings.fullTimes.join(', ')}, léger toutes les ${this.settings.intervalMinutes} min de ${this.settings.windowStart} à ${this.settings.windowEnd} (${this.settings.timeZone}), du ${this.settings.firstDay} au ${this.settings.lastDay}`,
     );
     void this.tick(true);
     this.timer = setInterval(() => void this.tick(false), this.settings.tickSeconds * 1000);

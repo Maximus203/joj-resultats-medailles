@@ -9,6 +9,12 @@ const NOT_COUNT = 'doit être un entier supérieur ou égal à 0';
 const positiveInt = () =>
   z.coerce.number({ error: NOT_POSITIVE_INT }).int(NOT_POSITIVE_INT).positive(NOT_POSITIVE_INT);
 
+const HOUR_MINUTE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const hourMinute = () =>
+  z
+    .string()
+    .regex(HOUR_MINUTE, 'doit être une heure HH:MM entre 00:00 et 23:59 (par exemple 23:00)');
+
 const baseSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'test', 'production'], {
@@ -39,23 +45,26 @@ const baseSchema = z.object({
   SCRAPING_LAST_DAY: z.iso
     .date({ error: 'doit être une date au format AAAA-MM-JJ' })
     .default('2026-11-13'),
-  /** Heure locale (HH:MM) de l'exécution quotidienne, dans SCRAPING_TIMEZONE. */
-  SCRAPING_DAILY_TIME: z
+  /** Heures locales (HH:MM, séparées par des virgules) des imports complets, dans SCRAPING_TIMEZONE. */
+  SCRAPING_FULL_TIMES: z
     .string()
-    .regex(
-      /^([01]\d|2[0-3]):[0-5]\d$/,
-      'doit être une heure HH:MM entre 00:00 et 23:59 (par exemple 23:00)',
-    )
-    .default('23:00'),
+    .default('07:00,23:00')
+    .transform((value) => value.split(',').map((time) => time.trim()))
+    .pipe(z.array(hourMinute()).min(1, 'doit contenir au moins une heure HH:MM')),
+  /** Fenêtre du jour (heure locale, fin incluse à la minute) où tournent les imports légers. */
+  SCRAPING_WINDOW_START: hourMinute().default('08:00'),
+  SCRAPING_WINDOW_END: hourMinute().default('23:00'),
   SCRAPING_TIMEZONE: z
     .string()
     .refine(isTimeZone, 'fuseau horaire inconnu (par exemple Africa/Dakar)')
     .default('Africa/Dakar'),
-  /** En plus de l'heure fixe : une exécution toutes les N minutes pendant les Jeux (facultatif). */
+  /** Cadence des imports légers pendant la fenêtre, en minutes. */
   SCRAPING_INTERVAL_MINUTES: z.preprocess(
     (value) => (value === '' ? undefined : value),
-    positiveInt().optional(),
+    positiveInt().default(15),
   ),
+  /** Sans import réussi depuis ce nombre de minutes, dans la fenêtre, les données sont périmées. */
+  SCRAPING_STALE_AFTER_MINUTES: positiveInt().default(120),
   /** Fréquence à laquelle l'horloge regarde si une exécution est due. */
   SCRAPING_TICK_SECONDS: positiveInt().default(60),
   /** Politesse envers le site officiel : pause après chaque requête, délai maximal d'une requête. */
@@ -72,13 +81,15 @@ const baseSchema = z.object({
 });
 
 /** Les règles entre variables : une plage de jours à l'envers arrête le démarrage. */
-export const envSchema = baseSchema.refine(
-  (env) => env.SCRAPING_FIRST_DAY <= env.SCRAPING_LAST_DAY,
-  {
+export const envSchema = baseSchema
+  .refine((env) => env.SCRAPING_FIRST_DAY <= env.SCRAPING_LAST_DAY, {
     path: ['SCRAPING_FIRST_DAY'],
     error: 'doit être le même jour que SCRAPING_LAST_DAY ou un jour avant',
-  },
-);
+  })
+  .refine((env) => env.SCRAPING_WINDOW_START < env.SCRAPING_WINDOW_END, {
+    path: ['SCRAPING_WINDOW_START'],
+    error: 'doit être avant SCRAPING_WINDOW_END',
+  });
 
 function isTimeZone(value: string): boolean {
   try {

@@ -7,8 +7,8 @@ import { countryCodeSchema } from './podiums.ts';
  */
 
 export const scrapeTriggerSchema = z.enum(['scheduled', 'manual', 'startup']);
-/** `failed` : aucun jour du calendrier lu ; `partial` : au moins une erreur ; `success` sinon. */
-export const scrapeStatusValueSchema = z.enum(['success', 'partial', 'failed']);
+/** `failed` : aucun jour du calendrier lu ; `partial` : au moins une erreur ; `skipped` : sauté, un autre import tournait ; `success` sinon. */
+export const scrapeStatusValueSchema = z.enum(['success', 'partial', 'failed', 'skipped']);
 
 const podiumMedalsSchema = z.object({
   gold: countryCodeSchema,
@@ -96,9 +96,14 @@ export const scrapeStatusSchema = z.object({
   enabled: z.boolean(),
   running: z.boolean(),
   schedule: z.object({
-    dailyTime: z.string(),
     timeZone: z.string(),
-    intervalMinutes: z.number().int().positive().nullable(),
+    /** Heures locales des imports complets. */
+    fullTimes: z.array(z.string()),
+    /** Fenêtre locale des imports légers, et leur cadence en minutes. */
+    windowStart: z.string(),
+    windowEnd: z.string(),
+    intervalMinutes: z.number().int().positive(),
+    staleAfterMinutes: z.number().int().positive(),
     firstDay: z.iso.date(),
     lastDay: z.iso.date(),
   }),

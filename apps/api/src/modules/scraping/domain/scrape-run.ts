@@ -1,8 +1,10 @@
 import type { IgnoredFinal } from './official-results';
 
 export type ScrapeTrigger = 'scheduled' | 'manual' | 'startup';
-/** `failed` : aucun jour du calendrier lu ; `partial` : au moins une erreur ; `success` sinon. */
-export type ScrapeStatus = 'success' | 'partial' | 'failed';
+/** `failed` : aucun jour du calendrier lu ; `partial` : au moins une erreur ; `skipped` : sauté, un autre import tournait ; `success` sinon. */
+export type ScrapeStatus = 'success' | 'partial' | 'failed' | 'skipped';
+/** `full` : tous les jours des Jeux et confrontation à la base ; `incremental` : aujourd'hui et hier, finales nouvelles seulement. */
+export type ScrapeKind = 'full' | 'incremental';
 
 /** Les médaillés d'un podium, de part et d'autre d'une comparaison. */
 export interface PodiumMedals {

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ScrapeRun } from '../../domain/scrape-run';
-import { nextDailySlot } from '../../domain/scrape-schedule';
+import { nextFullSlot } from '../../domain/scrape-schedule';
 import { Clock } from '../clock';
 import { ScrapeRunRepository } from '../scrape-run.repository';
 import { SCRAPING_SETTINGS, type ScrapingSettings } from '../scraping-settings';
@@ -30,7 +30,7 @@ export class GetScrapeStatus {
     return {
       settings: this.settings,
       running: this.runScrape.running,
-      nextRunAt: this.settings.enabled ? nextDailySlot(this.clock.now(), this.settings) : null,
+      nextRunAt: this.settings.enabled ? nextFullSlot(this.clock.now(), this.settings) : null,
       lastRun: recentRuns[0] ?? null,
       recentRuns,
     };

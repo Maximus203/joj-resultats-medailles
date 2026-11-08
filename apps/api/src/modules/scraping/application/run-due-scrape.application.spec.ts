@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { RunDueScrape } from './use-cases/run-due-scrape';
 import { RunScrape } from './use-cases/run-scrape';
+import { testSettings } from './testing/settings';
 import type { ScrapingSettings } from './scraping-settings';
 import { quietDay } from './testing/official-pages';
 import { FakeResultsSource } from './testing/fake-results-source';
@@ -9,15 +10,7 @@ import { FixedClock } from './testing/fixed-clock';
 import { InMemoryImportedPodiumRepository } from './testing/in-memory-imported-podium.repository';
 import { InMemoryScrapeRunRepository } from './testing/in-memory-scrape-run.repository';
 
-const SETTINGS: ScrapingSettings = {
-  enabled: true,
-  firstDay: '2026-11-01',
-  lastDay: '2026-11-13',
-  dailyTime: '23:00',
-  timeZone: 'Africa/Dakar',
-  intervalMinutes: null,
-  tickSeconds: 60,
-};
+const SETTINGS: ScrapingSettings = testSettings();
 
 function setup(settings: ScrapingSettings = SETTINGS, now = '2026-11-03T10:00:00Z') {
   const source = new FakeResultsSource();

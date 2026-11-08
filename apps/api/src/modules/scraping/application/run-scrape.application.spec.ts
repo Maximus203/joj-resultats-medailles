@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { podiumIdOf } from '../domain/official-results';
 import type { StoredPodium } from '../domain/podium-reconciliation';
 import { RunScrape } from './use-cases/run-scrape';
+import { testSettings } from './testing/settings';
 import type { ScrapingSettings } from './scraping-settings';
 import { FakeResultsSource } from './testing/fake-results-source';
 import { FixedClock } from './testing/fixed-clock';
@@ -10,15 +11,7 @@ import { InMemoryImportedPodiumRepository } from './testing/in-memory-imported-p
 import { InMemoryScrapeRunRepository } from './testing/in-memory-scrape-run.repository';
 import { medalPage, quietDay, scheduleItem } from './testing/official-pages';
 
-const SETTINGS: ScrapingSettings = {
-  enabled: true,
-  firstDay: '2026-11-01',
-  lastDay: '2026-11-13',
-  dailyTime: '23:00',
-  timeZone: 'Africa/Dakar',
-  intervalMinutes: null,
-  tickSeconds: 60,
-};
+const SETTINGS: ScrapingSettings = testSettings();
 const NOW = '2026-11-02T10:00:00.000Z';
 
 const JUDO = 'Judo – Men -66 kg';

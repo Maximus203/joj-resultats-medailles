@@ -1,29 +1,45 @@
 import { localDay } from './local-time';
+import type { ScrapeKind } from './scrape-run';
 
-/** Quand l'import tourne : une heure locale par jour, pendant les Jeux, et en rattrapage. */
+/**
+ * Quand l'import tourne : un import léger tous les `intervalMinutes` dans la fenêtre du jour, un
+ * import complet aux heures de `fullTimes`, et un rattrapage complet au démarrage.
+ */
 export interface ScheduleSettings {
   firstDay: string;
   lastDay: string;
-  /** Heure locale HH:MM de l'exécution quotidienne. */
-  dailyTime: string;
   timeZone: string;
-  /** Exécution supplémentaire toutes les N minutes, ou `null`. */
-  intervalMinutes: number | null;
-  /** Pas de l'horloge : le créneau quotidien se prend dans les deux battements qui suivent son heure. */
+  /** Heures locales HH:MM des imports complets. */
+  fullTimes: readonly string[];
+  /** Fenêtre locale (HH:MM, fin incluse à la minute) des imports légers. */
+  windowStart: string;
+  windowEnd: string;
+  intervalMinutes: number;
+  /** Pas de l'horloge : un créneau complet se prend dans les deux battements qui suivent son heure. */
   tickSeconds: number;
+  /** Au-delà de cette durée sans import réussi, dans la fenêtre, les données sont périmées. */
+  staleAfterMinutes: number;
 }
 
-/** `catch-up` : serveur démarré après plus de 24 h sans import réussi ; `daily` : heure fixe ; `interval` : complément. */
-export type DueReason = 'catch-up' | 'daily' | 'interval';
+/** `catch-up` : serveur démarré après plus de 24 h sans import réussi ; `full-slot` : heure complète ; `interval` : import léger. */
+export type DueReason = 'catch-up' | 'full-slot' | 'interval';
+
+export interface Due {
+  kind: ScrapeKind;
+  reason: DueReason;
+}
 
 const DAY_MS = 86_400_000;
+const MINUTE_MS = 60_000;
 const CATCH_UP_AFTER_MS = DAY_MS;
 
 export interface DueInput {
   now: Date;
-  /** Le début de la dernière exécution, réussie ou non. */
+  /** Le début de la dernière exécution lancée ou sautée, tous genres confondus. */
   lastAttemptAt: Date | null;
-  /** Le début de la dernière exécution qui n'a pas échoué. */
+  /** Le début du dernier import complet réellement lancé. */
+  lastFullAt: Date | null;
+  /** Le début de la dernière exécution qui n'a ni échoué ni été sautée. */
   lastSucceededAt: Date | null;
   /** Vrai au démarrage du serveur : c'est là que l'on rattrape une exécution manquée. */
   startup: boolean;
@@ -67,58 +83,86 @@ export function zonedInstant(day: string, time: string, timeZone: string): Date 
 }
 
 /** Les Jeux, plus le lendemain de leur dernier jour : après, plus rien ne tourne. */
-export function inGamesWindow(now: Date, settings: ScheduleSettings): boolean {
+export function inGamesWindow(
+  now: Date,
+  settings: Pick<ScheduleSettings, 'firstDay' | 'lastDay' | 'timeZone'>,
+): boolean {
   const day = localDay(now, settings.timeZone);
   return day >= settings.firstDay && day <= addDays(settings.lastDay, 1);
 }
 
-/** Le dernier créneau quotidien passé (aujourd'hui à l'heure fixe, ou hier si elle n'est pas venue). */
-function lastDailySlot(now: Date, settings: ScheduleSettings): Date {
-  const today = zonedInstant(
-    localDay(now, settings.timeZone),
-    settings.dailyTime,
-    settings.timeZone,
-  );
-  if (today <= now) return today;
-  return zonedInstant(
-    addDays(localDay(now, settings.timeZone), -1),
-    settings.dailyTime,
-    settings.timeZone,
-  );
+/** La fenêtre du jour où tournent les imports légers : de `windowStart` à `windowEnd` inclus, à la minute. */
+export function inWindow(
+  now: Date,
+  settings: Pick<ScheduleSettings, 'timeZone' | 'windowStart' | 'windowEnd'>,
+): boolean {
+  const day = localDay(now, settings.timeZone);
+  const opening = zonedInstant(day, settings.windowStart, settings.timeZone);
+  const closing = zonedInstant(day, settings.windowEnd, settings.timeZone);
+  return now >= opening && now.getTime() < closing.getTime() + MINUTE_MS;
 }
 
-/** Le prochain créneau quotidien, ou `null` quand les Jeux (et leur lendemain) sont finis. */
-export function nextDailySlot(now: Date, settings: ScheduleSettings): Date | null {
-  const day = localDay(now, settings.timeZone);
-  const tonight = zonedInstant(day, settings.dailyTime, settings.timeZone);
-  const next =
-    tonight > now ? tonight : zonedInstant(addDays(day, 1), settings.dailyTime, settings.timeZone);
-  const opening = zonedInstant(settings.firstDay, settings.dailyTime, settings.timeZone);
-  const slot = next < opening ? opening : next;
-  const lastSlot = zonedInstant(
-    addDays(settings.lastDay, 1),
-    settings.dailyTime,
-    settings.timeZone,
+/** Le dernier créneau complet passé, aujourd'hui ou hier. */
+function lastFullSlot(now: Date, settings: ScheduleSettings): Date | null {
+  const today = localDay(now, settings.timeZone);
+  const slots = [today, addDays(today, -1)].flatMap((day) =>
+    settings.fullTimes.map((time) => zonedInstant(day, time, settings.timeZone)),
   );
-  return slot > lastSlot ? null : slot;
+  const past = slots.filter((slot) => slot <= now).sort((a, b) => b.getTime() - a.getTime());
+  return past[0] ?? null;
+}
+
+/** Le prochain créneau complet, ou `null` quand les Jeux (et leur lendemain) sont finis. */
+export function nextFullSlot(now: Date, settings: ScheduleSettings): Date | null {
+  const today = localDay(now, settings.timeZone);
+  const first = zonedInstant(settings.firstDay, '00:00', settings.timeZone);
+  const startDay = now < first ? settings.firstDay : today;
+  const last = addDays(settings.lastDay, 1);
+  for (let day = startDay; day <= last; day = addDays(day, 1)) {
+    const slots = settings.fullTimes
+      .map((time) => zonedInstant(day, time, settings.timeZone))
+      .filter((slot) => slot > now)
+      .sort((a, b) => a.getTime() - b.getTime());
+    if (slots[0]) return slots[0];
+  }
+  return null;
 }
 
 /**
- * Pourquoi une exécution est due maintenant, ou `null`. Une exécution échouée compte comme une
- * tentative : on ne la rejoue qu'au créneau suivant (ou à l'intervalle), pas à chaque minute.
+ * Périmé : l'import est dans sa fenêtre des Jeux et aucun import n'a réussi depuis plus de
+ * `staleAfterMinutes` (ou jamais). Hors fenêtre, rien n'est attendu : jamais périmé.
  */
-export function dueReason(input: DueInput, settings: ScheduleSettings): DueReason | null {
-  const { now, lastAttemptAt, lastSucceededAt, startup } = input;
+export function isStale(
+  input: { now: Date; lastSucceededAt: Date | null },
+  settings: ScheduleSettings,
+): boolean {
+  const { now, lastSucceededAt } = input;
+  if (!inGamesWindow(now, settings) || !inWindow(now, settings)) return false;
+  return (
+    lastSucceededAt === null ||
+    now.getTime() - lastSucceededAt.getTime() > settings.staleAfterMinutes * MINUTE_MS
+  );
+}
+
+/**
+ * Quel import est dû maintenant, ou `null`. Le complet prime sur le léger. Une exécution échouée
+ * compte comme une tentative : on ne la rejoue qu'au créneau ou à l'intervalle suivant. Un
+ * battement tardif ne lance rien : seuls un créneau, l'intervalle ou le démarrage déclenchent.
+ */
+export function dueRun(input: DueInput, settings: ScheduleSettings): Due | null {
+  const { now, lastAttemptAt, lastFullAt, lastSucceededAt, startup } = input;
   if (!inGamesWindow(now, settings)) return null;
   const staleSuccess =
     lastSucceededAt === null || now.getTime() - lastSucceededAt.getTime() > CATCH_UP_AFTER_MS;
-  if (startup && staleSuccess) return 'catch-up';
-  const slot = lastDailySlot(now, settings);
-  const onTime = now.getTime() - slot.getTime() <= 2 * settings.tickSeconds * 1000;
-  // Un battement tardif ne lance rien : seul le créneau lui-même, ou le démarrage, déclenche.
-  if (onTime && (lastAttemptAt === null || lastAttemptAt < slot)) return 'daily';
-  if (lastAttemptAt === null) return null;
-  const interval = settings.intervalMinutes;
-  if (interval && now.getTime() - lastAttemptAt.getTime() >= interval * 60_000) return 'interval';
+  if (startup && staleSuccess) return { kind: 'full', reason: 'catch-up' };
+  const slot = lastFullSlot(now, settings);
+  const onTime = slot !== null && now.getTime() - slot.getTime() <= 2 * settings.tickSeconds * 1000;
+  if (slot && onTime && (lastFullAt === null || lastFullAt < slot)) {
+    return { kind: 'full', reason: 'full-slot' };
+  }
+  const dueByInterval =
+    lastAttemptAt === null ||
+    now.getTime() - lastAttemptAt.getTime() >= settings.intervalMinutes * MINUTE_MS;
+  if (inWindow(now, settings) && dueByInterval) return { kind: 'incremental', reason: 'interval' };
   return null;
 }

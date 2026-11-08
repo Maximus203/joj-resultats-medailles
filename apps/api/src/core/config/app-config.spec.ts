@@ -19,37 +19,51 @@ describe('AppConfig', () => {
     expect(() => AppConfig.fromEnv({ DATABASE_URL: 'mysql://localhost' })).toThrow(/DATABASE_URL/);
   });
 
-  it('007-AS6: keeps the automatic import off by default, set for 23:00 in Dakar', () => {
+  it('008-AS1: keeps the automatic import off by default, with the rhythm of the Games', () => {
     const config = AppConfig.fromEnv({});
     expect(config.get('SCRAPING_ENABLED')).toBe(false);
-    expect(config.get('SCRAPING_DAILY_TIME')).toBe('23:00');
+    expect(config.get('SCRAPING_FULL_TIMES')).toEqual(['07:00', '23:00']);
+    expect(config.get('SCRAPING_WINDOW_START')).toBe('08:00');
+    expect(config.get('SCRAPING_WINDOW_END')).toBe('23:00');
+    expect(config.get('SCRAPING_INTERVAL_MINUTES')).toBe(15);
+    expect(config.get('SCRAPING_STALE_AFTER_MINUTES')).toBe(120);
     expect(config.get('SCRAPING_TIMEZONE')).toBe('Africa/Dakar');
     expect(config.get('SCRAPING_FIRST_DAY')).toBe('2026-11-01');
     expect(config.get('SCRAPING_LAST_DAY')).toBe('2026-11-13');
-    expect(config.get('SCRAPING_INTERVAL_MINUTES')).toBeUndefined();
   });
 
-  it('007-AS6: reads the import settings and rejects an invalid hour or time zone', () => {
+  it('008-AS1: reads the rhythm settings and rejects an invalid hour, list or time zone', () => {
     const config = AppConfig.fromEnv({
       SCRAPING_ENABLED: 'true',
-      SCRAPING_DAILY_TIME: '06:30',
-      SCRAPING_INTERVAL_MINUTES: '180',
+      SCRAPING_FULL_TIMES: '06:30, 12:00,23:30',
+      SCRAPING_WINDOW_START: '09:00',
+      SCRAPING_INTERVAL_MINUTES: '30',
     });
     expect(config.get('SCRAPING_ENABLED')).toBe(true);
-    expect(config.get('SCRAPING_DAILY_TIME')).toBe('06:30');
-    expect(config.get('SCRAPING_INTERVAL_MINUTES')).toBe(180);
-    expect(() => AppConfig.fromEnv({ SCRAPING_DAILY_TIME: '25:00' })).toThrow(
-      /SCRAPING_DAILY_TIME/,
+    expect(config.get('SCRAPING_FULL_TIMES')).toEqual(['06:30', '12:00', '23:30']);
+    expect(config.get('SCRAPING_WINDOW_START')).toBe('09:00');
+    expect(config.get('SCRAPING_INTERVAL_MINUTES')).toBe(30);
+    expect(() => AppConfig.fromEnv({ SCRAPING_FULL_TIMES: '07:00,25:00' })).toThrow(
+      /SCRAPING_FULL_TIMES/,
     );
+    expect(() => AppConfig.fromEnv({ SCRAPING_FULL_TIMES: '' })).toThrow(/SCRAPING_FULL_TIMES/);
     expect(() => AppConfig.fromEnv({ SCRAPING_TIMEZONE: 'Mars/Phobos' })).toThrow(
       /SCRAPING_TIMEZONE/,
     );
   });
 
-  it('007-AS6: treats an empty interval, as a compose file passes it, as no interval', () => {
+  it('008-AS1: refuses a window that closes before it opens', () => {
+    const attempt = () =>
+      AppConfig.fromEnv({ SCRAPING_WINDOW_START: '23:00', SCRAPING_WINDOW_END: '08:00' });
+
+    expect(attempt).toThrow(/SCRAPING_WINDOW_START/);
+    expect(attempt).toThrow(/doit être avant SCRAPING_WINDOW_END/);
+  });
+
+  it('007-AS6: treats an empty interval, as a compose file passes it, as the default', () => {
     expect(
       AppConfig.fromEnv({ SCRAPING_INTERVAL_MINUTES: '' }).get('SCRAPING_INTERVAL_MINUTES'),
-    ).toBeUndefined();
+    ).toBe(15);
   });
 
   it('007-AS6: refuses a first day after the last day, naming the variable in French', () => {
@@ -73,7 +87,9 @@ describe('AppConfig', () => {
       }
     };
 
-    expect(message({ SCRAPING_DAILY_TIME: '7h30' })).toMatch(/heure HH:MM.*SCRAPING_DAILY_TIME/s);
+    expect(message({ SCRAPING_WINDOW_START: '7h30' })).toMatch(
+      /heure HH:MM.*SCRAPING_WINDOW_START/s,
+    );
     expect(message({ SCRAPING_ENABLED: 'maybe' })).toMatch(/true ou false.*SCRAPING_ENABLED/s);
     expect(message({ SCRAPING_FIRST_DAY: '2026-02-31' })).toMatch(
       /AAAA-MM-JJ.*SCRAPING_FIRST_DAY/s,

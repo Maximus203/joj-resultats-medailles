@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { type ScrapeRun } from '../../domain/scrape-run';
-import { dueReason } from '../../domain/scrape-schedule';
+import { dueRun } from '../../domain/scrape-schedule';
 import { Clock } from '../clock';
 import { ScrapeRunRepository } from '../scrape-run.repository';
 import { SCRAPING_SETTINGS, type ScrapingSettings } from '../scraping-settings';
@@ -22,16 +22,18 @@ export class RunDueScrape {
   async execute({ startup }: { startup: boolean }): Promise<ScrapeRun | null> {
     if (!this.settings.enabled || this.runScrape.running) return null;
     const [lastRun] = await this.runs.latest(1);
-    const reason = dueReason(
+    const due = dueRun(
       {
         now: this.clock.now(),
         lastAttemptAt: lastRun?.startedAt ?? null,
+        // Tant que seul l'import complet existe, la dernière exécution est le dernier complet.
+        lastFullAt: lastRun?.startedAt ?? null,
         lastSucceededAt: await this.runs.lastSucceededAt(),
         startup,
       },
       this.settings,
     );
-    if (!reason) return null;
-    return this.runScrape.execute(reason === 'catch-up' ? 'startup' : 'scheduled');
+    if (!due || due.kind === 'incremental') return null;
+    return this.runScrape.execute(due.reason === 'catch-up' ? 'startup' : 'scheduled');
   }
 }

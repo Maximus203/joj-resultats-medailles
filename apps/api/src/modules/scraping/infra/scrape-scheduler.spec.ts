@@ -1,17 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ScrapingSettings } from '../application/scraping-settings';
+import { testSettings } from '../application/testing/settings';
 import { ScrapeScheduler } from './scrape-scheduler';
 
-const SETTINGS: ScrapingSettings = {
-  enabled: true,
-  firstDay: '2026-11-01',
-  lastDay: '2026-11-13',
-  dailyTime: '23:00',
-  timeZone: 'Africa/Dakar',
-  intervalMinutes: null,
-  tickSeconds: 60,
-};
+const SETTINGS: ScrapingSettings = testSettings();
 const BEAT = SETTINGS.tickSeconds * 1000;
 
 function setup(settings: ScrapingSettings = SETTINGS) {

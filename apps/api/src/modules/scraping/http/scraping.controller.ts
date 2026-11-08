@@ -34,9 +34,12 @@ export class ScrapingController {
       enabled: settings.enabled,
       running: view.running,
       schedule: {
-        dailyTime: settings.dailyTime,
         timeZone: settings.timeZone,
+        fullTimes: [...settings.fullTimes],
+        windowStart: settings.windowStart,
+        windowEnd: settings.windowEnd,
         intervalMinutes: settings.intervalMinutes,
+        staleAfterMinutes: settings.staleAfterMinutes,
         firstDay: settings.firstDay,
         lastDay: settings.lastDay,
       },

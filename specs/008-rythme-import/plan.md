@@ -59,7 +59,7 @@ On étend le module `scraping`.
 
 ## 6. Tâches
 
-- [ ] T01 [008-AS1, AS3, AS4, AS7] Écrire d'abord `domain/scrape-schedule.spec.ts` (« 008-AS1: … », « 008-AS3: … », « 008-AS4: … », « 008-AS7: … ») et `app-config.spec.ts`, puis `scrape-schedule.ts` (genre, créneaux, fenêtre, `isStale`) et les variables de `env-schema.ts`
+- [x] T01 [008-AS1, AS3, AS4, AS7] Écrire d'abord `domain/scrape-schedule.spec.ts` (« 008-AS1: … », « 008-AS3: … », « 008-AS4: … », « 008-AS7: … ») et `app-config.spec.ts`, puis `scrape-schedule.ts` (genre, créneaux, fenêtre, `isStale`) et les variables de `env-schema.ts`
 - [ ] T02 [008-AS2, AS5] Écrire d'abord `application/run-scrape.application.spec.ts` (« 008-AS2: … »), puis le genre `incremental` dans `RunScrape` et `collectOfficialPodiums` (épreuves connues non relues), le statut `skipped`, la colonne `kind` (migration générée) et les dépôts
 - [ ] T03 [008-AS1, AS3, AS5, AS6, AS7] Écrire d'abord `run-due-scrape.application.spec.ts`, `check-staleness.application.spec.ts` et `test/scraping.e2e.spec.ts` (« 008-AS6: … »), puis `RunDueScrape`, `CheckStaleness`, `GetScrapeStatus`, le planificateur, le schéma partagé et le contrôleur
 - [ ] T04 [008-AS8] Écrire d'abord `features/scraping/freshness-banner.test.tsx` (« 008-AS8: … »), puis `FreshnessBanner`, la requête, la fausse API et l'affichage sous l'en-tête
