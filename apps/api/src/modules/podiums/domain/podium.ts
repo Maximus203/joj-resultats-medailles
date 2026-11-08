@@ -9,6 +9,8 @@ export interface PodiumProps {
   gold: string;
   silver: string;
   bronze: string;
+  /** Le second bronze (judo, lutte…) ; `null` ou absent quand l'épreuve n'en décerne qu'un. */
+  secondBronze?: string | null;
   createdAt: Date;
   /** La date de la dernière correction ; `null` tant que le podium n'a jamais été corrigé. */
   correctedAt: Date | null;
@@ -22,6 +24,7 @@ export interface NewPodium {
   gold: string;
   silver: string;
   bronze: string;
+  secondBronze?: string | null;
   now: Date;
 }
 
@@ -30,11 +33,12 @@ export class Podium {
   private constructor(private readonly props: PodiumProps) {}
 
   static create({ now, ...input }: NewPodium): Podium {
-    if (new Set([input.gold, input.silver, input.bronze]).size < 3) {
+    if (hasRepeatedCountry([input.gold, input.silver, input.bronze, input.secondBronze])) {
       throw podiumCountriesNotDistinct();
     }
     return new Podium({
       ...input,
+      secondBronze: input.secondBronze ?? null,
       eventName: cleanName(input.eventName),
       discipline: input.discipline.trim(),
       createdAt: now,
@@ -55,7 +59,7 @@ export class Podium {
     medals: { gold: string; silver: string; bronze: string },
     now: Date,
   ): { podium: Podium; revision: PodiumRevision | null } {
-    if (new Set([medals.gold, medals.silver, medals.bronze]).size < 3) {
+    if (hasRepeatedCountry([medals.gold, medals.silver, medals.bronze, this.secondBronze])) {
       throw podiumCountriesNotDistinct();
     }
     const unchanged =
@@ -95,12 +99,21 @@ export class Podium {
   get bronze(): string {
     return this.props.bronze;
   }
+  get secondBronze(): string | null {
+    return this.props.secondBronze ?? null;
+  }
   get createdAt(): Date {
     return this.props.createdAt;
   }
   get correctedAt(): Date | null {
     return this.props.correctedAt;
   }
+}
+
+/** Vrai si deux des pays donnés (les absents sont ignorés) sont le même. */
+function hasRepeatedCountry(countries: (string | null | undefined)[]): boolean {
+  const present = countries.filter((country) => country != null);
+  return new Set(present).size < present.length;
 }
 
 /** Retire les espaces en trop, aux extrémités et entre les mots. */

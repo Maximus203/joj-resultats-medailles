@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { type DatabaseConnection, openDatabase } from '../../../core/database/database';
 import { Podium } from '../domain/podium';
 import { DrizzlePodiumRepository } from './drizzle-podium.repository';
+import { toPodiumRow } from './podium.mapper';
 import { podiums } from './podiums.schema';
 
 const podium = (eventName: string, medals: { gold: string; silver: string; bronze: string }) =>
@@ -48,6 +49,31 @@ function contractTests(open: () => DatabaseConnection) {
       bronze: 'FRA',
       day: '2026-11-05',
     });
+  });
+
+  it('007-AS2: stores a second bronze and refuses one that repeats a country', async () => {
+    const judo = Podium.create({
+      id: randomUUID(),
+      eventName: 'Judo – Men -66 kg',
+      discipline: 'Judo',
+      day: '2026-11-01',
+      now: new Date(),
+      gold: 'UKR',
+      silver: 'CAN',
+      bronze: 'ARG',
+      secondBronze: 'SEN',
+    });
+    await repository.add(judo);
+
+    expect((await repository.findById(judo.id))?.secondBronze).toBe('SEN');
+    const error = await connection.db
+      .insert(podiums)
+      .values({ ...toPodiumRow(judo), id: randomUUID(), eventKey: 'x', secondBronze: 'CAN' })
+      .then(
+        () => null,
+        (reason: unknown) => reason,
+      );
+    expect(rootCause(error)).toMatchObject({ constraint: 'podiums_second_bronze_distinct' });
   });
 
   it('001-AS3: the database refuses a repeated country even if the domain is bypassed', async () => {

@@ -6,9 +6,11 @@
 
 On crée le module `scraping` dans l'API : il lit le calendrier et les pages « Medallists » du site officiel, transforme chaque finale terminée en podium, le compare à la base et l'importe sans doublon, puis écrit un compte rendu d'exécution consultable. Une horloge interne le lance chaque jour à 23:00 (Africa/Dakar) pendant les Jeux et le rattrape au démarrage ; une route permet de le lancer à la demande. Six tâches : parsing et script, modèle du podium (second bronze, origine), comparaison et cas d'usage, persistance et source HTTP, horloge et routes, déploiement et documentation. On laisse de côté l'écran et l'affichage du second bronze.
 
+Correction (T02) : l'origine d'un podium se déduit de son identifiant (celui de l'import est stable, celui d'une saisie à la main est aléatoire), il n'y a donc pas de colonne `source` ; `second_bronze` seule est ajoutée, par une migration `add_podium_second_bronze`. La configuration `SCRAPING_*` est ajoutée dès T01, le script en ayant besoin.
+
 Choix faits sans que la spec les impose (à contester) :
 
-- **Règle de conflit** : la clé d'une épreuve est son nom en minuscules (`eventKey`, déjà unique en base). Absente : insertion (origine `scraper`). Identique : rien. Différente : mise à jour seulement si le podium est d'origine `scraper` et jamais corrigé ; sinon (origine `manual` ou corrigé via TR4) le podium reste et l'écart est listé.
+- **Règle de conflit** : la clé d'une épreuve est son nom en minuscules (`eventKey`, déjà unique en base). Absente : insertion avec l'identifiant stable de l'import. Identique : rien. Différente : mise à jour seulement si le podium porte l'identifiant stable de l'import et n'a jamais été corrigé ; sinon (saisi à la main, identifiant aléatoire, ou corrigé via TR4) il reste et l'écart est listé.
 - **Mise à jour officielle** : elle garde l'ancienne version dans `podium_revisions` mais ne pose pas `corrected_at` (réservé aux corrections du journaliste).
 - **Second bronze** : colonne `second_bronze` nullable (judo, lutte, triathlon). Une égalité à l'or ou à l'argent est ignorée (raison `TIED_PLACES`).
 - **Finales atypiques** : toute unité terminée dont le code contient `FNL-` est candidate, hors placements, bronze, séries et manches ; sa page « Medallists » dit s'il y a un podium.
@@ -32,13 +34,13 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 - **application** : ports `ResultsSource`, `ImportedPodiumRepository`, `ScrapeRunRepository`, `Clock`, jeton `SCRAPING_SETTINGS` ; cas d'usage `RunScrape` (verrou, collecte, comparaison, écriture, compte rendu), `RunDueScrape` (appelé par l'horloge), `GetScrapeStatus` ; fakes dans `application/testing/`.
 - **infra** : `scraping.schema.ts` (table `scrape_runs`), `drizzle-imported-podium.repository.ts`, `drizzle-scrape-run.repository.ts`, `http-results-source.ts` (délai poli, délai maximal, `fetch` injectable), `system-clock.ts`, `scrape-scheduler.ts` (minuteur, démarrage).
 - **http** : `GET /api/scraping` rend l'état et le dernier compte rendu complet (200) ; `POST /api/scraping/runs` lance une exécution (202), 409 si une tourne. Le POST est protégé en production par l'authentification de Traefik (écritures).
-- **podiums** : `podiums.schema.ts` gagne `secondBronze` et `source` ; `Podium` et le tableau des médailles comptent le second bronze.
+- **podiums** : `podiums.schema.ts` gagne `secondBronze` ; `Podium` et le tableau des médailles comptent le second bronze.
 - **config** : `core/config/app-config.ts` gagne les variables `SCRAPING_*` ; `scripts/scrape-results.mts` devient un mince appel à `collectOfficialPodiums`.
 - **web** : rien : l'écran est hors périmètre.
 
 ## 3. Données
 
-`podiums` gagne `second_bronze` varchar(3) nullable (contrainte : différent des trois autres pays) et `source` varchar(10) non nul, défaut `manual` (règle de conflit). Table `scrape_runs` : `id` uuid clé primaire ; `trigger` (`scheduled`, `manual`, `startup`) ; `status` (`success`, `partial`, `failed`) ; `started_at`, `finished_at` ; `imported`, `updated`, `identical`, `differing`, `absent`, `ignored`, `errors` (entiers, lisibles sans ouvrir le détail) ; `report` jsonb (comparaison, exhaustivité, messages). Index sur `started_at`. Migrations : `pnpm db:generate --name=add_podium_second_bronze_and_source`, puis `--name=create_scrape_runs`.
+`podiums` gagne `second_bronze` varchar(3) nullable (contrainte : différent des trois autres pays). Table `scrape_runs` : `id` uuid clé primaire ; `trigger` (`scheduled`, `manual`, `startup`) ; `status` (`success`, `partial`, `failed`) ; `started_at`, `finished_at` ; `imported`, `updated`, `identical`, `differing`, `absent`, `ignored`, `errors` (entiers, lisibles sans ouvrir le détail) ; `report` jsonb (comparaison, exhaustivité, messages). Index sur `started_at`. Migrations : `pnpm db:generate --name=add_podium_second_bronze`, puis `--name=create_scrape_runs`.
 
 ## 4. Erreurs
 
@@ -61,7 +63,7 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 ## 6. Tâches
 
 - [x] T01 [007-AS2, AS3] Écrire d'abord `apps/api/src/modules/scraping/domain/official-results.spec.ts` (« 007-AS2: reads a final not flagged gold », « 007-AS3: ignores a tie with its reason »), puis `official-results.ts` (repris de `scripts/scrape-core.mts`, qui disparaît) et le script `scrape-results.mts` en mince appel
-- [ ] T02 [007-AS2] Écrire d'abord `podiums/domain/medal-table.spec.ts` (« 007-AS2: counts both bronze countries »), puis `secondBronze` et `source` dans `Podium`, le schéma, la migration générée, le mapper et les schémas partagés
+- [x] T02 [007-AS2] Écrire d'abord `podiums/domain/medal-table.spec.ts` (« 007-AS2: counts both bronze countries »), puis `secondBronze` et `source` dans `Podium`, le schéma, la migration générée, le mapper et les schémas partagés
 - [ ] T03 [007-AS1, AS4, AS5] Écrire d'abord `application/run-scrape.application.spec.ts` (« 007-AS1: … », « 007-AS4: … », « 007-AS5: … »), puis `podium-reconciliation.ts`, les ports, les fakes, `RunScrape`
 - [ ] T04 [007-AS4] Écrire d'abord `infra/drizzle-imported-podium.repository.int.spec.ts` (« 007-AS4: … »), puis `scraping.schema.ts`, la migration générée, les dépôts Drizzle et `http-results-source.ts`
 - [ ] T05 [007-AS6, AS7, AS1] Écrire d'abord `domain/scrape-schedule.spec.ts` (« 007-AS6: … »), `application/run-due-scrape.application.spec.ts` et `test/scraping.e2e.spec.ts` (« 007-AS7: … »), puis horloge, `RunDueScrape`, `GetScrapeStatus`, contrôleur, schémas partagés, configuration, module

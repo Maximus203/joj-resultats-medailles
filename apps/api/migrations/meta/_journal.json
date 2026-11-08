@@ -29,6 +29,13 @@
       "when": 1794072267612,
       "tag": "0003_create_podium_revisions",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794146566961,
+      "tag": "0004_add_podium_second_bronze",
+      "breakpoints": true
     }
   ]
 }

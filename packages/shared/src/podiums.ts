@@ -25,6 +25,8 @@ export const podiumSchema = z.object({
   gold: countryCodeSchema,
   silver: countryCodeSchema,
   bronze: countryCodeSchema,
+  /** Le second bronze des épreuves à deux bronzes (judo, lutte) ; `null` ou absent sinon. */
+  secondBronze: countryCodeSchema.nullable().optional(),
   createdAt: z.iso.datetime(),
 });
 export type PodiumResponse = z.infer<typeof podiumSchema>;

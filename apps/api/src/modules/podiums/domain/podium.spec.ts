@@ -11,6 +11,24 @@ const base = {
 };
 
 describe('Podium', () => {
+  it('007-AS2: keeps a second bronze, and refuses one that repeats another country', () => {
+    const podium = Podium.create({
+      ...base,
+      gold: 'UKR',
+      silver: 'CAN',
+      bronze: 'ARG',
+      secondBronze: 'SEN',
+    });
+
+    expect(podium.secondBronze).toBe('SEN');
+    expect(() =>
+      Podium.create({ ...base, gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'CAN' }),
+    ).toThrow(expect.objectContaining({ code: 'PODIUM_COUNTRIES_NOT_DISTINCT' }));
+    expect(
+      Podium.create({ ...base, gold: 'UKR', silver: 'CAN', bronze: 'ARG' }).secondBronze,
+    ).toBeNull();
+  });
+
   it('001-AS3: refuses a podium with a repeated country', () => {
     const repeated = [
       { gold: 'SEN', silver: 'SEN', bronze: 'FRA' },

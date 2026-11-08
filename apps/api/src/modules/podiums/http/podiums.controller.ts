@@ -82,6 +82,7 @@ function toResponse(podium: Podium): PodiumResponse {
     gold: podium.gold,
     silver: podium.silver,
     bronze: podium.bronze,
+    secondBronze: podium.secondBronze,
     createdAt: podium.createdAt.toISOString(),
   };
 }

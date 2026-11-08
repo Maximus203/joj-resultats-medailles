@@ -45,4 +45,15 @@ describe('buildMedalTable', () => {
   it('004-AS3: returns an empty table without podiums', () => {
     expect(buildMedalTable([])).toEqual([]);
   });
+
+  it('007-AS2: counts both bronze countries of a combat event', () => {
+    const table = buildMedalTable([
+      { gold: 'UKR', silver: 'CAN', bronze: 'ARG', secondBronze: 'SEN' },
+      podium('SEN', 'CAN', 'ARG'),
+    ]);
+
+    expect(table.find((row) => row.country === 'SEN')).toMatchObject({ gold: 1, bronze: 1 });
+    expect(table.find((row) => row.country === 'ARG')).toMatchObject({ bronze: 2 });
+    expect(table.find((row) => row.country === 'CAN')).toMatchObject({ silver: 2 });
+  });
 });

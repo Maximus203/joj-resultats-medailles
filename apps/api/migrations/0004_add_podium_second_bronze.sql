@@ -1,0 +1,2 @@
+ALTER TABLE "podiums" ADD COLUMN "second_bronze" varchar(3);--> statement-breakpoint
+ALTER TABLE "podiums" ADD CONSTRAINT "podiums_second_bronze_distinct" CHECK ("podiums"."second_bronze" is null or ("podiums"."second_bronze" <> "podiums"."gold" and "podiums"."second_bronze" <> "podiums"."silver" and "podiums"."second_bronze" <> "podiums"."bronze"));

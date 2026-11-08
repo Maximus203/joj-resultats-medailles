@@ -26,6 +26,8 @@ export const podiums = pgTable(
     gold: varchar('gold', { length: 3 }).notNull(),
     silver: varchar('silver', { length: 3 }).notNull(),
     bronze: varchar('bronze', { length: 3 }).notNull(),
+    // Le second bronze des sports de combat à deux bronzes ; nul pour les autres épreuves.
+    secondBronze: varchar('second_bronze', { length: 3 }),
     // Précision milliseconde = celle de Date en JavaScript.
     createdAt: timestamp('created_at', { withTimezone: true, precision: 3 }).notNull(),
     // La dernière correction ; nul tant que le podium n'a jamais été corrigé.
@@ -36,6 +38,10 @@ export const podiums = pgTable(
     check(
       'podiums_countries_distinct',
       sql`${table.gold} <> ${table.silver} and ${table.gold} <> ${table.bronze} and ${table.silver} <> ${table.bronze}`,
+    ),
+    check(
+      'podiums_second_bronze_distinct',
+      sql`${table.secondBronze} is null or (${table.secondBronze} <> ${table.gold} and ${table.secondBronze} <> ${table.silver} and ${table.secondBronze} <> ${table.bronze})`,
     ),
   ],
 );

@@ -2,6 +2,8 @@ export interface PodiumMedals {
   gold: string;
   silver: string;
   bronze: string;
+  /** Le second bronze des sports de combat à deux bronzes ; absent ou `null` sinon. */
+  secondBronze?: string | null;
 }
 
 export interface MedalTableRow {
@@ -37,10 +39,11 @@ function countMedals(podiums: readonly PodiumMedals[]): Map<string, Counts> {
     counts.set(country, created);
     return created;
   };
-  for (const { gold, silver, bronze } of podiums) {
+  for (const { gold, silver, bronze, secondBronze } of podiums) {
     countryRow(gold).gold += 1;
     countryRow(silver).silver += 1;
     countryRow(bronze).bronze += 1;
+    if (secondBronze) countryRow(secondBronze).bronze += 1;
   }
   return counts;
 }

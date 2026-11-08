@@ -11,6 +11,7 @@ export function toPodium(row: PodiumRow): Podium {
     gold: row.gold,
     silver: row.silver,
     bronze: row.bronze,
+    secondBronze: row.secondBronze,
     createdAt: row.createdAt,
     correctedAt: row.correctedAt,
   });
@@ -27,6 +28,7 @@ export function toPodiumRow(podium: Podium): PodiumRow {
     gold: podium.gold,
     silver: podium.silver,
     bronze: podium.bronze,
+    secondBronze: podium.secondBronze,
     createdAt: podium.createdAt,
     correctedAt: podium.correctedAt,
   };
