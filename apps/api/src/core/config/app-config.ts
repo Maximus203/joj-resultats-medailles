@@ -1,15 +1,5 @@
 import { z } from 'zod';
-
-const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  PORT: z.coerce.number().int().positive().default(3000),
-  /** Défini : un vrai serveur PostgreSQL. Absent : PGlite, embarqué dans le process. */
-  DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }).optional(),
-  /** Dossier des données PGlite, relatif à apps/api ; `memory://` pour une base en mémoire. */
-  PGLITE_DATA_DIR: z.string().min(1).default('.data/pglite'),
-});
-
-export type Env = z.infer<typeof envSchema>;
+import { type Env, envSchema } from './env-schema';
 
 /** Configuration validée une fois, au démarrage : une variable invalide arrête l'API. */
 export class AppConfig {

@@ -2,44 +2,34 @@
  * pnpm db:scrape  récupère les podiums déjà publiés sur le site officiel des résultats des JOJ
  *                 Dakar 2026 et écrit apps/api/data/podiums.json, que `pnpm db:seed` charge.
  *
- * Source : https://webresult.apps.dakar2026.org (résultats officiels, pages publiques).
- * Pour chaque jour des Jeux : le calendrier repère les finales terminées, puis la page
- * « Medallists » de chaque finale donne l'or, l'argent et le bronze. Relancer le scraper met le
- * fichier à jour au fil des Jeux ; les id sont stables, le seed ignore les doublons.
+ * Mince appel au code de l'API (modules/scraping/domain/official-results.ts) : la lecture du site
+ * est la même que celle de l'import automatique, et les réglages viennent de la même
+ * configuration (variables SCRAPING_*). Ce script ne touche pas à la base ; en production,
+ * l'API importe seule chaque soir.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { type Env, envSchema } from '../src/core/config/env-schema.ts';
 import {
-  parseMedalRows,
-  parseMedalUnits,
-  toPodiumRow,
-  type MedalUnit,
-  type PodiumSeedRow,
-} from './scrape-core.mts';
+  collectOfficialPodiums,
+  daysBetween,
+  type OfficialSource,
+} from '../src/modules/scraping/domain/official-results.ts';
 
-const BASE = 'https://webresult.apps.dakar2026.org/nh/en/Comp';
-const FIRST_DAY = '2026-11-01';
-const LAST_DAY = '2026-11-13';
-const PAUSE_MS = 250;
+if (existsSync('.env')) process.loadEnvFile('.env');
+const env = envSchema.parse(process.env);
+const config = { get: <K extends keyof Env>(key: K): Env[K] => env[key] };
 const outFile = fileURLToPath(new URL('../data/podiums.json', import.meta.url));
 
 async function get(url: string): Promise<string> {
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'joj-bootcamp-scraper/0.1 (projet pédagogique)' },
-    signal: AbortSignal.timeout(30_000),
+    headers: { 'User-Agent': config.get('SCRAPING_USER_AGENT') },
+    signal: AbortSignal.timeout(config.get('SCRAPING_REQUEST_TIMEOUT_MS')),
   });
   if (!response.ok) throw new Error(`HTTP ${response.status} sur ${url}`);
-  await new Promise((resolve) => setTimeout(resolve, PAUSE_MS));
+  await new Promise((resolve) => setTimeout(resolve, config.get('SCRAPING_REQUEST_DELAY_MS')));
   return response.text();
-}
-
-function daysBetween(first: string, last: string): string[] {
-  const days: string[] = [];
-  for (let t = Date.parse(first); t <= Date.parse(last); t += 86_400_000) {
-    days.push(new Date(t).toISOString().slice(0, 10));
-  }
-  return days;
 }
 
 /** AAAA-MM-JJ → JJMMAAAA, le format du paramètre `day` du site. */
@@ -48,37 +38,48 @@ function siteDay(day: string): string {
   return `${date}${month}${year}`;
 }
 
-const units: MedalUnit[] = [];
-for (const day of daysBetween(FIRST_DAY, LAST_DAY)) {
-  const html = await get(`${BASE}/ScheduleDatePartial?sportCode=---&day=${siteDay(day)}`);
-  const found = parseMedalUnits(html, day);
-  console.log(`${day} : ${found.length} finale(s) terminée(s)`);
-  units.push(...found);
-}
+const base = config.get('SCRAPING_SOURCE_URL');
+const source: OfficialSource = {
+  schedule: (day) => get(`${base}/ScheduleDatePartial?sportCode=---&day=${siteDay(day)}`),
+  medalList: (code) =>
+    get(`${base}/ListPartial?pagetype=MedalList&rsc=${encodeURIComponent(code)}`),
+};
 
-const now = new Date();
-const rows: PodiumSeedRow[] = [];
-const problems: string[] = [];
-for (const unit of units) {
-  try {
-    const html = await get(
-      `${BASE}/ListPartial?pagetype=MedalList&rsc=${encodeURIComponent(unit.code)}`,
-    );
-    rows.push(toPodiumRow(unit, parseMedalRows(html), now));
-  } catch (error) {
-    problems.push(`${unit.discipline} / ${unit.competition} : ${(error as Error).message}`);
-  }
-}
-
-// Deux finales d'une même épreuve (Wushu, équipes…) donnent la même clé : on garde la dernière.
-const byKey = new Map(rows.map((row) => [row.event_key, row]));
-const podiums = [...byKey.values()].sort(
-  (a, b) => a.day.localeCompare(b.day) || a.event_name.localeCompare(b.event_name),
+const collection = await collectOfficialPodiums(
+  source,
+  daysBetween(config.get('SCRAPING_FIRST_DAY'), config.get('SCRAPING_LAST_DAY')).filter(
+    (day) => day <= new Date().toISOString().slice(0, 10),
+  ),
 );
+
+const createdAt = new Date().toISOString();
+const podiums = collection.drafts
+  .map((draft) => ({
+    id: draft.id,
+    event_name: draft.eventName,
+    event_key: draft.eventKey,
+    discipline: draft.discipline,
+    day: draft.day,
+    gold: draft.gold,
+    silver: draft.silver,
+    bronze: draft.bronze,
+    ...(draft.secondBronze ? { second_bronze: draft.secondBronze } : {}),
+    created_at: createdAt,
+  }))
+  .sort((a, b) => a.day.localeCompare(b.day) || a.event_name.localeCompare(b.event_name));
 mkdirSync(dirname(outFile), { recursive: true });
 writeFileSync(outFile, `${JSON.stringify(podiums, null, 2)}\n`);
 
-console.log(`\n${podiums.length} podium(s) écrit(s) dans data/podiums.json`);
-if (problems.length > 0) {
-  console.warn(`${problems.length} épreuve(s) ignorée(s) :\n- ${problems.join('\n- ')}`);
+console.log(
+  `${collection.finalsSeen} finale(s) vue(s), ${podiums.length} podium(s) écrit(s) dans data/podiums.json`,
+);
+if (collection.ignored.length > 0) {
+  const lines = collection.ignored.map(
+    (item) =>
+      `${item.day} ${item.discipline} / ${item.competition} : ${item.reason} (${item.detail})`,
+  );
+  console.warn(`${collection.ignored.length} finale(s) ignorée(s) :\n- ${lines.join('\n- ')}`);
+}
+if (collection.daysFailed.length > 0) {
+  console.warn(`Jours illisibles : ${collection.daysFailed.join(', ')}`);
 }

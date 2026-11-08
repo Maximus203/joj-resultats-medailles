@@ -60,7 +60,7 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 
 ## 6. Tâches
 
-- [ ] T01 [007-AS2, AS3] Écrire d'abord `apps/api/src/modules/scraping/domain/official-results.spec.ts` (« 007-AS2: reads a final not flagged gold », « 007-AS3: ignores a tie with its reason »), puis `official-results.ts` (repris de `scripts/scrape-core.mts`, qui disparaît) et le script `scrape-results.mts` en mince appel
+- [x] T01 [007-AS2, AS3] Écrire d'abord `apps/api/src/modules/scraping/domain/official-results.spec.ts` (« 007-AS2: reads a final not flagged gold », « 007-AS3: ignores a tie with its reason »), puis `official-results.ts` (repris de `scripts/scrape-core.mts`, qui disparaît) et le script `scrape-results.mts` en mince appel
 - [ ] T02 [007-AS2] Écrire d'abord `podiums/domain/medal-table.spec.ts` (« 007-AS2: counts both bronze countries »), puis `secondBronze` et `source` dans `Podium`, le schéma, la migration générée, le mapper et les schémas partagés
 - [ ] T03 [007-AS1, AS4, AS5] Écrire d'abord `application/run-scrape.application.spec.ts` (« 007-AS1: … », « 007-AS4: … », « 007-AS5: … »), puis `podium-reconciliation.ts`, les ports, les fakes, `RunScrape`
 - [ ] T04 [007-AS4] Écrire d'abord `infra/drizzle-imported-podium.repository.int.spec.ts` (« 007-AS4: … »), puis `scraping.schema.ts`, la migration générée, les dépôts Drizzle et `http-results-source.ts`
