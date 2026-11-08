@@ -1,8 +1,10 @@
 import type { ScrapeStatus } from '@joj/shared';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { StateBanner } from '@/components/cachet/states';
 import { ApiError } from '@/lib/api';
 import { formatClockTime, isImportExpected } from '@/lib/dates';
+import { scrapingKeys } from '@/lib/query-keys';
 import { useScrapeStatus } from '../api/scraping';
 
 const CLOCK_MS = 60_000;
@@ -53,6 +55,18 @@ export function FreshnessMessage({ status, now }: { status: ScrapeStatus; now: D
 export function FreshnessBanner() {
   const { data, error, isError } = useScrapeStatus();
   const now = useNow();
+  const queryClient = useQueryClient();
+  // Quand la lecture de l'état a échoué et qu'une autre lecture de la page réussit (un « Réessayer »,
+  // le réseau qui revient), l'état est relu tout de suite : le bandeau n'attend pas la minute suivante.
+  useEffect(() => {
+    if (!isError) return;
+    return queryClient.getQueryCache().subscribe((event) => {
+      const isOther = event.query.queryKey[0] !== scrapingKeys.status[0];
+      if (event.type === 'updated' && event.action.type === 'success' && isOther) {
+        void queryClient.invalidateQueries({ queryKey: scrapingKeys.status });
+      }
+    });
+  }, [isError, queryClient]);
   if (isError && !(error instanceof ApiError && error.status === 404)) {
     return (
       <div className="fraicheur">

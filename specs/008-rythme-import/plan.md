@@ -91,3 +91,7 @@ Passage 4 (QA rejouée sur 7b4ecfd).
 - [x] T18 [008-AS7] Écrire d'abord « 008-AS7: refuses a stale threshold that is not above the light import interval » (`app-config.spec.ts`), puis la règle de cohérence dans `env-schema.ts` (seuil de retard strictement supérieur à l'intervalle, message français)
 - [x] T19 [008-AS1] Écrire d'abord (« 008-AS1: bounds the beat of the clock … », « 008-AS1: warns at startup that a removed setting is ignored … ») dans `app-config.spec.ts`, puis la borne de `SCRAPING_TICK_SECONDS` (1 à 300, message français) et l'avertissement `Logger` quand un réglage retiré (`SCRAPING_DAILY_TIME`) est encore dans l'environnement
 - [x] T20 [008-AS1] Mettre à jour l'Action des scénarios 007-AS6.2 et 007-AS6.3 du playbook 007 (plus de `SCRAPING_DAILY_TIME` : `SCRAPING_FULL_TIMES`), sans toucher aux Observé ni aux Verdict
+
+Passage 5 (3e campagne QA).
+
+- [x] T21 [008-AS8] Écrire d'abord « 008-AS8: goes back to the real state right after a successful retry … » (`freshness-banner.test.tsx`), puis la relecture immédiate de l'état dans `FreshnessBanner` quand une autre lecture de la page réussit alors que la lecture de l'état était en échec

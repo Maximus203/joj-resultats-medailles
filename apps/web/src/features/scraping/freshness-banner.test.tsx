@@ -2,6 +2,7 @@
 // avertissement lisible quand l'API dit que les données sont périmées, et rien quand l'import est éteint.
 import type { ScrapeStatus } from '@joj/shared';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockControl } from '@/mocks/control';
 import { fixture } from '@/mocks/fixture';
@@ -86,6 +87,21 @@ describe('freshness banner', () => {
     expect(
       await screen.findByText('Impossible de vérifier la fraîcheur des données'),
     ).toBeVisible();
+  });
+
+  it('008-AS8: goes back to the real state right after a successful retry, without waiting for the next minute', async () => {
+    fixture.scraping = status({});
+    mockControl.failNext('GET /api/scraping');
+    mockControl.failNext('GET /api/medals');
+    await renderRoute({ initialEntries: ['/medailles'] });
+    expect(
+      await screen.findByText('Impossible de vérifier la fraîcheur des données'),
+    ).toBeVisible();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Réessayer' }));
+
+    expect(await screen.findByText('Données à jour à 14:07')).toBeVisible();
+    expect(screen.queryByText('Impossible de vérifier la fraîcheur des données')).toBeNull();
   });
 
   it('008-AS8: stays silent on an API that does not know the state route at all (404)', async () => {
