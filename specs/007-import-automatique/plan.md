@@ -112,3 +112,7 @@ Passage 4 (QA rejouée sur 7b4ecfd).
 
 - [x] T26 [007-AS4] Écrire d'abord `packages/shared/src/event-key.spec.ts` (« 007-AS4: reads every apostrophe … »), l'e2e « … curly apostrophe … » (`test/scraping.e2e.spec.ts`) et l'écran « … conflict message » (`routes/journaliste.test.tsx`), puis `normalizeEventKey` qui ramène ’ ‘ ʼ ` ´ à l'apostrophe droite, et la fausse API du front qui compare comme l'API
 - [x] T27 [007-AS4] Mesurer puis borner `001-AS1` et `001-AS2` de `routes/journaliste.test.tsx` : 1,8 s seuls, 2,2 s dans le projet web, plus de 5 s sous la charge de `pnpm check` (le premier rendu de l'application est dans le premier test). Délai explicite de 20 s pour ces deux tests, aucun relèvement global ; aucun rouge à produire
+
+Passage 5 (3e campagne QA).
+
+- [x] T28 [007-AS4] Écrire d'abord « 007-AS4: reads every hyphen and dash, with or without spaces around, as one hyphen » (`packages/shared/src/event-key.spec.ts`) et l'e2e « … unicode hyphen and no spaces … », puis `normalizeEventKey` : U+2010 à U+2015, U+2212, U+FE58, U+FE63 et U+FF0D deviennent un seul tiret, espaces autour absorbés (même règle des deux côtés, sans correspondance floue)

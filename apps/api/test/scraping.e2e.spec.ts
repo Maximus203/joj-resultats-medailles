@@ -231,6 +231,28 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     expect((await http().get('/api/medals').expect(200)).body.items).toEqual(medalsBefore);
   });
 
+  it('007-AS4: refuses an event typed with a unicode hyphen and no spaces that the import already published', async () => {
+    await runAndWait();
+
+    for (const dash of ['‐', '－', '−']) {
+      const typed = await http()
+        .post('/api/podiums')
+        .send({
+          eventName: `Judo${dash}Men ${dash}66 kg`,
+          discipline: 'Judo',
+          day: '2026-11-01',
+          gold: 'USA',
+          silver: 'CAN',
+          bronze: 'ARG',
+        })
+        .expect(409);
+      expect(typed.body).toMatchObject({ code: 'PODIUM_ALREADY_RECORDED' });
+    }
+    expect((await http().get('/api/podiums?day=2026-11-01').expect(200)).body.items).toHaveLength(
+      2,
+    );
+  });
+
   it('007-AS4: follows an official change of the second bronze and keeps the replaced version', async () => {
     await runAndWait();
     const judo = (await http().get('/api/podiums').expect(200)).body.items.find(

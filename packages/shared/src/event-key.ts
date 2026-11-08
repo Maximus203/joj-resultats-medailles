@@ -7,7 +7,8 @@ export function normalizeEventKey(name: string): string {
   return name
     .normalize('NFD')
     .replace(/\p{M}+/gu, '')
-    .replace(/[‐-―−]/g, '-')
+    .replace(/[‐-―−﹘﹣－]/g, '-')
+    .replace(/\s*-\s*/g, '-')
     .replace(/[‘’ʼ`´]/g, "'")
     .toLowerCase()
     .replace(/\s+/g, ' ')
