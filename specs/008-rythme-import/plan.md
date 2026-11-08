@@ -1,6 +1,6 @@
 # 008 — Rythme de l'import des résultats officiels : plan
 
-**Statut** : Brouillon
+**Statut** : Validé
 
 ## 1. Résumé
 

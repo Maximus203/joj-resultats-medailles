@@ -1,6 +1,6 @@
 # 008 — Rythme de l'import des résultats officiels
 
-**Statut** : Brouillon
+**Statut** : Validée
 **PRD** : specs/prd-resultats-medailles.md, TR6
 
 ## Contexte

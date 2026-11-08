@@ -166,7 +166,8 @@ createServer((request, response) => {
       (url.searchParams.get('day') ?? '').slice(4),
     ];
     if (rawCalendar !== null) return text(200, rawCalendar);
-    return text(200, (SCHEDULES[`${year}-${month}-${date}`] ?? [QUIET_DAY]).join('\n'));
+    const day = `${year}-${month}-${date}`;
+    return text(200, [...(SCHEDULES[day] ?? [QUIET_DAY]), ...(extras.get(day) ?? [])].join('\n'));
   }
   if (url.pathname.endsWith('/ListPartial')) {
     return text(200, medalPage(...(MEDALS.get(url.searchParams.get('rsc') ?? '') ?? [])));
