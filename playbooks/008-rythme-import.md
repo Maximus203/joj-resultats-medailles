@@ -1,6 +1,6 @@
 # 008 — Rythme de l'import des résultats officiels
 
-> Spec : specs/008-rythme-import · Statut : 🟡 · Build : journee @7b4ecfd (worktree propre, API compilée par le testeur, une base PGlite neuve par scénario, faux site + intermédiaire local qui journalise chaque requête ; horloge décalée par un préchargement `Date` hors du dépôt pour les frontières 07:59, 08:00, 22:59, 23:00, 23:01) · Testé : 2026-11-08
+> Spec : specs/008-rythme-import · Statut : 🟡 · Build : journee @4b00d9f (worktree propre à ce commit, API compilée par le testeur, une base PGlite neuve par scénario, faux site ; horloge du processus décalée par un préchargement `Date` hors du dépôt pour les frontières 07:58, 08:00, 22:58, 23:00, 23:01) · Testé : 2026-11-08 (rejeu 3 : tous les 🟡 de la campagne précédente et les scénarios dont l'Attendu a changé, plus passage rapide ; non rejoués, observés sur 7b4ecfd : AS1.2, AS2.2, AS4.1, AS5.2, AS5.4, AS6.1, AS7.2, AS8.2)
 > Surfaces : [API] [WEB] · Profils : journaliste, supporter
 
 ## Préconditions
@@ -19,7 +19,7 @@
 **Technique** : valeurs-limites
 **Action** : lancer l'API avec `SCRAPING_INTERVAL_MINUTES=1`, `SCRAPING_WINDOW_START` réglé sur la minute suivante (heure UTC) et `SCRAPING_WINDOW_END=23:59` ; lire `recentRuns` avant puis après le passage de cette minute, pendant 3 minutes.
 **Attendu** : avant l'ouverture, seul le rattrapage au démarrage (`kind: full`, `trigger: startup`) existe ; à l'ouverture, un import `kind: incremental` part, puis un par minute ; aucun import léger ne part avant l'heure d'ouverture.
-**Observé** : `SCRAPING_INTERVAL_MINUTES=1`, `SCRAPING_WINDOW_START=15:36`, démarrage à 15:34:33 : avant l'ouverture seul le rattrapage `full` `startup` (15:34:33) ; premier import `incremental` `scheduled` à 15:36:03 (le battement qui suit l'ouverture, pas de 15:35) ; puis 15:37:03, un par minute. Rejoué avec l'horloge décalée à la frontière : démarrage à 07:58:00, fenêtre 08:00 : aucun léger à 07:59:xx, premier à 08:00:02, puis 08:01:02.
+**Observé** : Rejeu 3 sur 4b00d9f, `INTERVAL=1`, `STALE_AFTER=5`, tick 5 s, horloge décalée : démarrage à 07:58:00, fenêtre par défaut 08:00-23:00 : `full` `startup` à 07:58:03, aucun léger à 07:59:xx, premier `incremental` `scheduled` à 08:00:03.
 **Verdict** : ✅
 **Issue** : —
 
@@ -41,7 +41,7 @@
 **Technique** : table-décision
 **Action** : après un premier import complet, ajouter une finale aujourd'hui (`__final?day=today&code=NEW-FNL…`), attendre un import léger, puis relire `lastRun.report`. Ajouter une seconde finale et rejouer.
 **Attendu** : `lastRun.kind: incremental`, `exhaustiveness.daysRead` = hier et aujourd'hui seulement (jamais le 1er novembre), `imported` contient la finale nouvelle, `finalsKnown` compte les finales déjà en base sans les rouvrir ; une finale déjà importée n'est pas relue ; `updated`, `kept` et `absentFromSource` restent vides.
-**Observé** : Après un premier complet (7 finales), `__final?day=today&code=NEW-FNL…` : l'import léger suivant rend `kind: incremental`, `imported: [Judo – Men -73 kg]`, `daysRead: [2026-11-07, 2026-11-08]`, `finalsKnown: 0`, `updated`/`kept`/`absentFromSource` vides ; l'intermédiaire journalise 3 requêtes seulement (deux calendriers hier et aujourd'hui, une page de médailles), jamais le 1er novembre. Seconde finale (`NEW2-FNL`, hier) : une seule page de médailles demandée (NEW2), la finale déjà importée n'est pas relue ; `finalsSeen: 2`, `finalsWithPodium: 1`, `finalsKnown: 1`.
+**Observé** : Rejeu 3 : après un complet (5 importés), `__final?day=today&code=NEW-FNL…` : l'import léger suivant rend `kind: incremental`, `imported: [Judo – Men -73 kg]`, `daysRead: [2026-11-07, 2026-11-08]` (hier et aujourd'hui, jamais le 1er novembre), `updated`, `kept`, `absentFromSource` vides.
 **Verdict** : ✅
 **Issue** : —
 
@@ -63,7 +63,7 @@
 **Technique** : transition-état
 **Action** : après un import complet, `__set?code=S50-FNL&medals=gold:ITA,silver:GBR,bronze:FRA`, attendre un import léger puis lire le podium de la natation ; lancer ensuite `POST /api/scraping/runs` (import complet) et relire.
 **Attendu** : après le léger, le podium garde GBR, ITA, FRA ; après l'import complet, il prend ITA, GBR, FRA, l'ancienne version est consultable (`GET /api/podiums/:id/revisions`) et `lastFullRun.report.updated` donne l'ancien et le nouveau.
-**Observé** : Source changée en GBR/ITA/FRA pendant que la base a ITA/GBR/FRA (import précédent) : après un import léger (15:41:04), le podium reste ITA/GBR/FRA ; après `POST /api/scraping/runs` (complet) il prend GBR/ITA/FRA, `/revisions` rend l'ancienne version ITA/GBR/FRA, `lastFullRun.report.updated` donne `current.gold: ITA` et `source.gold: GBR`. Le léger suivant (15:42:09) ne change pas `lastFullRun` : la comparaison complète est gardée.
+**Observé** : Rejeu 3 : `__set?code=S50-FNL&medals=gold:FRA,silver:ITA,bronze:GBR` alors que la base a ITA/GBR/FRA : après un import léger, le podium reste ITA/GBR/FRA ; après `POST /api/scraping/runs` (complet) il prend FRA/ITA/GBR, `lastFullRun.report.updated` donne `current.gold: ITA` et `source.gold: FRA`.
 **Verdict** : ✅
 **Issue** : —
 
@@ -85,8 +85,8 @@
 **Technique** : erreur
 **Action** : `SCRAPING_REQUEST_DELAY_MS=1000`, `SCRAPING_INTERVAL_MINUTES=1` ; laisser passer une minute après un import, puis `POST /api/scraping/runs` (complet lent) ; relire `recentRuns` pendant et après.
 **Attendu** : un import léger dû pendant le complet apparaît avec `status: skipped`, `kind: incremental`, `skippedReason` (« un autre import est en cours »), `errors` vide, sans aucune requête vers le faux site pendant ce temps ; le complet se termine normalement ; aucune erreur dans les logs.
-**Observé** : Une exécution complète manuelle lente (`SCRAPING_REQUEST_DELAY_MS=6000`, 96 s, 16 requêtes espacées de 6 s au journal de l'intermédiaire) : à 15:46:24, un import léger dû est enregistré `kind: incremental`, `trigger: scheduled`, `status: skipped`, `durationMs: 0`, aucune requête de plus vers le faux site pendant ce temps (les 16 requêtes sont celles du complet), le complet finit `success`, aucune ligne `ERROR` ; le journal dit « Import incremental scheduled sauté : un autre import est en cours ». MAIS la raison n'est lisible que dans le journal et dans la base : `GET /api/scraping` n'expose pas `skippedReason` (`recentRuns` sans détail, `lastRun` écarte volontairement les exécutions sautées). Le playbook et la spec demandent « le suivi le montre … avec sa raison ». À 1000 ms de retard le complet (15 s) est plus court que l'intervalle : le saut ne se produit pas, il faut allonger le retard (choix du testeur : 6000 ms). Voir aussi 008-AS5.3.
-**Verdict** : 🟡
+**Observé** : Rejeu 3 : `SCRAPING_REQUEST_DELAY_MS=6000`, `INTERVAL=1` : pendant le complet (84 s) les imports légers dus à 16:58:42, 16:59:42 puis, pendant le complet manuel (17:00:35), à 17:00:42 et 17:01:42, apparaissent dans `GET /api/scraping` `recentRuns` avec `kind: incremental`, `trigger: scheduled`, `status: skipped`, `durationMs: 0`, `skippedReason: « un autre import est en cours »` ; les complets finissent `success` ; journal « Import incremental scheduled sauté : un autre import est en cours », aucune ligne `ERROR`. Corrigé depuis la campagne précédente. Réserve : à 1000 ms de retard le complet est plus court que l'intervalle et rien n'est sauté (retard réglé à 6000 ms, choix du testeur) ; chaque saut occupe une des dix lignes de `recentRuns` (quatre sauts pour un complet de 84 s).
+**Verdict** : ✅
 **Issue** : —
 
 ### 008-AS5.2 — [API] Un import complet manuel pendant un autre est refusé
@@ -118,7 +118,7 @@
 **Technique** : transition-état
 **Action** : `SCRAPING_STALE_AFTER_MINUTES=1`, fenêtre ouverte toute la journée ; après un import réussi, `GET .../__fail?match=nh%2Fen` (le site tombe), attendre 3 minutes en relisant l'état et les logs ; puis `__heal` et attendre le prochain import.
 **Attendu** : `stale: true` dès la deuxième minute sans succès et un seul avertissement « Données périmées » dans les logs (`CheckStaleness`) pendant l'épisode ; après le retour du site et un import réussi, `stale: false` et une ligne « Données de nouveau à jour ».
-**Observé** : `STALE_AFTER=1`, `INTERVAL=1`, fenêtre toute la journée ; panne du site à 15:52:06 : `stale: false` à 15:52:40, `stale: true` à 15:53:10 (`lastSuccessAt` 15:51:43), un seul avertissement « Données périmées … » pour l'épisode (15:52:43), aucun de plus à 15:53:43, 15:54:44 ; `__heal` : import réussi à 15:55:44, `stale: false` et une ligne « Données de nouveau à jour » (15:55:49). Réserve : à ce réglage (retard = intervalle), un avertissement et un retour à jour tombent chaque minute même quand tout va bien : voir 008-AS7.3.
+**Observé** : Rejeu 3 avec `INTERVAL=1`, `STALE_AFTER=2` (l'Action telle qu'écrite, `STALE_AFTER=1` à l'intervalle par défaut de 15, est maintenant refusée au démarrage : voir 008-AS3.3 ; Action à mettre à jour par son auteur) : site coupé à 17:04:00, dernier succès 17:03:46 : `stale: true` à 17:06:51, un seul avertissement « Données périmées : aucun import réussi depuis 2026-11-08T17:03:46.842Z (seuil 2 min) » (17:05:47) ; site rétabli à 17:07:2x : import réussi 17:07:47, `stale: false`, une ligne « Données de nouveau à jour » (17:07:52).
 **Verdict** : ✅
 **Issue** : —
 
@@ -140,8 +140,8 @@
 **Technique** : transition-état
 **Action** : API activée avec `SCRAPING_STALE_AFTER_MINUTES=1`, front lancé (`pnpm --filter @joj/web dev`) ; ouvrir `/medailles`, `/resultats?day=2026-11-01` puis `/` à 375 px puis 320 px, juste après un import, puis deux minutes après avoir coupé le faux site ; recharger. Éteindre l'import (sans `SCRAPING_ENABLED`) et recharger.
 **Attendu** : juste après l'import, un bandeau « Données à jour à HH:MM » (heure du dernier succès, Dakar) sous aucune autre alerte ; après le retard, le bandeau devient « Les résultats sont peut-être en retard » avec « Ils n'ont pas été mis à jour depuis HH:MM. Revenez dans quelques minutes. » ; import éteint : aucun bandeau ; texte lisible sans coupure ni débordement à 320 px, console propre.
-**Observé** : API activée (`STALE_AFTER=2`, `INTERVAL=1`), front Vite, console propre, aucune requête en échec. Juste après un import : « Données à jour à 15:59 » (ton « ok », `role=status`) au-dessus de l'en-tête sur `/medailles`, `/resultats?day=2026-11-01` et `/` à 375 puis 320 px, sans débordement (`scrollWidth` = largeur) et sans masquer l'en-tête ni la navigation (captures `.test-shots/008-AS8.1-ajour-*-375|320-dark-after.jpg`). Site coupé, 2 minutes plus tard : page ouverte, le bandeau passe tout seul à « Les résultats sont peut-être en retard / Ils n’ont pas été mis à jour depuis 15:59. Revenez dans quelques minutes. » (16:02:11, sans recharger), lisible sur 3 lignes à 320 px et à 188 px (zoom 200 % simulé), `…-retard-*`. Retour du site : « Données à jour à 16:04 » sans recharger (16:05:11). Import éteint : aucun bandeau (`…-eteint-accueil-320`). Mais, à ne pas manquer : (1) sous le bandeau « pas mis à jour depuis 15:59 », `/medailles` affiche « Mis à jour le 8 nov., 16 h 03 » (heure du dernier chargement par le navigateur, `dataUpdatedAt`) : deux fraîcheurs qui se contredisent, dans deux formats (15:59 et 16 h 03) ; (2) voir 008-AS8.2 à AS8.4.
-**Verdict** : 🟡
+**Observé** : Rejeu 3 : API activée (`INTERVAL=1`, `STALE_AFTER=2`), front Vite, `/medailles`, `/resultats?day=2026-11-01` et `/` à 375 puis 320 px : « Données à jour à 17:02 » (ton « ok ») au-dessus de l'en-tête, sans débordement (`scrollWidth` = largeur) ni masquer l'en-tête ou la navigation (captures `.test-shots/008-AS8.1-ajour-medailles-375-dark-after.jpg`, `…-resultats-375-…`, `…-accueil-320-…`). Site coupé à 17:04, page ouverte sans recharger : le bandeau passe tout seul à « Les résultats sont peut-être en retard / Ils n’ont pas été mis à jour depuis 17:03. Revenez dans quelques minutes. » (17:06:51, lisible sur 3 lignes à 320 px : `…-retard-medailles-320-…`) puis revient à « Données à jour à 17:07 » moins d'une minute après le retour du site, sans recharger. Import éteint : le conteneur du bandeau est vide (hauteur 0), aucun bandeau. La ligne « Mis à jour le … » de `/medailles` a disparu : une seule fraîcheur à l'écran. Console propre (hors `409`/`422` provoqués).
+**Verdict** : ✅
 **Issue** : —
 
 ### 008-AS1.3 — [API] Frontières d'horloge : 07:59, 08:00, 22:59, 23:00, 23:01 (ajouté par le testeur)
@@ -151,7 +151,7 @@
 **Technique** : valeurs-limites
 **Action** : réglages par défaut du rythme (fenêtre 08:00-23:00, complets 07:00 et 23:00), `SCRAPING_INTERVAL_MINUTES=1`, tick 5 s, horloge du processus décalée par un préchargement `Date` (`FAKE_NOW`) : démarrer à 07:58:00 ; à 22:58:30 ; à 23:01:00 ; relire `recentRuns` de chaque base pendant 3 minutes.
 **Attendu** : rien de léger avant 08:00 ; premier léger à l'ouverture ; à 23:00 un complet `scheduled` (et non un léger) ; rien de léger après 23:00:59 ; un démarrage à 23:01 fait son rattrapage complet puis plus rien.
-**Observé** : démarrage 07:58:06 : `full` `startup`, aucun léger à 07:59:xx, premier `incremental` à 08:00:02 puis 08:01:02. Démarrage 22:58:36 : `startup` 22:58:36, léger 22:59:36, `full` `scheduled` à 23:00:01 (7 identiques) et plus rien (le léger de 23:01:01 tomberait hors fenêtre). Démarrage 23:01:06 : `full` `startup`, aucun léger ensuite. Limite : l'heure est décalée par un préchargement `Date` du processus, pas par l'horloge du système.
+**Observé** : Rejeu 3, fenêtre par défaut, `INTERVAL=1`, `STALE_AFTER=5`, tick 5 s, trois bases en parallèle, horloge décalée : démarrage à 07:58:00 → `full` `startup` 07:58:03, aucun léger avant 08:00, premier `incremental` 08:00:03 ; à 22:58:30 → `startup` 22:58:33, léger 22:59:33, `full` `scheduled` à 23:00:03 (et non un léger), rien ensuite, `nextFullRunAt: 2026-11-09T07:00:00Z` ; à 23:01:00 → `full` `startup` 23:01:03, puis plus rien. Limite : l'heure est décalée par un préchargement `Date` du processus, pas par l'horloge du système.
 **Verdict** : ✅
 **Issue** : —
 
@@ -162,8 +162,8 @@
 **Technique** : transition-état
 **Action** : base avec un succès de 22:55 (horloge décalée), arrêter l'API, la relancer à 22:59:00 ; refaire avec un redémarrage à 23:00:30.
 **Attendu** : pas de rattrapage (succès récent) ; le complet de 23:00 a lieu à 22:59 ; redémarré à 23:00:30, le créneau de 23:00 est manqué, personne ne le rattrape un battement tardif.
-**Observé** : redémarrage à 22:59:00 : aucun `startup`, un léger à 22:59:11, le complet `scheduled` à 23:00:01 ✅. Redémarrage à 23:00:30 (base avec succès de 22:59:02) : aucun complet, un léger à 23:00:31, `nextFullRunAt: 2026-11-09T07:00:00Z` : le complet de 23:00 est perdu et la prochaine reprise des corrections des organisateurs a lieu à 07:00, 8 heures plus tard. C'est la règle écrite (« aucun battement tardif »), mais un redéploiement qui tombe entre 23:00:10 et 23:00:59 saute le complet de la nuit ; à signaler à Cherif, pas à corriger sans arbitrage.
-**Verdict** : 🟡
+**Observé** : Rejeu 3, horloge décalée, base avec un complet réussi à 22:55:02 : redémarrage à 22:59:00 → aucun `startup`, le complet `scheduled` à 23:00:01 (`identical: 5`) ✅. Même base redémarrée à 23:00:30 (complet de 23:00:01 fait) → aucune exécution de plus ✅. Copie de la base d'avant 23:00 (dernier complet à 22:55:02) redémarrée à 23:00:30 → un complet `startup` à 23:00:31 : le créneau de 23:00 manqué pendant l'arrêt est rattrapé au redémarrage ✅ (`nextFullRunAt: 2026-11-09T07:00:00Z`). Corrigé depuis la campagne précédente, où un redémarrage à 23:00:30 perdait le complet de la nuit.
+**Verdict** : ✅
 **Issue** : —
 
 ### 008-AS2.2 — [API] Une finale ajoutée à chaud pendant un import complet (ajouté par le testeur)
@@ -184,8 +184,8 @@
 **Technique** : erreur
 **Action** : `SCRAPING_REQUEST_DELAY_MS=6000`, `SCRAPING_INTERVAL_MINUTES=1`, base neuve : le rattrapage de démarrage dure 96 s ; lire `recentRuns` à la fin.
 **Attendu** : spec AS5 : l'import léger dû pendant le complet est enregistré `skipped` avec sa raison.
-**Observé** : le complet `startup` tourne de 15:42:43 à 15:44:19 ; le léger dû à 15:43:43 n'est pas enregistré du tout (aucune ligne `skipped`) ; le premier léger part à 15:44:24, juste après la fin. Cause lue : le battement qui lance le complet (`ScrapeScheduler.tick`) l'attend, les battements suivants s'arrêtent sur `busy`, et seul `RunDueScrape` écrit les exécutions sautées. Seule une exécution manuelle produit donc une ligne `skipped` (008-AS5.1). Sans effet sur les données ; le suivi est incomplet.
-**Verdict** : 🟡
+**Observé** : Rejeu 3 (retard 6000 ms, `INTERVAL=1`, base neuve) : le complet de rattrapage `startup` (16:58:37, 84 s) ne laisse plus de silence : les imports légers dus à 16:58:42 et 16:59:42 sont enregistrés `skipped` avec `skippedReason: « un autre import est en cours »` et le premier léger réel n'est pas perdu (même constat pendant un complet manuel, voir AS5.1). Corrigé depuis la campagne précédente.
+**Verdict** : ✅
 **Issue** : —
 
 ### 008-AS5.4 — [API] Source lente pendant un import léger (ajouté par le testeur)
@@ -206,7 +206,7 @@
 **Technique** : table-décision
 **Action** : le réglage accéléré du playbook : `SCRAPING_STALE_AFTER_MINUTES=1`, `SCRAPING_INTERVAL_MINUTES=1`, tick 5 s, site en bonne santé ; lire les journaux 4 minutes.
 **Attendu** : aucune alerte tant que les imports réussissent.
-**Observé** : chaque minute, « Données périmées : aucun import réussi depuis … (seuil 1 min) » puis 5 s plus tard « Données de nouveau à jour » (15:48:43, 15:49:43, 15:50:43, 15:51:43…) : les imports réussis sont espacés de 60 à 65 s, le seuil est de 60 s. Rien n'interdit ce réglage au démarrage (retard ≤ intervalle accepté). Avec les valeurs par défaut (15 min, 120 min) le cas ne se présente pas ; un réglage de retard inférieur à l'intervalle plus un battement produirait le même clignotement en production, et `stale` reflète aussi un état faux à ces valeurs. De plus, tout premier démarrage à vide journalise un « Données périmées … depuis le démarrage » avant la fin du premier import.
+**Observé** : Rejeu 3 : (1) l'Action du playbook (`STALE_AFTER=1`, `INTERVAL=1`) est maintenant refusée au démarrage : « Configuration invalide : ✖ doit être supérieur à SCRAPING_INTERVAL_MINUTES, sinon les données seraient « en retard » entre deux imports légers → at SCRAPING_STALE_AFTER_MINUTES » ; `STALE_AFTER=10` ou `15` avec l'intervalle par défaut de 15 : refusé de même, `16` accepté. (2) Avec `INTERVAL=1`, `STALE_AFTER=2`, site sain, tick 5 s : plus de clignotement (aucun « Données périmées » entre 17:02:51 et 17:05:47). Reste : tout premier démarrage d'une base vide journalise « Données périmées : aucun import réussi depuis le démarrage (seuil N min) » puis, 5 s plus tard, « Données de nouveau à jour », alors que le premier import tourne (vu à chaque base neuve, aux seuils 2, 5 et 120 min) : avertissement et retour à jour pour rien. Gravité faible.
 **Verdict** : 🟡
 **Issue** : —
 
@@ -217,7 +217,7 @@
 **Technique** : valeurs-limites
 **Action** : démarrer l'API avec `SCRAPING_INTERVAL_MINUTES` à 0, -1, 1.5, `abc` ; `SCRAPING_STALE_AFTER_MINUTES=0` ; `SCRAPING_TICK_SECONDS=0` ; `SCRAPING_FULL_TIMES` à `25:00`, `7h30`, `7:00`, `07:00,,23:00`, vide ; fenêtre inversée, début = fin, `24:00` ; jours à l'envers ; fuseau `Mars/Phobos`.
 **Attendu** : refus « Configuration invalide » qui nomme la variable, en français, sortie en erreur, jamais de démarrage.
-**Observé** : tous refusés avec le nom de la variable et une phrase française (« doit être un entier positif », « doit être une heure HH:MM entre 00:00 et 23:59 (par exemple 23:00) → at SCRAPING_FULL_TIMES[1] », « doit être avant SCRAPING_WINDOW_END », « fuseau horaire inconnu … », « doit être le même jour que SCRAPING_LAST_DAY ou un jour avant »). Acceptés sans réserve : heures en double (`07:00,07:00`), heures en désordre (`23:00,07:00`), `SCRAPING_INTERVAL_MINUTES` vide (retombe sur 15).
+**Observé** : Rejeu 3 : réglages refusés avec le nom de la variable et une phrase française : `SCRAPING_FULL_TIMES` `25:00`, `7h30`, `07:00,,23:00` (→ `SCRAPING_FULL_TIMES[1]`), `SCRAPING_TICK_SECONDS` 0 (« doit être un entier positif ») et 301 (« doit être un entier entre 1 et 300 (secondes) »), `SCRAPING_STALE_AFTER_MINUTES` ≤ intervalle, jours à l'envers (« doit être le même jour que SCRAPING_LAST_DAY ou un jour avant »), `Mars/Phobos`. Tick 300 accepté. Non rejoués ce coup-ci (observés sur 7b4ecfd) : intervalle 0/-1/1.5/abc, fenêtre inversée, `24:00`.
 **Verdict** : ✅
 **Issue** : —
 
@@ -228,8 +228,8 @@
 **Technique** : valeurs-limites
 **Action** : démarrer avec `SCRAPING_DAILY_TIME=25:00` (réglage supprimé par la spec 008) ; avec `SCRAPING_TICK_SECONDS=3000000`.
 **Attendu** : un réglage inconnu ou démesuré est signalé.
-**Observé** : `SCRAPING_DAILY_TIME=25:00` : démarrage normal, aucun avertissement, « Import automatique actif : complet à 07:00, 23:00 … » : un exploitant qui avait réglé `SCRAPING_DAILY_TIME=06:00` croit toujours avoir 06:00. `SCRAPING_TICK_SECONDS=3000000` : accepté ; Node avertit `TimeoutOverflowWarning: 3000000000 does not fit into a 32-bit signed integer` et le battement tombe à 1 ms (le rattrapage de démarrage a mis 3,8 s au lieu de 0,5 s) ; aucun plafond côté configuration.
-**Verdict** : 🟡
+**Observé** : Rejeu 3 : `SCRAPING_DAILY_TIME=25:00` : le serveur démarre et journalise « SCRAPING_DAILY_TIME est ignoré : voir SCRAPING_FULL_TIMES » (`WARN [AppConfig]`), puis « Import automatique actif : complet à 07:00, 23:00 … » ; `SCRAPING_TICK_SECONDS=3000000` : refusé au démarrage (« doit être un entier entre 1 et 300 (secondes) »). Corrigé depuis la campagne précédente.
+**Verdict** : ✅
 **Issue** : —
 
 ### 008-AS8.2 — [WEB] Une ancienne API ou une API coupée ne casse pas la page (ajouté par le testeur)
@@ -250,7 +250,7 @@
 **Technique** : transition-état
 **Action** : page `/medailles` ouverte avec le bandeau « Données à jour à 16:04 » ; toutes les routes `/api` coupées (connexion fermée) à 16:05:28 ; regarder 3 min 40 s puis recharger à froid.
 **Attendu** : le bandeau ne continue pas d'affirmer que les données sont à jour quand plus rien ne se rafraîchit.
-**Observé** : le bandeau reste « Données à jour à 16:04 » pendant les 3 min 40 s observées (11 relevés, jusqu'à 16:09:08), bien après le seuil de retard de 2 minutes, avec une rangée de requêtes `502` en console ; la page ne dit rien. Rechargée à froid : pas de bandeau et « Le tableau n’a pas pu être chargé. Le serveur a rencontré un problème. Réessayez dans un instant. » + « Réessayer ». Cause lue : `useScrapeStatus` garde la dernière réponse réussie ; le retard est calculé côté serveur, donc invisible quand le serveur ne répond plus. Capture `.test-shots/008-AS8.1-api-injoignable-session-ouverte-375-dark-after.jpg`.
+**Observé** : Rejeu 3 : `/medailles` ouverte à 320 px avec « Données à jour à 17:07 », API tuée à 17:08:48 : le bandeau reste « à jour » jusqu'à la relecture suivante, puis passe (au plus une minute et quelques secondes plus tard, constaté à 17:09:56) à « Impossible de vérifier la fraîcheur des données / Les résultats affichés peuvent ne pas être à jour. Revenez dans quelques minutes. » (alerte, tableau toujours affiché, capture `.test-shots/008-AS8.3-api-injoignable-session-ouverte-320-dark-after.jpg`). Rechargement à froid API coupée : ce même bandeau PLUS « Le tableau n’a pas pu être chargé. Le serveur a rencontré un problème. Réessayez dans un instant. » + « Réessayer » (capture `…-chargement-a-froid-320-…`). API relancée, clic sur « Réessayer » : le tableau revient (13 lignes) mais le bandeau garde « Impossible de vérifier… » jusqu'à sa relecture suivante (moins d'une minute), puis « Données à jour à 17:10 ». Défaut mineur : jusqu'à une minute de contradiction après « Réessayer ». Le bandeau n'affirme plus jamais « à jour » sans pouvoir le vérifier (corrigé).
 **Verdict** : 🟡
 **Issue** : —
 
@@ -261,8 +261,8 @@
 **Technique** : partition-équivalence
 **Action** : API activée sur base neuve, site officiel en panne depuis le démarrage (`stale: true`, `lastSuccessAt: null`) ; ouvrir `/medailles`, `/resultats?day=2026-11-01` et `/` à 320 px.
 **Attendu** : un avertissement lisible : les données sont en retard.
-**Observé** : `GET /api/scraping` : `enabled: true`, `stale: true`, `lastSuccessAt: null`, `lastRun.status: failed` ; à l'écran : aucun bandeau sur les trois pages (`FreshnessMessage` ne rend rien sans `lastSuccessAt`). Sur un premier déploiement dont le site officiel refuse l'import, le supporter lit un tableau vide sans alerte. (La branche a reçu depuis `f250f16`, « warn plainly when the data is stale and no import ever succeeded » : non rejoué ici, le build testé est 7b4ecfd.)
-**Verdict** : 🟡
+**Observé** : Rejeu 3 : API activée sur base neuve, faux site en panne dès le démarrage (`stale: true`, `lastSuccessAt: null`, `lastRun.status: failed`, 8 erreurs) : `/medailles`, `/resultats?day=2026-11-01` et `/` à 320 px, puis `/medailles` à 375 px : bandeau d'alerte « Aucune mise à jour réussie pour l’instant / Les résultats peuvent être incomplets. Revenez dans quelques minutes. » au-dessus de l'en-tête, sans débordement (`scrollWidth` 320 et 375), capture `.test-shots/008-AS8.4-jamais-reussi-medailles-320-dark-after.jpg` et `…-375-…`. Corrigé depuis la campagne précédente (T13).
+**Verdict** : ✅
 **Issue** : —
 
 ## Session imprévisible
@@ -271,18 +271,18 @@ Voir [`transverse.md`](transverse.md) : le bandeau est le seul élément d'écra
 
 Exécuté par le testeur le 2026-11-08, build 7b4ecfd.
 
-| #   | Geste                                                                      | Observé                                                                                                                                                                                                                         | Verdict |
-| --- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| U1  | Horloge à 07:59, 08:00, 22:59, 23:00, 23:01                                | Voir 008-AS1.3 : rien avant 08:00, premier léger à 08:00:02, complet à 23:00:01, plus de léger après 23:00:59, rattrapage à 23:01.                                                                                              | ✅      |
-| U2  | Redémarrage à 22:59 et à 23:00:30                                          | Voir 008-AS4.2 : 22:59 tient, 23:00:30 perd le complet de la nuit jusqu'à 07:00.                                                                                                                                                | 🟡      |
-| U3  | Finale ajoutée à chaud pendant un import complet                           | Voir 008-AS2.2 : la première entre dans le complet, la seconde dans le léger suivant.                                                                                                                                           | ✅      |
-| U4  | Source lente pendant un léger, puis au-delà du délai                       | Voir 008-AS5.4 : `409` français pendant, `failed` lisible au-delà, API vivante.                                                                                                                                                 | ✅      |
-| U5  | Double déclenchement manuel / six POST pendant un import                   | `202` puis `409` français (008-AS5.2) ; pendant le léger lent aussi (008-AS5.4).                                                                                                                                                | ✅      |
-| U6  | Bandeau quand l'API est injoignable, ancienne API, import éteint           | Voir 008-AS8.1 à AS8.4 : ancienne API et import éteint sans bandeau ni erreur ; session ouverte et API coupée : bandeau figé « à jour » ; jamais de succès : aucun bandeau.                                                     | 🟡      |
-| U7  | Configuration absurde : intervalle 0, heures mal formées, fenêtre inversée | Voir 008-AS3.3 : tous refusés en français, la variable nommée ; ancienne variable et tick démesuré sans un mot (008-AS3.4).                                                                                                     | 🟡      |
-| U8  | Bandeau à 188 px (zoom 200 % simulé) et clavier seul                       | Texte rendu en entier à 188 px, sans coupure du bandeau (en-tête déjà rogné, constat de transverse.md) ; premier Tab sur « Aller au contenu » dans les deux états : le bandeau n'est pas focalisable, il ne prend pas le focus. | ✅      |
-| U9  | Console et réseau pendant tous les gestes du bandeau                       | Aucune erreur applicative ni avertissement React ; seules les lignes « Failed to load resource » provoquées volontairement (404/502 de l'intermédiaire).                                                                        | ✅      |
-| U10 | Contrôle anti vibe-coding (`anti_slop.py`)                                 | Mêmes 3 ERREURS « lucide » (`apps/web/components.json:20`, `specs/design/artefact-design.html:1717` et `:2974`) et avertissement « page sans image » de `apps/web/index.html` (mascotte et logo présents) ; hors diff.          | 🟡      |
+| #   | Geste                                                                      | Observé                                                                                                                                                                                                                            | Verdict |
+| --- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| U1  | Horloge à 07:59, 08:00, 22:59, 23:00, 23:01                                | Voir 008-AS1.3 : rien avant 08:00, premier léger à 08:00:02, complet à 23:00:01, plus de léger après 23:00:59, rattrapage à 23:01.                                                                                                 | ✅      |
+| U2  | Redémarrage à 22:59 et à 23:00:30                                          | Voir 008-AS4.2 : 22:59 tient, 23:00:30 rattrape le complet manqué au redémarrage.                                                                                                                                                  | ✅      |
+| U3  | Finale ajoutée à chaud pendant un import complet                           | Voir 008-AS2.2 : la première entre dans le complet, la seconde dans le léger suivant.                                                                                                                                              | ✅      |
+| U4  | Source lente pendant un léger, puis au-delà du délai                       | Voir 008-AS5.4 : `409` français pendant, `failed` lisible au-delà, API vivante.                                                                                                                                                    | ✅      |
+| U5  | Double déclenchement manuel / six POST pendant un import                   | `202` puis `409` français (008-AS5.2) ; pendant le léger lent aussi (008-AS5.4).                                                                                                                                                   | ✅      |
+| U6  | Bandeau quand l'API est injoignable, ancienne API, import éteint           | Voir 008-AS8.1 à AS8.4 : ancienne API et import éteint sans bandeau ni erreur ; API coupée en session ouverte : « Impossible de vérifier… » (≤ 1 min) ; jamais de succès : alerte ; défaut mineur après « Réessayer » (008-AS8.3). | 🟡      |
+| U7  | Configuration absurde : intervalle 0, heures mal formées, fenêtre inversée | Voir 008-AS3.3 et AS3.4 : tous refusés en français, la variable nommée ; ancienne variable signalée, tick borné à 300 s.                                                                                                           | ✅      |
+| U8  | Bandeau à 188 px (zoom 200 % simulé) et clavier seul                       | Texte rendu en entier à 188 px, sans coupure du bandeau (en-tête déjà rogné, constat de transverse.md) ; premier Tab sur « Aller au contenu » dans les deux états : le bandeau n'est pas focalisable, il ne prend pas le focus.    | ✅      |
+| U9  | Console et réseau pendant tous les gestes du bandeau                       | Aucune erreur applicative ni avertissement React ; seules les lignes « Failed to load resource » provoquées volontairement (404/502 de l'intermédiaire).                                                                           | ✅      |
+| U10 | Contrôle anti vibe-coding (`anti_slop.py`)                                 | Rejeu 3 : mêmes 3 ERREURS « lucide » (`apps/web/components.json:20`, `specs/design/artefact-design.html:1717` et `:2974`) et avertissement « page sans image » de `apps/web/index.html` (mascotte et logo présents) ; hors diff.   | 🟡      |
 
 Non joué : réseau lent/coupé côté navigateur pendant un import (la panne a été simulée par l'intermédiaire, pas par l'émulation du navigateur), rotation de l'écran, deux onglets sur le bandeau, un vrai site officiel (interdit), un import complet de plus de 4 minutes au délai par défaut, la reprise après un redéploiement réel.
 
