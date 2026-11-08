@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ScrapeRun } from '../../domain/scrape-run';
-import { nextFullSlot } from '../../domain/scrape-schedule';
+import { isStale, nextFullSlot } from '../../domain/scrape-schedule';
 import { Clock } from '../clock';
 import { ScrapeRunRepository } from '../scrape-run.repository';
 import { SCRAPING_SETTINGS, type ScrapingSettings } from '../scraping-settings';
@@ -11,8 +11,11 @@ const RECENT_RUNS = 10;
 export interface ScrapeStatusView {
   settings: ScrapingSettings;
   running: boolean;
-  nextRunAt: Date | null;
+  nextFullRunAt: Date | null;
+  lastSuccessAt: Date | null;
+  stale: boolean;
   lastRun: ScrapeRun | null;
+  lastFullRun: ScrapeRun | null;
   recentRuns: ScrapeRun[];
 }
 
@@ -26,12 +29,22 @@ export class GetScrapeStatus {
   ) {}
 
   async execute(): Promise<ScrapeStatusView> {
-    const recentRuns = await this.runs.latest(RECENT_RUNS);
+    const now = this.clock.now();
+    const [recentRuns, lastSuccessAt, lastFullRun] = await Promise.all([
+      this.runs.latest(RECENT_RUNS),
+      this.runs.lastSucceededAt(),
+      this.runs.latestFull(),
+    ]);
     return {
       settings: this.settings,
       running: this.runScrape.running,
-      nextRunAt: this.settings.enabled ? nextFullSlot(this.clock.now(), this.settings) : null,
-      lastRun: recentRuns[0] ?? null,
+      nextFullRunAt: this.settings.enabled ? nextFullSlot(now, this.settings) : null,
+      lastSuccessAt,
+      stale:
+        this.settings.enabled && isStale({ now, lastSucceededAt: lastSuccessAt }, this.settings),
+      // Une exécution sautée n'a rien lu : le dernier compte rendu utile est la dernière vraie exécution.
+      lastRun: recentRuns.find((run) => run.status !== 'skipped') ?? null,
+      lastFullRun,
       recentRuns,
     };
   }

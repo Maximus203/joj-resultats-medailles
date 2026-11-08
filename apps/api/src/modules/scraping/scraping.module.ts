@@ -5,6 +5,7 @@ import { ImportedPodiumRepository } from './application/imported-podium.reposito
 import { ResultsSource } from './application/results-source';
 import { ScrapeRunRepository } from './application/scrape-run.repository';
 import { SCRAPING_SETTINGS, type ScrapingSettings } from './application/scraping-settings';
+import { CheckStaleness } from './application/use-cases/check-staleness';
 import { GetScrapeStatus } from './application/use-cases/get-scrape-status';
 import { RunDueScrape } from './application/use-cases/run-due-scrape';
 import { RunScrape } from './application/use-cases/run-scrape';
@@ -44,6 +45,7 @@ import { SystemClock } from './infra/system-clock';
     RunDueScrape,
     StartScrape,
     GetScrapeStatus,
+    CheckStaleness,
     ScrapeScheduler,
   ],
 })

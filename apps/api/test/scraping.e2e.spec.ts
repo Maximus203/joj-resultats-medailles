@@ -12,6 +12,9 @@ import {
   scheduleItem,
 } from '../src/modules/scraping/application/testing/official-pages';
 import { RunScrape } from '../src/modules/scraping/application/use-cases/run-scrape';
+import { SCRAPING_SETTINGS } from '../src/modules/scraping/application/scraping-settings';
+import { testSettings } from '../src/modules/scraping/application/testing/settings';
+import { ScrapeScheduler } from '../src/modules/scraping/infra/scrape-scheduler';
 import { createTestApp } from './create-test-app';
 
 describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official site)', () => {
@@ -72,8 +75,11 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
         firstDay: '2026-11-01',
         lastDay: '2026-11-13',
       },
-      nextRunAt: null,
+      nextFullRunAt: null,
+      lastSuccessAt: null,
+      stale: false,
       lastRun: null,
+      lastFullRun: null,
       recentRuns: [],
     });
   });
@@ -232,5 +238,64 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     const { lastRun } = await status();
     expect(lastRun).toMatchObject({ status: 'failed', counts: { imported: 0, errors: 2 } });
     expect((await http().get('/api/podiums').expect(200)).body.items).toHaveLength(2);
+  });
+});
+
+describe('GET /api/scraping, freshness (e2e, import switched on, clock injected)', () => {
+  let app: INestApplication;
+  let clock: FixedClock;
+  const status = async () =>
+    scrapeStatusSchema.parse((await request(app.getHttpServer()).get('/api/scraping')).body);
+
+  beforeEach(async () => {
+    const source = new FakeResultsSource();
+    source.schedules.set('2026-11-01', quietDay);
+    source.schedules.set('2026-11-02', quietDay);
+    clock = new FixedClock(new Date('2026-11-02T10:00:00.000Z'));
+    app = await createTestApp((builder) =>
+      builder
+        .overrideProvider(ResultsSource)
+        .useValue(source)
+        .overrideProvider(Clock)
+        .useValue(clock)
+        .overrideProvider(SCRAPING_SETTINGS)
+        .useValue(testSettings())
+        // L'horloge réelle ne tourne pas : le test déplace l'heure et lance l'import lui-même.
+        .overrideProvider(ScrapeScheduler)
+        .useValue({
+          onApplicationBootstrap: () => undefined,
+          onApplicationShutdown: () => undefined,
+        }),
+    );
+  });
+
+  afterEach(() => app?.close());
+
+  it('008-AS6: tells the kind, the duration and the time of the last success of each run', async () => {
+    await request(app.getHttpServer()).post('/api/scraping/runs').expect(202);
+    await app.get(RunScrape).whenIdle();
+
+    const view = await status();
+
+    expect(view.lastSuccessAt).toBe('2026-11-02T10:00:00.000Z');
+    expect(view.lastRun).toMatchObject({ kind: 'full', durationMs: 0, status: 'success' });
+    expect(view.lastFullRun?.id).toBe(view.lastRun?.id);
+    expect(view.recentRuns[0]).toMatchObject({ kind: 'full', durationMs: 0 });
+    expect(view.nextFullRunAt).toBe('2026-11-02T23:00:00.000Z');
+  });
+
+  it('008-AS7: is stale after 2 hours without a success inside the window, fresh again after one', async () => {
+    expect((await status()).stale).toBe(true);
+
+    await request(app.getHttpServer()).post('/api/scraping/runs').expect(202);
+    await app.get(RunScrape).whenIdle();
+    expect((await status()).stale).toBe(false);
+
+    clock.set('2026-11-02T12:00:00.000Z');
+    expect((await status()).stale).toBe(false);
+    clock.set('2026-11-02T12:00:01.000Z');
+    expect((await status()).stale).toBe(true);
+    clock.set('2026-11-02T23:30:00.000Z');
+    expect((await status()).stale).toBe(false);
   });
 });

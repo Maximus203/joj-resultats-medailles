@@ -6,6 +6,7 @@ import {
   type OnApplicationShutdown,
 } from '@nestjs/common';
 import { SCRAPING_SETTINGS, type ScrapingSettings } from '../application/scraping-settings';
+import { CheckStaleness } from '../application/use-cases/check-staleness';
 import { RunDueScrape } from '../application/use-cases/run-due-scrape';
 
 /**
@@ -21,6 +22,7 @@ export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShu
 
   constructor(
     @Inject(RunDueScrape) private readonly runDue: Pick<RunDueScrape, 'execute'>,
+    @Inject(CheckStaleness) private readonly staleness: Pick<CheckStaleness, 'execute'>,
     @Inject(SCRAPING_SETTINGS) private readonly settings: ScrapingSettings,
   ) {}
 
@@ -33,7 +35,11 @@ export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShu
       `Import automatique actif : complet à ${this.settings.fullTimes.join(', ')}, léger toutes les ${this.settings.intervalMinutes} min de ${this.settings.windowStart} à ${this.settings.windowEnd} (${this.settings.timeZone}), du ${this.settings.firstDay} au ${this.settings.lastDay}`,
     );
     void this.tick(true);
-    this.timer = setInterval(() => void this.tick(false), this.settings.tickSeconds * 1000);
+    void this.watchStaleness();
+    this.timer = setInterval(() => {
+      void this.tick(false);
+      void this.watchStaleness();
+    }, this.settings.tickSeconds * 1000);
     this.timer.unref();
   }
 
@@ -51,6 +57,15 @@ export class ScrapeScheduler implements OnApplicationBootstrap, OnApplicationShu
       this.logger.error(error);
     } finally {
       this.busy = false;
+    }
+  }
+
+  /** La fraîcheur se surveille à chaque battement, même pendant un import long. */
+  private async watchStaleness(): Promise<void> {
+    try {
+      await this.staleness.execute();
+    } catch (error) {
+      this.logger.error(error);
     }
   }
 }

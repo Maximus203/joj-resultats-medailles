@@ -43,8 +43,11 @@ export class ScrapingController {
         firstDay: settings.firstDay,
         lastDay: settings.lastDay,
       },
-      nextRunAt: view.nextRunAt?.toISOString() ?? null,
+      nextFullRunAt: view.nextFullRunAt?.toISOString() ?? null,
+      lastSuccessAt: view.lastSuccessAt?.toISOString() ?? null,
+      stale: view.stale,
       lastRun: view.lastRun ? toRunResponse(view.lastRun) : null,
+      lastFullRun: view.lastFullRun ? toRunResponse(view.lastFullRun) : null,
       recentRuns: view.recentRuns.map(toSummary),
     };
   }
@@ -62,9 +65,11 @@ function toSummary(run: ScrapeRun): ScrapeRunSummary {
   return {
     id: run.id,
     trigger: run.trigger,
+    kind: run.kind,
     status: run.status,
     startedAt: run.startedAt.toISOString(),
     finishedAt: run.finishedAt.toISOString(),
+    durationMs: run.finishedAt.getTime() - run.startedAt.getTime(),
     counts: countsOf(run.report),
   };
 }

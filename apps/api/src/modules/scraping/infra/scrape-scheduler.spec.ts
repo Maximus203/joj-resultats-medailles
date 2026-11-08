@@ -9,8 +9,9 @@ const BEAT = SETTINGS.tickSeconds * 1000;
 
 function setup(settings: ScrapingSettings = SETTINGS) {
   const execute = vi.fn<(input: { startup: boolean }) => Promise<null>>(async () => null);
-  const scheduler = new ScrapeScheduler({ execute }, settings);
-  return { execute, scheduler };
+  const staleness = vi.fn<() => Promise<boolean>>(async () => false);
+  const scheduler = new ScrapeScheduler({ execute }, { execute: staleness }, settings);
+  return { execute, staleness, scheduler };
 }
 
 describe('ScrapeScheduler', () => {
@@ -75,5 +76,17 @@ describe('ScrapeScheduler', () => {
     on.scheduler.onApplicationShutdown();
     await vi.advanceTimersByTimeAsync(BEAT * 5);
     expect(on.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('008-AS7: checks staleness on every beat, even while an import is still running', async () => {
+    const { execute, staleness, scheduler } = setup();
+    execute.mockImplementationOnce(() => new Promise<null>(() => undefined));
+
+    scheduler.onApplicationBootstrap();
+    await vi.advanceTimersByTimeAsync(BEAT * 3);
+
+    expect(execute).toHaveBeenCalledTimes(1);
+    expect(staleness).toHaveBeenCalledTimes(4);
+    scheduler.onApplicationShutdown();
   });
 });

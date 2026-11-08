@@ -54,6 +54,8 @@ export const exhaustivenessSchema = z.object({
   finalsSeen: z.number().int().min(0),
   /** Celles qui ont donné un podium. */
   finalsWithPodium: z.number().int().min(0),
+  /** Celles déjà en base, que l'import léger n'a pas rouvertes. */
+  finalsKnown: z.number().int().min(0),
   ignored: z.array(ignoredFinalSchema),
 });
 
@@ -66,6 +68,8 @@ export const scrapeReportSchema = z.object({
   absentFromSource: z.array(scrapedEventSchema),
   exhaustiveness: exhaustivenessSchema,
   errors: z.array(z.string()),
+  /** Pourquoi l'exécution a été sautée ; absent sinon. */
+  skippedReason: z.string().optional(),
 });
 
 export const scrapeCountsSchema = z.object({
@@ -81,9 +85,12 @@ export const scrapeCountsSchema = z.object({
 export const scrapeRunSummarySchema = z.object({
   id: z.uuid(),
   trigger: scrapeTriggerSchema,
+  /** `full` : tous les jours et la confrontation à la base ; `incremental` : hier et aujourd'hui, finales nouvelles seulement. */
+  kind: z.enum(['full', 'incremental']),
   status: scrapeStatusValueSchema,
   startedAt: z.iso.datetime(),
   finishedAt: z.iso.datetime(),
+  durationMs: z.number().int().min(0),
   counts: scrapeCountsSchema,
 });
 export type ScrapeRunSummary = z.infer<typeof scrapeRunSummarySchema>;
@@ -107,9 +114,16 @@ export const scrapeStatusSchema = z.object({
     firstDay: z.iso.date(),
     lastDay: z.iso.date(),
   }),
-  /** Le prochain créneau quotidien ; `null` si l'import est éteint ou les Jeux finis. */
-  nextRunAt: z.iso.datetime().nullable(),
+  /** Le prochain import complet ; `null` si l'import est éteint ou les Jeux finis. */
+  nextFullRunAt: z.iso.datetime().nullable(),
+  /** Le début du dernier import réussi (ni échoué ni sauté). */
+  lastSuccessAt: z.iso.datetime().nullable(),
+  /** Vrai si, dans la fenêtre des Jeux, aucun import n'a réussi depuis le seuil configuré. */
+  stale: z.boolean(),
+  /** La dernière exécution réellement lancée, de tout genre. */
   lastRun: scrapeRunSchema.nullable(),
+  /** Le dernier import complet : celui qui porte la comparaison à la base. */
+  lastFullRun: scrapeRunSchema.nullable(),
   /** Les dernières exécutions, la plus récente d'abord, sans leur détail. */
   recentRuns: z.array(scrapeRunSummarySchema),
 });
