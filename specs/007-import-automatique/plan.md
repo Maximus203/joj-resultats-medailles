@@ -107,3 +107,7 @@ Passage 3 (relectures indépendantes).
 Pour que la trace dise la vérité : `tools/sdd/lib/spec-format.mts` (limite du PRD relevée de 50 à 60 lignes, avec son test) et `.claude/skills/prd/SKILL.md` (le texte de la limite), le renvoi de 007-AS6 vers la spec 008 pour le rythme, le PRD (tranche TR6) et la spec 008 elle-même (`specs/008-rythme-import/`), séparée parce que la 007 atteint les 70 lignes.
 
 - [x] T25 [007-AS6, AS3] Ajouter « 007-AS6: sends nothing before the Games open, even at startup (2026-10-31T23:59) » (`run-due-scrape.application.spec.ts`) et « 007-AS3: serves the tie in French in the report of GET /api/scraping » (`test/scraping.e2e.spec.ts`). Comportements existants : tests non rouges possibles
+
+Passage 4 (QA rejouée sur 7b4ecfd).
+
+- [x] T26 [007-AS4] Écrire d'abord `packages/shared/src/event-key.spec.ts` (« 007-AS4: reads every apostrophe … »), l'e2e « … curly apostrophe … » (`test/scraping.e2e.spec.ts`) et l'écran « … conflict message » (`routes/journaliste.test.tsx`), puis `normalizeEventKey` qui ramène ’ ‘ ʼ ` ´ à l'apostrophe droite, et la fausse API du front qui compare comme l'API

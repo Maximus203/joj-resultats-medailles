@@ -201,6 +201,36 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     expect((await http().get('/api/medals').expect(200)).body.items).toEqual(medalsBefore);
   });
 
+  it('007-AS4: refuses an event typed with a curly apostrophe that the import already published', async () => {
+    source.schedules.set(
+      '2026-11-02',
+      scheduleItem('medal-match gold', 'S50-FNL', 'Swimming', 'Women&#39;s 50m Freestyle Final'),
+    );
+    source.medalLists.set(
+      'S50-FNL',
+      medalPage(['Gold', 'GBR'], ['Silver', 'ITA'], ['Bronze', 'FRA']),
+    );
+    await runAndWait();
+    const before = (await http().get('/api/podiums').expect(200)).body.items.length;
+    const medalsBefore = (await http().get('/api/medals').expect(200)).body.items;
+
+    const typed = await http()
+      .post('/api/podiums')
+      .send({
+        eventName: 'Swimming - Women’s 50m Freestyle',
+        discipline: 'Swimming',
+        day: '2026-11-02',
+        gold: 'USA',
+        silver: 'ITA',
+        bronze: 'FRA',
+      })
+      .expect(409);
+
+    expect(typed.body).toMatchObject({ code: 'PODIUM_ALREADY_RECORDED' });
+    expect((await http().get('/api/podiums').expect(200)).body.items).toHaveLength(before);
+    expect((await http().get('/api/medals').expect(200)).body.items).toEqual(medalsBefore);
+  });
+
   it('007-AS4: follows an official change of the second bronze and keeps the replaced version', async () => {
     await runAndWait();
     const judo = (await http().get('/api/podiums').expect(200)).body.items.find(

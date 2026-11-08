@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
+import { fixture } from '@/mocks/fixture';
 import { mockControl } from '@/mocks/control';
 import { axeFindings, runAxe } from '@/test/axe';
 import { seedPodium, setOnline } from '@/test/seed';
@@ -84,6 +85,21 @@ describe('record a podium screen', () => {
     expect(within(alert).getByRole('link', { name: 'Corriger ce podium' })).toBeVisible();
     expect(within(alert).getByRole('link', { name: 'Voir le podium enregistré' })).toBeVisible();
     expect(axeFindings(await runAxe())).toEqual([]);
+  });
+
+  it('007-AS4: refuses an event typed with a curly apostrophe that was already published, with the conflict message', async () => {
+    const user = userEvent.setup();
+    seedPodium({ eventName: "Swimming – Women's 50m Freestyle", day: '2026-11-05' });
+    await open();
+    await fill(user, { ...wrestling, nom: 'Swimming - Women’s 50m Freestyle', disc: 'Swimming' });
+    await user.clear(screen.getByLabelText('Jour'));
+    await user.type(screen.getByLabelText('Jour'), '2026-11-05');
+    await submit(user);
+
+    const alert = await screen.findByRole('alert');
+
+    expect(alert).toHaveTextContent('Cette épreuve a déjà un podium.');
+    expect(fixture.podiums).toHaveLength(1);
   });
 
   it('001-AS3: refuses a repeated country and names it on both lines', async () => {

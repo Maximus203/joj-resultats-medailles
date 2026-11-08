@@ -1,5 +1,6 @@
 import {
   correctPodiumSchema,
+  normalizeEventKey,
   listPodiumsQuerySchema,
   type PodiumResponse,
   type ProblemDetails,
@@ -84,7 +85,10 @@ export const handlers: RequestHandler[] = [
       );
     }
     const eventName = cleanName(parsed.data.eventName);
-    if (fixture.podiums.some((p) => p.eventName.toLowerCase() === eventName.toLowerCase())) {
+    // Comme l'API : deux écritures d'une même épreuve (tiret, apostrophe, casse) n'en font qu'une.
+    if (
+      fixture.podiums.some((p) => normalizeEventKey(p.eventName) === normalizeEventKey(eventName))
+    ) {
       return problem(
         409,
         'PODIUM_ALREADY_RECORDED',
