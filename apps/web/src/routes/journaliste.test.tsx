@@ -37,55 +37,71 @@ function describedByTargetsExist(): string[] {
   return missing;
 }
 
+/**
+ * Les deux premiers tests du fichier paient le premier rendu de toute l'application (routes,
+ * Radix, fausse API) : 1,8 s seul, 2,2 s dans le projet web, mais plus de 5 s quand `pnpm check`
+ * lance l'API, le web et les outils en parallèle. Un délai explicite pour eux seuls, pas de
+ * relèvement global.
+ */
+const SLOW_FIRST_RENDER_MS = 20_000;
+
 const wrestling = { nom: 'Lutte filles 52 kg', disc: 'Lutte', or: 'SEN', ar: 'JPN', br: 'FRA' };
 
 describe('record a podium screen', () => {
-  it('001-AS1: records the podium, then shows it back as the public will read it', async () => {
-    const user = userEvent.setup();
-    const seen = trackRequests();
-    await open();
-    await fill(user, wrestling);
-    await submit(user);
-    expect(await screen.findByText('Podium enregistré.')).toBeVisible();
-    const card = screen.getByRole('article');
-    expect(within(card).getByRole('heading', { name: 'Lutte filles 52 kg' })).toBeVisible();
-    expect(within(card).getAllByText(/^(SEN|JPN|FRA)$/)).toHaveLength(3);
-    expect(writes(seen)).toHaveLength(1);
-    expect(writes(seen)[0]).toMatchObject({
-      method: 'POST',
-      path: '/api/podiums',
-      body: {
-        eventName: 'Lutte filles 52 kg',
-        discipline: 'Lutte',
-        gold: 'SEN',
-        silver: 'JPN',
-        bronze: 'FRA',
-      },
-    });
-    expect(screen.getByRole('link', { name: /Voir les résultats du/ })).toBeVisible();
-  });
+  it(
+    '001-AS1: records the podium, then shows it back as the public will read it',
+    async () => {
+      const user = userEvent.setup();
+      const seen = trackRequests();
+      await open();
+      await fill(user, wrestling);
+      await submit(user);
+      expect(await screen.findByText('Podium enregistré.')).toBeVisible();
+      const card = screen.getByRole('article');
+      expect(within(card).getByRole('heading', { name: 'Lutte filles 52 kg' })).toBeVisible();
+      expect(within(card).getAllByText(/^(SEN|JPN|FRA)$/)).toHaveLength(3);
+      expect(writes(seen)).toHaveLength(1);
+      expect(writes(seen)[0]).toMatchObject({
+        method: 'POST',
+        path: '/api/podiums',
+        body: {
+          eventName: 'Lutte filles 52 kg',
+          discipline: 'Lutte',
+          gold: 'SEN',
+          silver: 'JPN',
+          bronze: 'FRA',
+        },
+      });
+      expect(screen.getByRole('link', { name: /Voir les résultats du/ })).toBeVisible();
+    },
+    SLOW_FIRST_RENDER_MS,
+  );
 
-  it('001-AS2: refuses a second podium for the same event, with a message tied to the Épreuve field', async () => {
-    const user = userEvent.setup();
-    seedPodium({ eventName: 'Lutte filles 52 kg', day: '2026-11-05' });
-    await open();
-    await fill(user, wrestling);
-    await user.clear(screen.getByLabelText('Jour'));
-    await user.type(screen.getByLabelText('Jour'), '2026-11-05');
-    await submit(user);
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('Cette épreuve a déjà un podium.');
-    expect(alert).toHaveTextContent('Le podium enregistré n’a pas changé.');
-    const field = screen.getByLabelText('Épreuve');
-    expect(field).toHaveAttribute('aria-invalid', 'true');
-    const describedBy = (field.getAttribute('aria-describedby') ?? '').split(' ');
-    expect(describedBy).toContain('nom-err');
-    expect(document.getElementById('nom-err')).toHaveTextContent('utilisez la correction');
-    expect(describedByTargetsExist()).toEqual([]);
-    expect(within(alert).getByRole('link', { name: 'Corriger ce podium' })).toBeVisible();
-    expect(within(alert).getByRole('link', { name: 'Voir le podium enregistré' })).toBeVisible();
-    expect(axeFindings(await runAxe())).toEqual([]);
-  });
+  it(
+    '001-AS2: refuses a second podium for the same event, with a message tied to the Épreuve field',
+    async () => {
+      const user = userEvent.setup();
+      seedPodium({ eventName: 'Lutte filles 52 kg', day: '2026-11-05' });
+      await open();
+      await fill(user, wrestling);
+      await user.clear(screen.getByLabelText('Jour'));
+      await user.type(screen.getByLabelText('Jour'), '2026-11-05');
+      await submit(user);
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent('Cette épreuve a déjà un podium.');
+      expect(alert).toHaveTextContent('Le podium enregistré n’a pas changé.');
+      const field = screen.getByLabelText('Épreuve');
+      expect(field).toHaveAttribute('aria-invalid', 'true');
+      const describedBy = (field.getAttribute('aria-describedby') ?? '').split(' ');
+      expect(describedBy).toContain('nom-err');
+      expect(document.getElementById('nom-err')).toHaveTextContent('utilisez la correction');
+      expect(describedByTargetsExist()).toEqual([]);
+      expect(within(alert).getByRole('link', { name: 'Corriger ce podium' })).toBeVisible();
+      expect(within(alert).getByRole('link', { name: 'Voir le podium enregistré' })).toBeVisible();
+      expect(axeFindings(await runAxe())).toEqual([]);
+    },
+    SLOW_FIRST_RENDER_MS,
+  );
 
   it('007-AS4: refuses an event typed with a curly apostrophe that was already published, with the conflict message', async () => {
     const user = userEvent.setup();

@@ -1,0 +1,1003 @@
+{
+  "numTotalTestSuites": 22,
+  "numPassedTestSuites": 22,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 81,
+  "numPassedTests": 81,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1794155680817,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["country names"],
+          "fullName": "country names 007-AS8: names every country seen on the official site",
+          "status": "passed",
+          "title": "007-AS8: names every country seen on the official site",
+          "duration": 2.9975999999999203,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["country names"],
+          "fullName": "country names 007-AS8: names the six countries the QA found without a name",
+          "status": "passed",
+          "title": "007-AS8: names the six countries the QA found without a name",
+          "duration": 0.5889999999999418,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682638,
+      "endTime": 1794155682641.589,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/lib/countries.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["mock podiums API"],
+          "fullName": "mock podiums API 001-AS1: records a podium and answers 201 with the cleaned event name",
+          "status": "passed",
+          "title": "001-AS1: records a podium and answers 201 with the cleaned event name",
+          "duration": 91.39949999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podiums API"],
+          "fullName": "mock podiums API 001-AS2: refuses a second podium for the same event with a 409 PODIUM_ALREADY_RECORDED problem",
+          "status": "passed",
+          "title": "001-AS2: refuses a second podium for the same event with a 409 PODIUM_ALREADY_RECORDED problem",
+          "duration": 13.950799999999845,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podiums API"],
+          "fullName": "mock podiums API 001-AS3: refuses a repeated country with a 422 PODIUM_COUNTRIES_NOT_DISTINCT problem",
+          "status": "passed",
+          "title": "001-AS3: refuses a repeated country with a 422 PODIUM_COUNTRIES_NOT_DISTINCT problem",
+          "duration": 4.13350000000014,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podiums API"],
+          "fullName": "mock podiums API rejects an invalid body with a 400 VALIDATION_FAILED problem",
+          "status": "passed",
+          "title": "rejects an invalid body with a 400 VALIDATION_FAILED problem",
+          "duration": 5.942600000000084,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock medals API"],
+          "fullName": "mock medals API 004-AS1: counts and sorts medals by gold, then silver, then bronze",
+          "status": "passed",
+          "title": "004-AS1: counts and sorts medals by gold, then silver, then bronze",
+          "duration": 19.127099999999928,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock medals API"],
+          "fullName": "mock medals API 007-AS8: counts a second bronze like the real API",
+          "status": "passed",
+          "title": "007-AS8: counts a second bronze like the real API",
+          "duration": 13.164099999999962,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock medals API"],
+          "fullName": "mock medals API 004-AS2: gives two countries on equal medals the same rank, then skips",
+          "status": "passed",
+          "title": "004-AS2: gives two countries on equal medals the same rank, then skips",
+          "duration": 10.510899999999992,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock medals API"],
+          "fullName": "mock medals API 004-AS3: answers an empty table, not an error, when no podium exists",
+          "status": "passed",
+          "title": "004-AS3: answers an empty table, not an error, when no podium exists",
+          "duration": 2.4831000000001495,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium listing API"],
+          "fullName": "mock podium listing API 005-AS1: lists the podiums of one day",
+          "status": "passed",
+          "title": "005-AS1: lists the podiums of one day",
+          "duration": 9.11830000000009,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium listing API"],
+          "fullName": "mock podium listing API 005-AS2: lists every podium without a day",
+          "status": "passed",
+          "title": "005-AS2: lists every podium without a day",
+          "duration": 6.922199999999975,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium listing API"],
+          "fullName": "mock podium listing API 005-AS3: lists the most recent podium first",
+          "status": "passed",
+          "title": "005-AS3: lists the most recent podium first",
+          "duration": 6.1766999999999825,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium listing API"],
+          "fullName": "mock podium listing API 005-AS4: answers an empty list for a day without podium",
+          "status": "passed",
+          "title": "005-AS4: answers an empty list for a day without podium",
+          "duration": 3.0881999999999152,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium correction API"],
+          "fullName": "mock podium correction API 006-AS1: corrects a podium and dates the correction",
+          "status": "passed",
+          "title": "006-AS1: corrects a podium and dates the correction",
+          "duration": 6.780899999999974,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium correction API"],
+          "fullName": "mock podium correction API 006-AS2: refuses a repeated country with a 422 problem",
+          "status": "passed",
+          "title": "006-AS2: refuses a repeated country with a 422 problem",
+          "duration": 6.658199999999852,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium correction API"],
+          "fullName": "mock podium correction API 006-AS3: refuses an unknown podium with a 404 problem, for the correction and the history",
+          "status": "passed",
+          "title": "006-AS3: refuses an unknown podium with a 404 problem, for the correction and the history",
+          "duration": 7.429000000000087,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium correction API"],
+          "fullName": "mock podium correction API 006-AS4: keeps the replaced versions, most recent first",
+          "status": "passed",
+          "title": "006-AS4: keeps the replaced versions, most recent first",
+          "duration": 9.36440000000016,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["mock podium correction API"],
+          "fullName": "mock podium correction API 006-AS5: accepts an identical correction without a new revision",
+          "status": "passed",
+          "title": "006-AS5: accepts an identical correction without a new revision",
+          "duration": 11.65449999999987,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682626,
+      "endTime": 1794155682855.6545,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/mocks/handlers.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen shows the last podium, the disciplines of the day, the day results and the top medals",
+          "status": "passed",
+          "title": "shows the last podium, the disciplines of the day, the day results and the top medals",
+          "duration": 1181.0825,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen shows empty states, without error, before the first podium",
+          "status": "passed",
+          "title": "shows empty states, without error, before the first podium",
+          "duration": 270.6331,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen shows loading states, then content",
+          "status": "passed",
+          "title": "shows loading states, then content",
+          "duration": 364.86760000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen shows readable errors with a retry",
+          "status": "passed",
+          "title": "shows readable errors with a retry",
+          "duration": 231.4431000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen shows the offline bar",
+          "status": "passed",
+          "title": "shows the offline bar",
+          "duration": 262.04659999999967,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen has no accessibility violation, with data and with empty states",
+          "status": "passed",
+          "title": "has no accessibility violation, with data and with empty states",
+          "duration": 897.9655000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["home screen"],
+          "fullName": "home screen has no accessibility violation on empty states",
+          "status": "passed",
+          "title": "has no accessibility violation on empty states",
+          "duration": 565.2078000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["unknown page"],
+          "fullName": "unknown page draws a 404 page with a way back, without breaking",
+          "status": "passed",
+          "title": "draws a 404 page with a way back, without breaking",
+          "duration": 212.2561999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["unknown page"],
+          "fullName": "unknown page keeps the skip link from changing the address",
+          "status": "passed",
+          "title": "keeps the skip link from changing the address",
+          "duration": 304.5157999999992,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155683007,
+      "endTime": 1794155687298.5159,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/routes/index.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen 001-AS1: records the podium, then shows it back as the public will read it",
+          "status": "passed",
+          "title": "001-AS1: records the podium, then shows it back as the public will read it",
+          "duration": 1965.7423,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen 001-AS2: refuses a second podium for the same event, with a message tied to the Épreuve field",
+          "status": "passed",
+          "title": "001-AS2: refuses a second podium for the same event, with a message tied to the Épreuve field",
+          "duration": 1891.5970000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen 007-AS4: refuses an event typed with a curly apostrophe that was already published, with the conflict message",
+          "status": "passed",
+          "title": "007-AS4: refuses an event typed with a curly apostrophe that was already published, with the conflict message",
+          "duration": 1524.1273,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen 001-AS3: refuses a repeated country and names it on both lines",
+          "status": "passed",
+          "title": "001-AS3: refuses a repeated country and names it on both lines",
+          "duration": 1029.6986000000006,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen refuses an incomplete entry without calling the server, and says what to fix",
+          "status": "passed",
+          "title": "refuses an incomplete entry without calling the server, and says what to fix",
+          "duration": 996.7644,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen keeps the typed entry after the page is closed and reopened",
+          "status": "passed",
+          "title": "keeps the typed entry after the page is closed and reopened",
+          "duration": 525.9094000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen refuses a day outside the Games without calling the server",
+          "status": "passed",
+          "title": "refuses a day outside the Games without calling the server",
+          "duration": 993.7965000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen shows the busy state while the podium is being sent",
+          "status": "passed",
+          "title": "shows the busy state while the podium is being sent",
+          "duration": 1603.1530000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen explains a server outage in plain words and keeps what was typed",
+          "status": "passed",
+          "title": "explains a server outage in plain words and keeps what was typed",
+          "duration": 980.8927000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen previews the podium live, and keeps a very long word or blank spaces inside the card",
+          "status": "passed",
+          "title": "previews the podium live, and keeps a very long word or blank spaces inside the card",
+          "duration": 1927.3513000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen disables the button and says why when the network is down",
+          "status": "passed",
+          "title": "disables the button and says why when the network is down",
+          "duration": 104.06700000000092,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen lists the podiums already recorded that day, each with a link to correct it",
+          "status": "passed",
+          "title": "lists the podiums already recorded that day, each with a link to correct it",
+          "duration": 162.10359999999855,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["record a podium screen"],
+          "fullName": "record a podium screen has no accessibility violation on the empty form",
+          "status": "passed",
+          "title": "has no accessibility violation on the empty form",
+          "duration": 365.6918999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682959,
+      "endTime": 1794155697030.692,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/routes/journaliste.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen 006-AS1: corrects the silver and bronze, then offers the history behind the dated stamp",
+          "status": "passed",
+          "title": "006-AS1: corrects the silver and bronze, then offers the history behind the dated stamp",
+          "duration": 1678.8467999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen 006-AS2: refuses a repeated country and names it",
+          "status": "passed",
+          "title": "006-AS2: refuses a repeated country and names it",
+          "duration": 1155.1401,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen 006-AS3: says so when the podium does not exist",
+          "status": "passed",
+          "title": "006-AS3: says so when the podium does not exist",
+          "duration": 124.04560000000038,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen explains a failed publication in plain words",
+          "status": "passed",
+          "title": "explains a failed publication in plain words",
+          "duration": 309.60059999999976,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen shows a loading state, then the form",
+          "status": "passed",
+          "title": "shows a loading state, then the form",
+          "duration": 317.6761999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen disables the publication and says why when the network is down",
+          "status": "passed",
+          "title": "disables the publication and says why when the network is down",
+          "duration": 260.7933000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["correct a podium screen"],
+          "fullName": "correct a podium screen has no accessibility violation",
+          "status": "passed",
+          "title": "has no accessibility violation",
+          "duration": 504.9893000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682953,
+      "endTime": 1794155687303.9893,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/routes/journaliste_.corriger.$podiumId.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen 004-AS1: shows one row per country, sorted by gold, silver, then bronze",
+          "status": "passed",
+          "title": "004-AS1: shows one row per country, sorted by gold, silver, then bronze",
+          "duration": 335.4557,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen 004-AS2: announces a shared rank as ex æquo and skips the next one",
+          "status": "passed",
+          "title": "004-AS2: announces a shared rank as ex æquo and skips the next one",
+          "duration": 85.75849999999991,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen 004-AS3: shows an empty state, not an error, when no podium exists",
+          "status": "passed",
+          "title": "004-AS3: shows an empty state, not an error, when no podium exists",
+          "duration": 60.28240000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen shows a loading state while the table loads",
+          "status": "passed",
+          "title": "shows a loading state while the table loads",
+          "duration": 261.7217999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen shows a readable error with a retry that reloads the table",
+          "status": "passed",
+          "title": "shows a readable error with a retry that reloads the table",
+          "duration": 125.82230000000027,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen highlights Mon pays and keeps the choice on the device",
+          "status": "passed",
+          "title": "highlights Mon pays and keeps the choice on the device",
+          "duration": 195.08489999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen 007-AS8: follows an imported country as Mon pays, by its French name, with both bronzes counted",
+          "status": "passed",
+          "title": "007-AS8: follows an imported country as Mon pays, by its French name, with both bronzes counted",
+          "duration": 632.6660999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen shows the offline bar and keeps the last table on screen",
+          "status": "passed",
+          "title": "shows the offline bar and keeps the last table on screen",
+          "duration": 151.05870000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen has no accessibility violation, with a table and with an empty state",
+          "status": "passed",
+          "title": "has no accessibility violation, with a table and with an empty state",
+          "duration": 742.7696000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["medal table screen"],
+          "fullName": "medal table screen has no accessibility violation on the empty state",
+          "status": "passed",
+          "title": "has no accessibility violation on the empty state",
+          "duration": 599.8263999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682956,
+      "endTime": 1794155686146.8264,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/routes/medailles.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen 005-AS1: shows the podiums of the chosen day, grouped by discipline",
+          "status": "passed",
+          "title": "005-AS1: shows the podiums of the chosen day, grouped by discipline",
+          "duration": 1075.0627,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen 005-AS3: lists the most recent podium first inside a discipline",
+          "status": "passed",
+          "title": "005-AS3: lists the most recent podium first inside a discipline",
+          "duration": 168.47839999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen 005-AS4: shows an empty day, without error, and a way to another day",
+          "status": "passed",
+          "title": "005-AS4: shows an empty day, without error, and a way to another day",
+          "duration": 269.9444000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen 007-AS8: shows both bronzes of a combat event on the podium card",
+          "status": "passed",
+          "title": "007-AS8: shows both bronzes of a combat event on the podium card",
+          "duration": 196.57369999999992,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen 005-AS2: filters by discipline and tells an empty filter from an empty day",
+          "status": "passed",
+          "title": "005-AS2: filters by discipline and tells an empty filter from an empty day",
+          "duration": 461.0009,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen marks the days that have a podium on the day strip",
+          "status": "passed",
+          "title": "marks the days that have a podium on the day strip",
+          "duration": 180.3811999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen shows a loading state, then the results",
+          "status": "passed",
+          "title": "shows a loading state, then the results",
+          "duration": 336.60169999999925,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen shows a readable error with a retry",
+          "status": "passed",
+          "title": "shows a readable error with a retry",
+          "duration": 213.53240000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen keeps the results on screen when the network drops",
+          "status": "passed",
+          "title": "keeps the results on screen when the network drops",
+          "duration": 180.6805000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen shows Mon pays with its rank and totals",
+          "status": "passed",
+          "title": "shows Mon pays with its rank and totals",
+          "duration": 279.5180999999993,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen 006-AS4: opens the history of a corrected podium, with focus handled, and closes on Escape",
+          "status": "passed",
+          "title": "006-AS4: opens the history of a corrected podium, with focus handled, and closes on Escape",
+          "duration": 997.4070000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen has no accessibility violation with results",
+          "status": "passed",
+          "title": "has no accessibility violation with results",
+          "duration": 694.8947000000007,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["day results screen"],
+          "fullName": "day results screen has no accessibility violation on an empty day",
+          "status": "passed",
+          "title": "has no accessibility violation on an empty day",
+          "duration": 554.8328000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155683010,
+      "endTime": 1794155688618.8328,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/routes/resultats.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["freshness banner"],
+          "fullName": "freshness banner 008-AS8: says when the data was last updated, in the time zone of the import",
+          "status": "passed",
+          "title": "008-AS8: says when the data was last updated, in the time zone of the import",
+          "duration": 286.27109999999993,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["freshness banner"],
+          "fullName": "freshness banner 008-AS8: reads the hour in Dakar time, not in the browser time",
+          "status": "passed",
+          "title": "008-AS8: reads the hour in Dakar time, not in the browser time",
+          "duration": 576.1954000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["freshness banner"],
+          "fullName": "freshness banner 008-AS8: turns into a readable warning when the data is stale",
+          "status": "passed",
+          "title": "008-AS8: turns into a readable warning when the data is stale",
+          "duration": 590.8584999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["freshness banner"],
+          "fullName": "freshness banner 008-AS8: warns plainly when the data is stale and no import ever succeeded",
+          "status": "passed",
+          "title": "008-AS8: warns plainly when the data is stale and no import ever succeeded",
+          "duration": 114.61479999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["freshness banner"],
+          "fullName": "freshness banner 008-AS8: says nothing when the import is off or has not run yet",
+          "status": "passed",
+          "title": "008-AS8: says nothing when the import is off or has not run yet",
+          "duration": 60.61369999999988,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682912,
+      "endTime": 1794155684540.6138,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/features/scraping/freshness-banner.test.tsx"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["createApiClient"],
+          "fullName": "createApiClient returns the response validated by its schema",
+          "status": "passed",
+          "title": "returns the response validated by its schema",
+          "duration": 100.12760000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["createApiClient"],
+          "fullName": "createApiClient throws INVALID_RESPONSE when the response does not match the schema",
+          "status": "passed",
+          "title": "throws INVALID_RESPONSE when the response does not match the schema",
+          "duration": 7.134600000000091,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["createApiClient"],
+          "fullName": "createApiClient turns a problem+json into an ApiError, with its code and details",
+          "status": "passed",
+          "title": "turns a problem+json into an ApiError, with its code and details",
+          "duration": 17.21699999999987,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["createApiClient"],
+          "fullName": "createApiClient falls back to HTTP_ERROR when the body is not a problem+json",
+          "status": "passed",
+          "title": "falls back to HTTP_ERROR when the body is not a problem+json",
+          "duration": 4.590799999999945,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": ["createApiClient"],
+          "fullName": "createApiClient throws NETWORK_ERROR when the server is unreachable",
+          "status": "passed",
+          "title": "throws NETWORK_ERROR when the server is unreachable",
+          "duration": 3.43100000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1794155682634,
+      "endTime": 1794155682766.431,
+      "status": "passed",
+      "message": "",
+      "name": "D:/01-Dev/Perso/Bootcamp/joj-resultats-medailles/apps/web/src/lib/api/api-client.test.ts"
+    }
+  ]
+}

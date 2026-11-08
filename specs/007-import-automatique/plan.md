@@ -111,3 +111,4 @@ Pour que la trace dise la vérité : `tools/sdd/lib/spec-format.mts` (limite du 
 Passage 4 (QA rejouée sur 7b4ecfd).
 
 - [x] T26 [007-AS4] Écrire d'abord `packages/shared/src/event-key.spec.ts` (« 007-AS4: reads every apostrophe … »), l'e2e « … curly apostrophe … » (`test/scraping.e2e.spec.ts`) et l'écran « … conflict message » (`routes/journaliste.test.tsx`), puis `normalizeEventKey` qui ramène ’ ‘ ʼ ` ´ à l'apostrophe droite, et la fausse API du front qui compare comme l'API
+- [x] T27 [007-AS4] Mesurer puis borner `001-AS1` et `001-AS2` de `routes/journaliste.test.tsx` : 1,8 s seuls, 2,2 s dans le projet web, plus de 5 s sous la charge de `pnpm check` (le premier rendu de l'application est dans le premier test). Délai explicite de 20 s pour ces deux tests, aucun relèvement global ; aucun rouge à produire
