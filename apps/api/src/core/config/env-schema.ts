@@ -4,7 +4,7 @@
  */
 import { z } from 'zod';
 
-export const envSchema = z.object({
+const baseSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(3000),
   /** Défini : un vrai serveur PostgreSQL. Absent : PGlite, embarqué dans le process. */
@@ -40,6 +40,15 @@ export const envSchema = z.object({
   SCRAPING_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
   SCRAPING_USER_AGENT: z.string().min(1).default('joj-bootcamp-scraper/0.1 (projet pédagogique)'),
 });
+
+/** Les règles entre variables : une plage de jours à l'envers arrête le démarrage. */
+export const envSchema = baseSchema.refine(
+  (env) => env.SCRAPING_FIRST_DAY <= env.SCRAPING_LAST_DAY,
+  {
+    path: ['SCRAPING_FIRST_DAY'],
+    error: 'doit être le même jour que SCRAPING_LAST_DAY ou un jour avant',
+  },
+);
 
 function isTimeZone(value: string): boolean {
   try {

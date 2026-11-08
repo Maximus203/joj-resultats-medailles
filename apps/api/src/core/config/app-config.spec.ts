@@ -51,4 +51,15 @@ describe('AppConfig', () => {
       AppConfig.fromEnv({ SCRAPING_INTERVAL_MINUTES: '' }).get('SCRAPING_INTERVAL_MINUTES'),
     ).toBeUndefined();
   });
+
+  it('007-AS6: refuses a first day after the last day, naming the variable in French', () => {
+    const attempt = () =>
+      AppConfig.fromEnv({ SCRAPING_FIRST_DAY: '2026-11-13', SCRAPING_LAST_DAY: '2026-11-01' });
+
+    expect(attempt).toThrow(/SCRAPING_FIRST_DAY/);
+    expect(attempt).toThrow(/doit être le même jour que SCRAPING_LAST_DAY ou un jour avant/);
+    expect(() =>
+      AppConfig.fromEnv({ SCRAPING_FIRST_DAY: '2026-11-05', SCRAPING_LAST_DAY: '2026-11-05' }),
+    ).not.toThrow();
+  });
 });
