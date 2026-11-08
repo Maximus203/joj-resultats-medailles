@@ -84,6 +84,8 @@ describe('GET /api/scraping and POST /api/scraping/runs (e2e, simulated official
     expect(lastRun).toMatchObject({
       trigger: 'manual',
       status: 'success',
+      startedAt: '2026-11-02T10:00:00.000Z',
+      finishedAt: '2026-11-02T10:00:00.000Z',
       counts: { imported: 2, updated: 0, identical: 0, kept: 0, absent: 0, ignored: 1, errors: 0 },
     });
     expect(lastRun?.report.imported.map((event) => event.eventName).sort()).toEqual([
