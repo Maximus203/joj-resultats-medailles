@@ -270,6 +270,17 @@
 **Verdict** : 🟡
 **Issue** : —
 
+### 007-AS8.1 — [WEB] Le second bronze et les noms de pays se lisent à l'écran
+
+**Profil** : supporter
+**Priorité** : critique
+**Technique** : nominal
+**Action** : après 007-AS1.1 sur la base importée, ouvrir `/resultats?day=2026-11-01` à 375 puis 320 px, puis `/medailles`, ouvrir la liste « Mon pays » et choisir UKR, HKG puis revenir à SEN.
+**Attendu** : la carte du Judo Men -66 kg montre quatre lignes (or UKR, argent CAN, bronze ARG, bronze SEN) ; le tableau et la liste nomment les pays (Ukraine, Hong Kong, Sénégal, Azerbaïdjan, RD Congo, Vietnam, Iran) ; à 320 px la pastille « Mon pays » reste entière, sous le pays, sans mordre la bordure de la ligne.
+**Observé** : _(à remplir)_
+**Verdict** : ⬜
+**Issue** : —
+
 ## Session imprévisible
 
 Pas d'écran propre à cette tranche : essais d'API ci-dessous, plus les gestes du front sur les pages qui affichent les données importées (voir 007-AS1.3). Exécuté par le testeur le 2026-11-08, build 69dc16b.
