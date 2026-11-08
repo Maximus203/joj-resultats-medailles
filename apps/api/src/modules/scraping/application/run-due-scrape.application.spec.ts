@@ -6,7 +6,9 @@ import { FakeResultsSource } from './testing/fake-results-source';
 import { FixedClock } from './testing/fixed-clock';
 import { InMemoryImportedPodiumRepository } from './testing/in-memory-imported-podium.repository';
 import { InMemoryScrapeRunRepository } from './testing/in-memory-scrape-run.repository';
-import { quietDay } from './testing/official-pages';
+import { medalPage, quietDay, scheduleItem } from './testing/official-pages';
+import { podiumIdOf } from '../domain/official-results';
+import type { StoredPodium } from '../domain/podium-reconciliation';
 import { testSettings } from './testing/settings';
 import type { ScrapingSettings } from './scraping-settings';
 
@@ -83,6 +85,79 @@ describe('RunDueScrape', () => {
       'schedule:2026-11-03',
     ]);
     expect(runs.runs.filter((run) => run.kind === 'full')).toHaveLength(3);
+  });
+
+  it('008-AS3: the 07:00 and 23:00 full imports apply the organizers corrections, and spare a TR4 correction', async () => {
+    const stored = (name: string, patch: Partial<StoredPodium>): StoredPodium => ({
+      id: podiumIdOf(name.toLowerCase()),
+      eventKey: name.toLowerCase(),
+      eventName: name,
+      day: '2026-11-03',
+      gold: 'AAA',
+      silver: 'BBB',
+      bronze: 'CCC',
+      secondBronze: null,
+      correctedAt: null,
+      ...patch,
+    });
+    const JUDO = 'Judo – Men -66 kg';
+    const SWIM = "Swimming – Women's 50m Freestyle";
+    const podiums = new InMemoryImportedPodiumRepository([
+      stored(JUDO, { gold: 'FRA', silver: 'CAN', bronze: 'ARG' }),
+      stored(SWIM, {
+        gold: 'USA',
+        silver: 'ITA',
+        bronze: 'FRA',
+        correctedAt: new Date('2026-11-03T05:00:00Z'),
+      }),
+    ]);
+    const source = new FakeResultsSource();
+    for (const day of ['2026-11-01', '2026-11-02']) source.schedules.set(day, quietDay);
+    source.schedules.set(
+      '2026-11-03',
+      [
+        scheduleItem('medal-match gold', 'J66-FNL', 'Judo', 'Men -66 kg Final'),
+        scheduleItem('medal-match gold', 'S50-FNL', 'Swimming', 'Women&#39;s 50m Freestyle Final'),
+      ].join(''),
+    );
+    source.medalLists.set(
+      'J66-FNL',
+      medalPage(['Gold', 'UKR'], ['Silver', 'CAN'], ['Bronze', 'ARG']),
+    );
+    source.medalLists.set(
+      'S50-FNL',
+      medalPage(['Gold', 'GBR'], ['Silver', 'ITA'], ['Bronze', 'FRA']),
+    );
+    const runs = new InMemoryScrapeRunRepository();
+    const clock = new FixedClock(new Date('2026-11-03T07:00:00Z'));
+    const settings = testSettings();
+    const runScrape = new RunScrape(source, podiums, runs, clock, settings);
+    const due = new RunDueScrape(runScrape, runs, clock, settings);
+
+    const morning = await due.execute(beat);
+    source.medalLists.set(
+      'J66-FNL',
+      medalPage(['Gold', 'CAN'], ['Silver', 'UKR'], ['Bronze', 'ARG']),
+    );
+    clock.set('2026-11-03T23:00:00Z');
+    const night = await due.execute(beat);
+
+    expect(morning).toMatchObject({ kind: 'full' });
+    expect(morning?.report.updated).toMatchObject([
+      { eventName: JUDO, current: { gold: 'FRA' }, source: { gold: 'UKR' } },
+    ]);
+    expect(morning?.report.kept).toMatchObject([{ eventName: SWIM, reason: 'CORRECTED' }]);
+    expect(night).toMatchObject({ kind: 'full' });
+    expect(night?.report.updated).toMatchObject([
+      { current: { gold: 'UKR' }, source: { gold: 'CAN' } },
+    ]);
+    const all = await podiums.findAll();
+    expect(all.find((podium) => podium.eventName === JUDO)).toMatchObject({
+      gold: 'CAN',
+      silver: 'UKR',
+    });
+    expect(all.find((podium) => podium.eventName === SWIM)).toMatchObject({ gold: 'USA' });
+    expect(podiums.revisions.map((entry) => entry.revision.gold)).toEqual(['FRA', 'UKR']);
   });
 
   it('008-AS4: catches up with a full import at startup after more than a day without success', async () => {
