@@ -116,3 +116,5 @@ Passage 4 (QA rejouée sur 7b4ecfd).
 Passage 5 (3e campagne QA).
 
 - [x] T28 [007-AS4] Écrire d'abord « 007-AS4: reads every hyphen and dash, with or without spaces around, as one hyphen » (`packages/shared/src/event-key.spec.ts`) et l'e2e « … unicode hyphen and no spaces … », puis `normalizeEventKey` : U+2010 à U+2015, U+2212, U+FE58, U+FE63 et U+FF0D deviennent un seul tiret, espaces autour absorbés (même règle des deux côtés, sans correspondance floue)
+- [x] T29 [007-AS7] `pnpm db:scrape` ne montre plus l'avertissement `MODULE_TYPELESS_PACKAGE_JSON` : `--disable-warning` dans le script de `apps/api/package.json` (`"type": "module"` aurait cassé la sortie CommonJS de `dist`). Vérifié à la main (aucune sortie d'avertissement) ; seed, reset et tests inchangés ; pas de test automatique possible
+- [x] T30 [007-AS7] Mettre à jour le texte des Actions de 008-AS7.1, 008-AS8.1 et de la précondition du playbook 008 (`INTERVAL=1`, `STALE_AFTER=2` : `STALE_AFTER` ≤ `INTERVAL` est refusé), sans toucher aux Observé ni aux Verdict

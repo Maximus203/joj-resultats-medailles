@@ -7,7 +7,7 @@
 
 - **Jamais le vrai site officiel** : faux site `pnpm --filter @joj/api dev:fake-site 4010` (voir `playbooks/007-import-automatique.md`). Réglages à chaud en plus : `GET http://127.0.0.1:4010/__final?day=today&code=NEW-FNL&discipline=Judo&competition=Men%20-73%20kg%20Final&medals=gold:USA,silver:CAN,bronze:ARG` ajoute une finale terminée aujourd'hui (`day` : `today`, `yesterday` ou `AAAA-MM-JJ`) ; `/__set`, `/__fail`, `/__raw`, `/__heal` comme au playbook 007.
 - API compilée (`pnpm build`) sur une base neuve : `SCRAPING_ENABLED=true SCRAPING_SOURCE_URL=http://127.0.0.1:4010/nh/en/Comp SCRAPING_REQUEST_DELAY_MS=0 SCRAPING_TICK_SECONDS=5 PGLITE_DATA_DIR=.data/playbook-008 PORT=3108 pnpm --filter @joj/api start`. Les imports tournent en heure de Dakar (= UTC). Pour jouer à n'importe quelle heure de la journée, poser `SCRAPING_WINDOW_START=00:00 SCRAPING_WINDOW_END=23:59` ; les scénarios 008-AS1 posent leur propre fenêtre.
-- Réglages par défaut du rythme : imports complets à `SCRAPING_FULL_TIMES=07:00,23:00`, léger toutes les `SCRAPING_INTERVAL_MINUTES=15` dans la fenêtre `08:00` à `23:00`, retard après `SCRAPING_STALE_AFTER_MINUTES=120`. Pour accélérer : `SCRAPING_INTERVAL_MINUTES=1`, `SCRAPING_STALE_AFTER_MINUTES=1`.
+- Réglages par défaut du rythme : imports complets à `SCRAPING_FULL_TIMES=07:00,23:00`, léger toutes les `SCRAPING_INTERVAL_MINUTES=15` dans la fenêtre `08:00` à `23:00`, retard après `SCRAPING_STALE_AFTER_MINUTES=120`. Pour accélérer : `SCRAPING_INTERVAL_MINUTES=1`, `SCRAPING_STALE_AFTER_MINUTES=2` (le seuil doit être strictement supérieur à l’intervalle : `STALE_AFTER=1` est refusé au démarrage).
 - L'état se lit sur `GET http://127.0.0.1:3108/api/scraping` : `lastSuccessAt`, `stale`, `lastRun`, `lastFullRun`, `recentRuns` (genre `kind`, `status`, `durationMs`, `counts`). Le jour courant est la date UTC du poste ; le faux site met ses finales du 1er et 2 novembre, et `__final` les met aujourd'hui ou hier.
 
 ## Scénarios
@@ -116,7 +116,7 @@
 **Profil** : journaliste
 **Priorité** : critique
 **Technique** : transition-état
-**Action** : `SCRAPING_STALE_AFTER_MINUTES=1`, fenêtre ouverte toute la journée ; après un import réussi, `GET .../__fail?match=nh%2Fen` (le site tombe), attendre 3 minutes en relisant l'état et les logs ; puis `__heal` et attendre le prochain import.
+**Action** : `SCRAPING_INTERVAL_MINUTES=1`, `SCRAPING_STALE_AFTER_MINUTES=2`, fenêtre ouverte toute la journée ; après un import réussi, `GET .../__fail?match=nh%2Fen` (le site tombe), attendre 3 minutes en relisant l'état et les logs ; puis `__heal` et attendre le prochain import.
 **Attendu** : `stale: true` dès la deuxième minute sans succès et un seul avertissement « Données périmées » dans les logs (`CheckStaleness`) pendant l'épisode ; après le retour du site et un import réussi, `stale: false` et une ligne « Données de nouveau à jour ».
 **Observé** : Rejeu 3 avec `INTERVAL=1`, `STALE_AFTER=2` (l'Action telle qu'écrite, `STALE_AFTER=1` à l'intervalle par défaut de 15, est maintenant refusée au démarrage : voir 008-AS3.3 ; Action à mettre à jour par son auteur) : site coupé à 17:04:00, dernier succès 17:03:46 : `stale: true` à 17:06:51, un seul avertissement « Données périmées : aucun import réussi depuis 2026-11-08T17:03:46.842Z (seuil 2 min) » (17:05:47) ; site rétabli à 17:07:2x : import réussi 17:07:47, `stale: false`, une ligne « Données de nouveau à jour » (17:07:52).
 **Verdict** : ✅
@@ -138,7 +138,7 @@
 **Profil** : supporter
 **Priorité** : critique
 **Technique** : transition-état
-**Action** : API activée avec `SCRAPING_STALE_AFTER_MINUTES=1`, front lancé (`pnpm --filter @joj/web dev`) ; ouvrir `/medailles`, `/resultats?day=2026-11-01` puis `/` à 375 px puis 320 px, juste après un import, puis deux minutes après avoir coupé le faux site ; recharger. Éteindre l'import (sans `SCRAPING_ENABLED`) et recharger.
+**Action** : API activée avec `SCRAPING_INTERVAL_MINUTES=1`, `SCRAPING_STALE_AFTER_MINUTES=2`, front lancé (`pnpm --filter @joj/web dev`) ; ouvrir `/medailles`, `/resultats?day=2026-11-01` puis `/` à 375 px puis 320 px, juste après un import, puis deux minutes après avoir coupé le faux site ; recharger. Éteindre l'import (sans `SCRAPING_ENABLED`) et recharger.
 **Attendu** : juste après l'import, un bandeau « Données à jour à HH:MM » (heure du dernier succès, Dakar) sous aucune autre alerte ; après le retard, le bandeau devient « Les résultats sont peut-être en retard » avec « Ils n'ont pas été mis à jour depuis HH:MM. Revenez dans quelques minutes. » ; import éteint : aucun bandeau ; texte lisible sans coupure ni débordement à 320 px, console propre.
 **Observé** : Rejeu 3 : API activée (`INTERVAL=1`, `STALE_AFTER=2`), front Vite, `/medailles`, `/resultats?day=2026-11-01` et `/` à 375 puis 320 px : « Données à jour à 17:02 » (ton « ok ») au-dessus de l'en-tête, sans débordement (`scrollWidth` = largeur) ni masquer l'en-tête ou la navigation (captures `.test-shots/008-AS8.1-ajour-medailles-375-dark-after.jpg`, `…-resultats-375-…`, `…-accueil-320-…`). Site coupé à 17:04, page ouverte sans recharger : le bandeau passe tout seul à « Les résultats sont peut-être en retard / Ils n’ont pas été mis à jour depuis 17:03. Revenez dans quelques minutes. » (17:06:51, lisible sur 3 lignes à 320 px : `…-retard-medailles-320-…`) puis revient à « Données à jour à 17:07 » moins d'une minute après le retour du site, sans recharger. Import éteint : le conteneur du bandeau est vide (hauteur 0), aucun bandeau. La ligne « Mis à jour le … » de `/medailles` a disparu : une seule fraîcheur à l'écran. Console propre (hors `409`/`422` provoqués).
 **Verdict** : ✅
@@ -204,7 +204,7 @@
 **Profil** : journaliste
 **Priorité** : normal
 **Technique** : table-décision
-**Action** : le réglage accéléré du playbook : `SCRAPING_STALE_AFTER_MINUTES=1`, `SCRAPING_INTERVAL_MINUTES=1`, tick 5 s, site en bonne santé ; lire les journaux 4 minutes.
+**Action** : le réglage accéléré du playbook : `SCRAPING_STALE_AFTER_MINUTES=2`, `SCRAPING_INTERVAL_MINUTES=1`, tick 5 s, site en bonne santé ; lire les journaux 4 minutes.
 **Attendu** : aucune alerte tant que les imports réussissent.
 **Observé** : Rejeu 3 : (1) l'Action du playbook (`STALE_AFTER=1`, `INTERVAL=1`) est maintenant refusée au démarrage : « Configuration invalide : ✖ doit être supérieur à SCRAPING_INTERVAL_MINUTES, sinon les données seraient « en retard » entre deux imports légers → at SCRAPING_STALE_AFTER_MINUTES » ; `STALE_AFTER=10` ou `15` avec l'intervalle par défaut de 15 : refusé de même, `16` accepté. (2) Avec `INTERVAL=1`, `STALE_AFTER=2`, site sain, tick 5 s : plus de clignotement (aucun « Données périmées » entre 17:02:51 et 17:05:47). Reste : tout premier démarrage d'une base vide journalise « Données périmées : aucun import réussi depuis le démarrage (seuil N min) » puis, 5 s plus tard, « Données de nouveau à jour », alors que le premier import tourne (vu à chaque base neuve, aux seuils 2, 5 et 120 min) : avertissement et retour à jour pour rien. Gravité faible.
 **Verdict** : 🟡
