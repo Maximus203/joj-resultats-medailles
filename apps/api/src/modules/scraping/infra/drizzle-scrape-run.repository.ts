@@ -34,8 +34,9 @@ export class DrizzleScrapeRunRepository extends ScrapeRunRepository {
     return rows.map(toRun);
   }
 
-  async lastSucceededAt(): Promise<Date | null> {
-    return this.firstStartedAt(notInArray(scrapeRuns.status, ['failed', 'skipped']));
+  async lastSucceededAt(kind?: ScrapeKind): Promise<Date | null> {
+    const worked = notInArray(scrapeRuns.status, ['failed', 'skipped']);
+    return this.firstStartedAt(kind ? and(worked, eq(scrapeRuns.kind, kind)) : worked);
   }
 
   async lastAttemptAt(): Promise<Date | null> {

@@ -26,13 +26,21 @@ export class RunDueScrape {
 
   async execute({ startup }: { startup: boolean }): Promise<ScrapeRun | null> {
     if (!this.settings.enabled) return null;
-    const [lastAttemptAt, lastFullAt, lastSucceededAt] = await Promise.all([
+    const [lastAttemptAt, lastFullAt, lastSucceededAt, lastFullSucceededAt] = await Promise.all([
       this.runs.lastAttemptAt(),
       this.runs.lastStartedAt('full'),
       this.runs.lastSucceededAt(),
+      this.runs.lastSucceededAt('full'),
     ]);
     const due = dueRun(
-      { now: this.clock.now(), lastAttemptAt, lastFullAt, lastSucceededAt, startup },
+      {
+        now: this.clock.now(),
+        lastAttemptAt,
+        lastFullAt,
+        lastSucceededAt,
+        lastFullSucceededAt,
+        startup,
+      },
       this.settings,
     );
     const expired = await this.traceExpiredSlot(due?.slot ?? null, lastFullAt);

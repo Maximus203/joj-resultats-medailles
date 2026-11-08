@@ -189,6 +189,25 @@ describe('RunDueScrape', () => {
     expect(run).toMatchObject({ kind: 'full', trigger: 'startup' });
   });
 
+  it('008-AS4: a restart at 23:00:30 runs the full import of the night, unless 23:00 already ran', async () => {
+    const { due, clock, runs } = setup();
+    clock.set('2026-11-03T07:00:00Z');
+    await due.execute(beat);
+    clock.set('2026-11-03T22:50:00Z');
+    await due.execute(beat);
+
+    clock.set('2026-11-03T22:59:00Z');
+    expect(await due.execute({ startup: true })).toBeNull();
+    clock.set('2026-11-03T23:00:30Z');
+    const restart = await due.execute({ startup: true });
+    expect(restart).toMatchObject({ kind: 'full', trigger: 'startup' });
+
+    // Redémarrer encore une fois juste après : le complet de 23:00 est fait, rien ne repart.
+    clock.set('2026-11-03T23:00:45Z');
+    expect(await due.execute({ startup: true })).toBeNull();
+    expect(runs.runs.filter((run) => run.kind === 'full')).toHaveLength(2);
+  });
+
   it('008-AS5: skips a light import that falls during a full one, and traces it as skipped', async () => {
     const { due, runScrape, source, runs, clock } = setup(testSettings(), '2026-11-03T07:00:00Z');
     let release: () => void = () => undefined;

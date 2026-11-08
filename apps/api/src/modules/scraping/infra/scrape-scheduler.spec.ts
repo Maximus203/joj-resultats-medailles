@@ -120,11 +120,15 @@ describe('ScrapeScheduler with the real use cases', () => {
     clock.set(at);
     await vi.advanceTimersByTimeAsync(BEAT);
   };
-  const lastSuccess = (runs: InMemoryScrapeRunRepository, startedAt: string) =>
+  const lastSuccess = (
+    runs: InMemoryScrapeRunRepository,
+    startedAt: string,
+    kind: 'full' | 'incremental' = 'incremental',
+  ) =>
     runs.add({
       id: crypto.randomUUID(),
       trigger: 'scheduled',
-      kind: 'incremental',
+      kind,
       status: 'success',
       startedAt: new Date(startedAt),
       finishedAt: new Date(startedAt),
@@ -167,8 +171,11 @@ describe('ScrapeScheduler with the real use cases', () => {
 
   it('008-AS5: traces as skipped a light import that falls during a manual import', async () => {
     const { runs, clock, runScrape, scheduler, hold, release } = wire('2026-11-03T09:00:00Z');
+    await lastSuccess(runs, '2026-11-03T07:00:05Z', 'full');
     await lastSuccess(runs, '2026-11-03T08:50:00Z');
     scheduler.onApplicationBootstrap();
+    // Le battement de démarrage est évalué à l'heure de départ, avant que le test ne déplace l'horloge.
+    await vi.advanceTimersByTimeAsync(0);
     hold();
     const manual = runScrape.execute('manual', 'full');
 
@@ -184,8 +191,11 @@ describe('ScrapeScheduler with the real use cases', () => {
 
   it('008-AS5: does not lose a full slot that falls during an import: it runs on a later beat', async () => {
     const { runs, clock, runScrape, scheduler, hold, release } = wire('2026-11-03T22:59:00Z');
+    await lastSuccess(runs, '2026-11-03T07:00:05Z', 'full');
     await lastSuccess(runs, '2026-11-03T22:50:00Z');
     scheduler.onApplicationBootstrap();
+    // Le battement de démarrage est évalué à l'heure de départ, avant que le test ne déplace l'horloge.
+    await vi.advanceTimersByTimeAsync(0);
     hold();
     const manual = runScrape.execute('manual', 'full');
 
@@ -204,8 +214,11 @@ describe('ScrapeScheduler with the real use cases', () => {
 
   it('008-AS5: traces a full slot as skipped only when it expires without having run', async () => {
     const { runs, clock, runScrape, scheduler, hold, release } = wire('2026-11-03T22:59:00Z');
+    await lastSuccess(runs, '2026-11-03T07:00:05Z', 'full');
     await lastSuccess(runs, '2026-11-03T22:50:00Z');
     scheduler.onApplicationBootstrap();
+    // Le battement de démarrage est évalué à l'heure de départ, avant que le test ne déplace l'horloge.
+    await vi.advanceTimersByTimeAsync(0);
     hold();
     const manual = runScrape.execute('manual', 'full');
 

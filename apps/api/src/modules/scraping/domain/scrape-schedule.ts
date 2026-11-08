@@ -43,6 +43,8 @@ export interface DueInput {
   lastFullAt: Date | null;
   /** Le début de la dernière exécution qui n'a ni échoué ni été sautée. */
   lastSucceededAt: Date | null;
+  /** Le début du dernier import complet réussi ; à défaut, on prend `lastFullAt`. */
+  lastFullSucceededAt?: Date | null;
   /** Vrai au démarrage du serveur : c'est là que l'on rattrape une exécution manquée. */
   startup: boolean;
 }
@@ -156,8 +158,12 @@ export function dueRun(input: DueInput, settings: ScheduleSettings): Due | null 
   if (!inGamesWindow(now, settings)) return null;
   const staleSuccess =
     lastSucceededAt === null || now.getTime() - lastSucceededAt.getTime() > CATCH_UP_AFTER_MS;
-  if (startup && staleSuccess) return { kind: 'full', reason: 'catch-up' };
   const slot = lastFullSlot(now, settings);
+  // Au démarrage, un complet dont le créneau (07:00 ou 23:00) est passé sans réussite est rattrapé tout
+  // de suite ; la règle « plus de 24 h sans succès » reste le filet.
+  const fullDone = input.lastFullSucceededAt === undefined ? lastFullAt : input.lastFullSucceededAt;
+  const slotMissed = slot !== null && (fullDone === null || fullDone < slot);
+  if (startup && (staleSuccess || slotMissed)) return { kind: 'full', reason: 'catch-up' };
   const onTime = slot !== null && now.getTime() - slot.getTime() <= 2 * settings.tickSeconds * 1000;
   if (slot && onTime && (lastFullAt === null || lastFullAt < slot)) {
     return { kind: 'full', reason: 'full-slot', slot };

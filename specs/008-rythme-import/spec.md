@@ -33,9 +33,9 @@ Un import par soir laisse les podiums du jour invisibles jusqu'à 23 h. Cherif v
 
 ### AS4 — Le rattrapage au démarrage reste complet
 
-- **Étant donné** un serveur arrêté depuis plus de 24 heures pendant les Jeux
+- **Étant donné** un serveur arrêté pendant les Jeux, dont le dernier import complet réussi précède le dernier créneau complet dû (07:00 ou 23:00), ou date de plus de 24 heures
 - **Quand** il démarre
-- **Alors** il lance un import complet, et aucun battement tardif ne lance d'import à une autre heure
+- **Alors** il lance un import complet (22:59 rien, 23:00:30 un complet, rien si celui de 23:00 est déjà fait) ; aucun battement tardif ne lance d'import à une autre heure
 
 ### AS5 — Jamais deux imports en même temps
 

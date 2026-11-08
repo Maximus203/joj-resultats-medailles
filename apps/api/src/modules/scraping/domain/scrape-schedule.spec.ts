@@ -143,6 +143,48 @@ describe('dueRun', () => {
     ).toBeNull();
   });
 
+  it('008-AS4: at startup, runs the full import of a slot that went by while the server was down', () => {
+    const fullAt0700 = {
+      lastFullAt: at('2026-11-03T07:00:10Z'),
+      lastFullSucceededAt: at('2026-11-03T07:00:10Z'),
+      lastAttemptAt: at('2026-11-03T22:50:00Z'),
+      lastSucceededAt: at('2026-11-03T22:50:00Z'),
+    };
+
+    // 22:59 : le complet de 07:00 est le dernier créneau dû, il est fait : rien.
+    expect(
+      dueRun(input('2026-11-03T22:59:00Z', { ...fullAt0700, startup: true }), DAKAR),
+    ).toBeNull();
+    // 23:00:30 au redémarrage : le complet de 23:00 est dû et pas fait : complet de rattrapage.
+    expect(
+      dueRun(input('2026-11-03T23:00:30Z', { ...fullAt0700, startup: true }), DAKAR),
+    ).toMatchObject({ kind: 'full', reason: 'catch-up' });
+    // 23:00:30 avec le complet de 23:00 déjà fait à 23:00:05 : rien.
+    const fullAt2300 = {
+      lastFullAt: at('2026-11-03T23:00:05Z'),
+      lastFullSucceededAt: at('2026-11-03T23:00:05Z'),
+      lastAttemptAt: at('2026-11-03T23:00:05Z'),
+      lastSucceededAt: at('2026-11-03T23:00:05Z'),
+    };
+    expect(
+      dueRun(input('2026-11-03T23:00:30Z', { ...fullAt2300, startup: true }), DAKAR),
+    ).toBeNull();
+    // Un complet échoué ne compte pas : au redémarrage il est retenté.
+    expect(
+      dueRun(
+        input('2026-11-03T23:00:30Z', { ...fullAt2300, lastFullSucceededAt: null, startup: true }),
+        DAKAR,
+      ),
+    ).toMatchObject({ kind: 'full', reason: 'catch-up' });
+    // Sans redémarrage, un battement tardif ne lance toujours rien.
+    expect(
+      dueRun(
+        input('2026-11-03T23:30:00Z', { ...fullAt0700, lastAttemptAt: at('2026-11-03T22:50:00Z') }),
+        DAKAR,
+      ),
+    ).toBeNull();
+  });
+
   it('008-AS4: catches up with a full run at startup after over 24 hours, and never on a late beat', () => {
     const stale = {
       lastSucceededAt: at('2026-11-02T23:00:30Z'),

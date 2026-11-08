@@ -7,8 +7,8 @@ export abstract class ScrapeRunRepository {
   /** Les dernières exécutions, la plus récente d'abord. */
   abstract latest(limit: number): Promise<ScrapeRun[]>;
 
-  /** Le début de la dernière exécution qui n'a ni échoué ni été sautée, ou `null`. */
-  abstract lastSucceededAt(): Promise<Date | null>;
+  /** Le début de la dernière exécution (de ce genre, si précisé) qui n'a ni échoué ni été sautée, ou `null`. */
+  abstract lastSucceededAt(kind?: ScrapeKind): Promise<Date | null>;
 
   /** Le début de la dernière exécution lancée ou sautée, de tout genre, ou `null`. */
   abstract lastAttemptAt(): Promise<Date | null>;

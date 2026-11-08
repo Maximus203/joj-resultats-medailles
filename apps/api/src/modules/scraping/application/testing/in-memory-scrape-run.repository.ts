@@ -12,10 +12,12 @@ export class InMemoryScrapeRunRepository extends ScrapeRunRepository {
     return this.runs.slice(0, limit);
   }
 
-  async lastSucceededAt(): Promise<Date | null> {
+  async lastSucceededAt(kind?: ScrapeKind): Promise<Date | null> {
     return (
-      this.runs.find((run) => run.status !== 'failed' && run.status !== 'skipped')?.startedAt ??
-      null
+      this.runs.find(
+        (run) =>
+          run.status !== 'failed' && run.status !== 'skipped' && (!kind || run.kind === kind),
+      )?.startedAt ?? null
     );
   }
 
