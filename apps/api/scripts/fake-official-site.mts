@@ -7,6 +7,8 @@
  *   /__set?code=J66-FNL&medals=gold:UKR,silver:CAN,bronze:ARG   remplace les médaillés d'une unité
  *   /__fail?match=ScheduleDatePartial&day=02112026               toute URL contenant ces morceaux répond 500
  *   /__raw?body=Maintenance                                       les calendriers répondent 200 avec ce corps
+ *   /__final?day=today&code=NEW-FNL&discipline=Judo&competition=Men%20-73%20kg%20Final&medals=gold:USA,silver:CAN,bronze:ARG
+ *                                                                 ajoute une finale terminée (day : today, yesterday ou AAAA-MM-JJ)
  *   /__heal                                                       lève toutes les pannes
  */
 import { createServer } from 'node:http';
@@ -93,7 +95,25 @@ const MEDALS = new Map<string, [string, string][]>([
   ],
 ]);
 
+function resolveDay(day: string): string {
+  const offset = day === 'today' ? 0 : day === 'yesterday' ? -1 : null;
+  if (offset === null) return day;
+  return new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
+}
+
+function parseMedals(medals: string): [string, string][] {
+  return medals
+    .split(',')
+    .filter(Boolean)
+    .map((pair) => {
+      const [medal = '', noc = ''] = pair.split(':');
+      return [medal.charAt(0).toUpperCase() + medal.slice(1), noc] as [string, string];
+    });
+}
+
 const failing: string[][] = [];
+/** Les finales ajoutées à chaud par `/__final`, par jour. */
+const extras = new Map<string, string[]>();
 let rawCalendar: string | null = null;
 /** Un jour sans finale garde la structure du calendrier : une épreuve non finale. */
 const QUIET_DAY = scheduleItem('', 'X-QFNL', 'Judo', 'Quarterfinals');
@@ -118,13 +138,22 @@ createServer((request, response) => {
     failing.push([...url.searchParams.values()]);
     return text(200, 'ok');
   }
+  if (url.pathname === '/__final') {
+    const day = resolveDay(url.searchParams.get('day') ?? 'today');
+    const code = url.searchParams.get('code') ?? 'NEW-FNL';
+    const item = scheduleItem(
+      'medal-match gold',
+      code,
+      url.searchParams.get('discipline') ?? 'Judo',
+      url.searchParams.get('competition') ?? 'Final',
+    );
+    extras.set(day, [...(extras.get(day) ?? []), item]);
+    MEDALS.set(code, parseMedals(url.searchParams.get('medals') ?? ''));
+    return text(200, 'ok');
+  }
   if (url.pathname === '/__set') {
     const code = url.searchParams.get('code') ?? '';
-    const rows = (url.searchParams.get('medals') ?? '').split(',').map((pair) => {
-      const [medal = '', noc = ''] = pair.split(':');
-      return [medal.charAt(0).toUpperCase() + medal.slice(1), noc] as [string, string];
-    });
-    MEDALS.set(code, rows);
+    MEDALS.set(code, parseMedals(url.searchParams.get('medals') ?? ''));
     return text(200, 'ok');
   }
   if (failing.some((parts) => parts.every((part) => request.url?.includes(part)))) {
