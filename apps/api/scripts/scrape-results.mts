@@ -14,36 +14,20 @@ import { type Env, envSchema } from '../src/core/config/env-schema.ts';
 import {
   collectOfficialPodiums,
   daysBetween,
-  type OfficialSource,
 } from '../src/modules/scraping/domain/official-results.ts';
+import { createOfficialSiteSource } from '../src/modules/scraping/infra/official-site-http.ts';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 const env = envSchema.parse(process.env);
 const config = { get: <K extends keyof Env>(key: K): Env[K] => env[key] };
 const outFile = fileURLToPath(new URL('../data/podiums.json', import.meta.url));
 
-async function get(url: string): Promise<string> {
-  const response = await fetch(url, {
-    headers: { 'User-Agent': config.get('SCRAPING_USER_AGENT') },
-    signal: AbortSignal.timeout(config.get('SCRAPING_REQUEST_TIMEOUT_MS')),
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status} sur ${url}`);
-  await new Promise((resolve) => setTimeout(resolve, config.get('SCRAPING_REQUEST_DELAY_MS')));
-  return response.text();
-}
-
-/** AAAA-MM-JJ → JJMMAAAA, le format du paramètre `day` du site. */
-function siteDay(day: string): string {
-  const [year, month, date] = day.split('-');
-  return `${date}${month}${year}`;
-}
-
-const base = config.get('SCRAPING_SOURCE_URL');
-const source: OfficialSource = {
-  schedule: (day) => get(`${base}/ScheduleDatePartial?sportCode=---&day=${siteDay(day)}`),
-  medalList: (code) =>
-    get(`${base}/ListPartial?pagetype=MedalList&rsc=${encodeURIComponent(code)}`),
-};
+const source = createOfficialSiteSource({
+  baseUrl: config.get('SCRAPING_SOURCE_URL'),
+  userAgent: config.get('SCRAPING_USER_AGENT'),
+  requestDelayMs: config.get('SCRAPING_REQUEST_DELAY_MS'),
+  requestTimeoutMs: config.get('SCRAPING_REQUEST_TIMEOUT_MS'),
+});
 
 const collection = await collectOfficialPodiums(
   source,

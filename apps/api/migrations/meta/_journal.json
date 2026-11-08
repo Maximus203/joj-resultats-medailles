@@ -36,6 +36,13 @@
       "when": 1794146566961,
       "tag": "0004_add_podium_second_bronze",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794146861431,
+      "tag": "0005_create_scrape_runs",
+      "breakpoints": true
     }
   ]
 }
