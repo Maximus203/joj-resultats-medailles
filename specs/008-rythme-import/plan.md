@@ -81,3 +81,7 @@ Passe finale.
 
 - [x] T12 [008-AS6] Écrire d'abord `domain/scrape-run.spec.ts` (« 008-AS6: gives the duration of a run … »), puis `durationMsOf` dans `scrape-run.ts` : le contrôleur ne fait plus que sérialiser
 - [x] T13 [008-AS8] Écrire d'abord « 008-AS8: warns plainly when the data is stale and no import ever succeeded » dans `freshness-banner.test.tsx`, puis le cas `lastSuccessAt` nul et `stale` vrai dans `FreshnessMessage`
+
+Passage 4 (QA rejouée sur 7b4ecfd).
+
+- [x] T14 [008-AS8] Écrire d'abord quatre tests de `freshness-banner.test.tsx` (« … never claims a freshness it cannot check … », « … unreachable from the start », « … silent on … 404 », « … turns into a warning by itself … »), puis `FreshnessBanner` : échec de la lecture de l'état = avertissement « Impossible de vérifier la fraîcheur des données » (sauf 404), heure courante rafraîchie chaque minute et `isImportExpected` pour recompter le retard côté client. Les tests simulent la date (`Date` seule) pour ne pas dépendre du jour

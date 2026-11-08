@@ -119,3 +119,26 @@ export function formatClockTime(iso: string, timeZone: string): string {
     timeZone,
   }).format(new Date(iso));
 }
+
+/**
+ * Vrai si, à cet instant, l'import doit avoir réussi récemment : pendant les Jeux (et le lendemain
+ * du dernier jour) et dans la fenêtre du jour. Hors de là, un long silence est normal (la nuit).
+ */
+export function isImportExpected(
+  now: Date,
+  schedule: {
+    timeZone: string;
+    firstDay: string;
+    lastDay: string;
+    windowStart: string;
+    windowEnd: string;
+  },
+): boolean {
+  const day = new Intl.DateTimeFormat('en-CA', { timeZone: schedule.timeZone }).format(now);
+  const dayAfterLast = new Date(Date.parse(schedule.lastDay) + 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+  if (day < schedule.firstDay || day > dayAfterLast) return false;
+  const time = formatClockTime(now.toISOString(), schedule.timeZone);
+  return time >= schedule.windowStart && time <= schedule.windowEnd;
+}

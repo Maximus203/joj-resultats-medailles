@@ -59,7 +59,7 @@ Un import par soir laisse les podiums du jour invisibles jusqu'à 23 h. Cherif v
 
 - **Étant donné** un dernier import réussi lancé à 14:07 heure de Dakar, puis un import en retard
 - **Quand** le supporter ouvre le tableau ou les résultats
-- **Alors** il lit « Données à jour à 14:07 » (l'heure de lancement du dernier import réussi), puis un avertissement lisible disant que les données n'ont pas été mises à jour depuis cette heure ; si aucun import n'a jamais réussi, « Aucune mise à jour réussie pour l'instant »
+- **Alors** il lit « Données à jour à 14:07 » (l'heure de lancement du dernier import réussi), puis un avertissement lisible disant que les données n'ont pas été mises à jour depuis cette heure ; si aucun import n'a jamais réussi, « Aucune mise à jour réussie pour l'instant », et « Impossible de vérifier la fraîcheur des données » quand l'état est injoignable
 
 ## Hors périmètre
 
