@@ -17,6 +17,13 @@ window.scrollTo = () => {};
 // d'un navigateur sans canvas, et évite un avertissement par audit.
 HTMLCanvasElement.prototype.getContext = () => null;
 
+// Le premier test d'un fichier de route paie la transformation de toute l'application (routes,
+// Radix, fausse API) : plus de 5 s quand `pnpm check` charge la machine. On la fait ici, dans un
+// crochet qui a son propre délai, pour que le budget de chaque test ne mesure que le test.
+beforeAll(async () => {
+  await import('@/router');
+}, 60_000);
+
 // Une requête qu'aucun handler ne connaît fait échouer le test : pas d'appel réseau caché.
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 
