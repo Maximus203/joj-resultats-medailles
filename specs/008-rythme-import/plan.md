@@ -80,3 +80,4 @@ Passage 3 (relectures indépendantes). Chaque ligne cite un test écrit d'abord 
 Passe finale.
 
 - [x] T12 [008-AS6] Écrire d'abord `domain/scrape-run.spec.ts` (« 008-AS6: gives the duration of a run … »), puis `durationMsOf` dans `scrape-run.ts` : le contrôleur ne fait plus que sérialiser
+- [x] T13 [008-AS8] Écrire d'abord « 008-AS8: warns plainly when the data is stale and no import ever succeeded » dans `freshness-banner.test.tsx`, puis le cas `lastSuccessAt` nul et `stale` vrai dans `FreshnessMessage`

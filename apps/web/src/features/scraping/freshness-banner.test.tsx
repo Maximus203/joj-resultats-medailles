@@ -45,6 +45,17 @@ describe('freshness banner', () => {
     expect(axeFindings(await runAxe())).toEqual([]);
   });
 
+  it('008-AS8: warns plainly when the data is stale and no import ever succeeded', async () => {
+    fixture.scraping = status({ stale: true, lastSuccessAt: null });
+    await renderRoute({ initialEntries: ['/medailles'] });
+
+    expect(await screen.findByText('Aucune mise à jour réussie pour l’instant')).toBeVisible();
+    expect(
+      screen.getByText('Les résultats peuvent être incomplets. Revenez dans quelques minutes.'),
+    ).toBeVisible();
+    expect(screen.queryByText(/Données à jour à/)).toBeNull();
+  });
+
   it('008-AS8: says nothing when the import is off or has not run yet', async () => {
     fixture.scraping = status({ enabled: false });
     await renderRoute({ initialEntries: ['/medailles'] });
