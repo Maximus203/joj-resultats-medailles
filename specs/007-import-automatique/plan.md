@@ -60,6 +60,7 @@ On crée `apps/api/src/modules/scraping/`, organisé comme le module `podiums`.
 | AS5      | `application/run-scrape.application.spec.ts`                                                         | application              | jour et page en échec, reste importé ; seconde exécution refusée (409)               |
 | AS6      | `domain/scrape-schedule.spec.ts`, `application/run-due-scrape.application.spec.ts`                   | unitaire, application    | 23:00 une fois, rattrapage, fenêtre, désactivé                                       |
 | AS7      | `test/scraping.e2e.spec.ts`                                                                          | e2e                      | POST 202 puis GET : compteurs, écarts, exhaustivité, ignorées                        |
+| AS8      | `apps/web/src/lib/countries.test.ts`, `apps/web/src/routes/resultats.test.tsx`                       | unitaire, écran          | chaque pays vu à l'import a un nom ; la carte montre les deux bronzes                |
 
 ## 6. Tâches
 
@@ -88,3 +89,4 @@ Passage 2 (QA). Chaque ligne cite un test écrit d'abord et vu en échec.
 - [x] T13 [007-AS4] Écrire d'abord (« 007-AS4: refuses an event typed with a keyboard hyphen … ») dans `test/scraping.e2e.spec.ts`, puis `normalizeEventKey` déplacée dans `packages/shared/src/event-key.ts` (lue par l'import et par le script) et `RecordPodium` qui refuse la variante d'une épreuve déjà publiée (409 `PODIUM_ALREADY_RECORDED`). Le compte rendu ne signale pas de clé « proche » : même clé normalisée = pas absente, sinon deux épreuves (pas de correspondance floue)
 - [x] T14 [007-AS5] Écrire d'abord `test/payload-too-large.e2e.spec.ts` (« 007-AS5: answers 413 problem+json … »), puis le traitement du corps trop gros dans `ProblemDetailsFilter` (413, code `PAYLOAD_TOO_LARGE`)
 - [x] T15 [007-AS6] Écrire d'abord `app-config.spec.ts` (« 007-AS6: refuses a first day after the last day … »), puis la règle de cohérence des jours dans `env-schema.ts`
+- [x] T16 [007-AS8] Écrire d'abord `apps/web/src/lib/countries.test.ts` (« 007-AS8: names every country seen on the official site »), puis les 68 noms français dans `apps/web/src/lib/countries.ts` (source unique)

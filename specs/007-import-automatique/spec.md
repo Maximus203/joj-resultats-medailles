@@ -9,8 +9,7 @@ Le journaliste recopie à la main les podiums du site officiel, et le supporter 
 
 ## User stories
 
-- En tant que supporter, je veux que les podiums officiels arrivent seuls, afin de voir toutes les médailles de mon pays.
-- En tant que journaliste, je veux savoir ce que chaque import a trouvé, changé ou laissé, afin de lui faire confiance sans jamais perdre mes corrections.
+- En tant que supporter ou journaliste, je veux que les podiums officiels arrivent seuls et que chaque import dise ce qu'il a trouvé, changé ou laissé, afin de voir toutes les médailles de mon pays sans jamais perdre une correction.
 
 ## Scénarios d'acceptation
 
@@ -56,9 +55,15 @@ Le journaliste recopie à la main les podiums du site officiel, et le supporter 
 - **Quand** on consulte l'état de l'import
 - **Alors** on voit son heure et son résultat (importées, mises à jour, identiques, écarts, absentes de la source, erreurs), les finales vues sur la source contre importées, et la liste des ignorées avec leur raison
 
+### AS8 — Le second bronze et chaque pays se lisent à l'écran
+
+- **Étant donné** un podium de judo à deux bronzes dont un du Sénégal, et des podiums importés avec l'Azerbaïdjan, le Congo (RDC), Hong Kong, l'Iran, l'Ukraine et le Vietnam
+- **Quand** le supporter ouvre les résultats du jour, puis choisit « Mon pays »
+- **Alors** la carte du podium montre les deux bronzes, et chacun de ces pays porte son nom français partout où un pays est nommé
+
 ## Hors périmètre
 
-- Écran « dernière mise à jour », second bronze affiché sur les podiums, égalités à l'or dans le tableau.
+- Écran « dernière mise à jour », égalités à l'or dans le tableau. Limite connue : les noms d'épreuves restent en anglais, comme sur le site officiel.
 
 ## Questions ouvertes
 
