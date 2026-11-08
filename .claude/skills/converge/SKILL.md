@@ -1,6 +1,6 @@
 ---
 name: converge
-description: Vérifie qu'une fonctionnalité est terminée (traçabilité scénario → tests, pnpm check, relecture indépendante). Répond « Converged » et passe la spec à Implémentée, ou ajoute les manques comme nouvelles tâches. À lancer par l'utilisateur avec /converge après /tdd-task.
+description: Vérifie qu'une fonctionnalité est terminée (traçabilité scénario → tests, pnpm check, relecture indépendante). Répond « Converged » et passe la spec à Implémentée, ou ajoute les manques comme nouvelles tâches. Outil d'ibrahima, enchaîné après /tdd-task sans pause ; la QA de cherif-qa est jouée avant la relecture.
 argument-hint: '[specs/NNN-nom]'
 ---
 
@@ -11,8 +11,8 @@ Spec visée : $ARGUMENTS (par défaut, le plus grand `specs/NNN-*`).
 ## 1. Préparer
 
 - Lis `specs/constitution.md`, et le `CLAUDE.md` du dépôt s'il existe. Lis `spec.md` et `plan.md`.
-- S'il reste des tâches non cochées dans `plan.md`, arrête-toi : il faut d'abord `/tdd-task`.
-- Compte les sections `### Passage N` sous « Corrections » de `plan.md`. **S'il y en a déjà 2**, arrête-toi : résume les écarts encore ouverts et demande à l'humain de trancher (accepter, changer la spec, ou corriger à la main).
+- S'il reste des tâches non cochées dans `plan.md`, termine d'abord `/tdd-task`.
+- Compte les sections `### Passage N` sous « Corrections » de `plan.md`. **S'il y en a déjà 2**, arrête-toi : résume dans le rapport les écarts encore ouverts, avec ta recommandation (accepter, changer la spec, ou corriger à la main), et escalade à l'humain.
 
 ## 2. Vérifier
 
@@ -21,7 +21,11 @@ Lance, et garde les sorties :
 1. `pnpm spec:check specs/NNN-nom --trace` : chaque scénario a un test, aucun test ne cite un scénario absent.
 2. `pnpm check` : format, lint, types, tous les tests, build.
 
-## 3. Faire relire
+## 3. Faire tester
+
+Si un playbook existe pour cette tranche (`playbooks/NNN-*.md`), lance le sous-agent `cherif-qa` avec seulement `specs/NNN-nom` (ni résumé, ni avis). Il joue le playbook sur la vraie pile, puis l'imprévisible. Un scénario ❌ devient une tâche de correction (section 5), comme un écart du relecteur.
+
+## 4. Faire relire
 
 Trouve la base : le commit qui précède l'ajout de la spec, pour que le relecteur ne voie que cette fonctionnalité, même si la branche en contient d'autres.
 
@@ -37,9 +41,9 @@ Lance le sous-agent `relecteur` avec **seulement** ce message :
 
 Ne lui donne ni résumé, ni liste de fichiers, ni ton avis. Il rend un verdict : `Converged`, ou des écarts bloquants avec fichier et ligne.
 
-## 4. Conclure
+## 5. Conclure
 
-**Si les deux commandes sont vertes et que le verdict est `Converged`** :
+**Si les deux commandes sont vertes, que la QA n'a aucun ❌ et que le verdict est `Converged`** :
 
 - `**Statut** : Implémentée` dans `spec.md`, puis `pnpm spec:check specs/NNN-nom` ;
 - `git add -A && git commit -m "docs(<module>): mark spec NNN as implemented"` ;
@@ -52,4 +56,4 @@ Ne lui donne ni résumé, ni liste de fichiers, ni ton avis. Il rend un verdict 
 - `pnpm spec:check specs/NNN-nom`, puis `git add -A && git commit -m "docs(<module>): add corrections from converge pass N"` ;
 - termine par :
 
-> Pas encore convergé : N tâche(s) ajoutée(s). Prochaine étape : `/tdd-task`, puis `/converge`
+> Pas encore convergé : N tâche(s) ajoutée(s). Enchaîne avec `/tdd-task`, puis `/converge`, sans attendre.

@@ -1,6 +1,6 @@
 ---
 name: tdd-task
-description: Réalise les tâches d'un plan validé en TDD, une par une, avec un commit par tâche. Avec un identifiant (/tdd-task T03), seulement cette tâche ; sans argument, toutes les tâches non cochées. À lancer par l'utilisateur.
+description: Réalise les tâches d'un plan validé en TDD, une par une, avec un commit par tâche, sans pause entre les tâches. Avec un identifiant (/tdd-task T03), seulement cette tâche ; sans argument, toutes les tâches non cochées. Outil d'ibrahima.
 argument-hint: '[Tnn]'
 ---
 
@@ -12,7 +12,7 @@ Tâche demandée : $ARGUMENTS (vide = toutes les tâches non cochées, dans l'or
 
 - Lis `specs/constitution.md`, et le `CLAUDE.md` du dépôt s'il existe.
 - Prends la spec au plus grand numéro `specs/NNN-*` (ou celle que l'utilisateur a nommée). Lis `spec.md` et `plan.md`.
-- **Si le plan n'est pas au statut `Validé`, arrête-toi** et dis-le : il faut d'abord `/spec-plan`.
+- Si le plan n'est pas au statut `Validé`, termine d'abord `/spec-plan`.
 - Les tâches sont les lignes `- [ ] Tnn [NNN-ASk] …` (ou `[NNN-ASk, ASm]`) de `plan.md` (sections « Tâches » puis « Corrections »).
 
 ## Pour chaque tâche
@@ -23,7 +23,7 @@ Tâche demandée : $ARGUMENTS (vide = toutes les tâches non cochées, dans l'or
    - « ne se charge pas » ou « pas pour la bonne raison » : écris le squelette demandé (modules et exports typés, corps `throw new Error('non implémenté')`), puis relance.
    - « passe déjà » : le test ne prouve rien ; renforce-le.
    - N'écris pas le code de production tant que `tdd:red` n'a pas répondu « rouge pour la bonne raison ».
-4. **Vert** : le code minimal qui fait passer ce test, en suivant le plan et le module `disciplines`. Puis `pnpm verify` (format, lint, types, tests liés). `pnpm format` règle le format.
+4. **Vert** : le code minimal qui fait passer ce test, en suivant le plan et le module `podiums`. Puis `pnpm verify` (format, lint, types, tests liés). `pnpm format` règle le format.
 5. **Refactoriser** si c'est utile, puis `pnpm verify` à nouveau.
 6. **Contrôler le périmètre** : `git status --short`. Chaque fichier modifié doit appartenir à la tâche (plan, « Fichiers par couche »). Sinon, annule ce qui déborde.
 7. **Commiter** : coche la tâche dans `plan.md` (`- [x]`), puis
@@ -33,12 +33,12 @@ Tâche demandée : $ARGUMENTS (vide = toutes les tâches non cochées, dans l'or
 
 ## En cas de blocage
 
-Après **deux échecs** sur la même tâche (rouge impossible à obtenir, vert impossible, verify ou commit qui échoue encore après une correction), arrête-toi. Ne passe pas à la tâche suivante. Explique : ce que tu as essayé, l'erreur exacte, et ce qu'il faudrait décider (changer le plan, découper la tâche…).
+Après **deux échecs** sur la même tâche (rouge impossible à obtenir, vert impossible, verify ou commit qui échoue encore après une correction), change d'approche une fois ; si cela échoue encore, arrête-toi et remonte le blocage dans le rapport : ce que tu as essayé, l'erreur exacte, ce qu'il faudrait décider. Ne passe pas à une tâche qui en dépend.
 
-Ne modifie ni `spec.md` ni les tâches d'un plan validé pour te débloquer : c'est à l'humain de trancher.
+Un défaut du plan se corrige dans `plan.md` (ajoute une ligne `Correction` qui dit pourquoi) ; une erreur de `spec.md` se corrige aussi, mais se signale dans le rapport.
 
 ## À la fin
 
 Quand il ne reste aucune tâche non cochée, termine par :
 
-> Toutes les tâches sont faites. Prochaine étape : `/converge`
+> Toutes les tâches sont faites. Enchaîne avec `/converge`, sans attendre.

@@ -18,4 +18,4 @@ Six principes, lus par chaque skill (`/prd`, `/spec`, `/spec-plan`, `/tdd-task`,
    `feat(bookings): T03 refuse a full trip (001-AS2)`. Jamais de `--no-verify`.
 
 6. **Celui qui produit ne valide pas.**
-   Le sous-agent `relecteur` relit avec un contexte vierge : la base git et le dossier de la spec, rien d'autre.
+   Le sous-agent `relecteur` relit avec un contexte vierge (la base git et le dossier de la spec, rien d'autre), et `cherif-qa` teste sur la vraie pile. L'humain a le dernier mot à la livraison, pas à chaque étape.

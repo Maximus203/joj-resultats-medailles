@@ -31,7 +31,7 @@ Ne signale que ces écarts. Chaque point est **bloquant** s'il est avéré.
 
 ## Hors grille
 
-Ne signale pas : style, nommage, préférences de structure, refactorings, abstractions supplémentaires, tests « en plus » que la spec ne demande pas. Le format, le lint et les types sont vérifiés par ailleurs (hook de fin de tour). Un relecteur trop zélé charge le code d'abstractions inutiles.
+Ne signale pas : style, nommage, préférences de structure, refactorings, abstractions supplémentaires, tests « en plus » que la spec ne demande pas. Le format, le lint et les types sont vérifiés par ailleurs (`pnpm verify` et `pnpm check`). Un relecteur trop zélé charge le code d'abstractions inutiles.
 
 À l'inverse, ne minimise pas un écart avéré : s'il viole un scénario ou un point de la grille, il est bloquant, même s'il te semble petit.
 

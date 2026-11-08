@@ -1,6 +1,6 @@
 ---
 name: playbook
-description: Écrit le playbook de test d'une spec validée (un scénario de playbook au moins par scénario d'acceptation, par profil, refus attendus compris) dans playbooks/NNN-nom.md, puis s'arrête pour relecture humaine. À lancer par l'utilisateur avec /playbook [specs/NNN-nom], après /spec-plan. L'exécution est celle du sous-agent testeur.
+description: Écrit le playbook de test d'une spec validée (un scénario de playbook au moins par scénario d'acceptation, par profil, refus attendus compris) dans playbooks/NNN-nom.md, sans attendre de relecture humaine. Outil d'ibrahima : /playbook [specs/NNN-nom], après /spec-plan. L'exécution est celle de cherif-qa.
 argument-hint: '[specs/NNN-nom]'
 ---
 
@@ -11,7 +11,7 @@ Spec demandée : $ARGUMENTS (vide = la spec au plus grand numéro `specs/NNN-*`)
 ## Avant de commencer
 
 - Lis `specs/constitution.md`, le `CLAUDE.md`, `playbooks/README.md` (format, verdicts), `playbooks/profils.md` et un playbook existant (`playbooks/001-podium.md`) comme modèle de ton et de niveau de détail.
-- **Si la spec n'est pas au statut `Validée`, arrête-toi** et dis-le.
+- Si la spec n'est pas au statut `Validée`, termine d'abord `/spec`.
 - Lis `spec.md` et `plan.md` (routes, codes d'erreur, champs) : les scénarios `[API]` en citent les valeurs exactes.
 
 ## Ce que tu écris
@@ -25,9 +25,9 @@ Un fichier `playbooks/NNN-nom.md` au format du README :
 5. Les champs **Observé / Verdict / Issue** restent `_(à remplir)_ / ⬜ / —`. Tu n'exécutes rien.
 6. Un renvoi à `transverse.md` pour la session imprévisible. N'y copie pas ses lignes ; ajoute-y une ligne seulement si l'écran de la tranche a un geste propre à tester.
 
-## Vérifier, puis t'arrêter
+## Vérifier, puis enchaîner
 
 - `pnpm playbook:check NNN` doit passer.
 - `pnpm format` sur les fichiers écrits.
 - Commit : `docs(playbooks): add playbook NNN`. Pas de code de production, pas de modification de la spec.
-- **Arrête-toi pour validation humaine** : le playbook est la spec du test, c'est l'humain qui le valide. Ne lance pas le testeur toi-même.
+- Ne joue rien toi-même : le playbook est la spec du test, il est joué par `cherif-qa` (à l'étape `/converge`).

@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Rédige la spec d'une tranche d'un PRD validé (le quoi et le pourquoi, sans technique) dans specs/NNN-nom/spec.md, puis s'arrête pour validation humaine. À lancer par l'utilisateur avec /spec TRn <précisions>, après /prd.
+description: Rédige la spec d'une tranche d'un PRD validé (le quoi et le pourquoi, sans technique) dans specs/NNN-nom/spec.md, puis passe son statut à Validée sans attendre et enchaîne vers /spec-plan. Outil d'ibrahima, utilisé sans pause : /spec TRn <précisions>, après /prd.
 argument-hint: TRn <précisions : règles, réponses attendues>
 ---
 
@@ -14,8 +14,8 @@ Lis `specs/constitution.md`, et le `CLAUDE.md` du dépôt s'il existe. Applique-
 
 ## 2. Trouver la tranche
 
-- Lis les PRD `specs/prd-*.md`. **S'il n'y en a aucun au statut `Validé`, arrête-toi** : dis que la méthode commence par `/prd`, et n'écris rien.
-- La tranche est celle que cite la demande (`TR1`). S'il y a plusieurs PRD validés, ou si la demande ne cite pas de tranche, demande laquelle, en une question.
+- Lis les PRD `specs/prd-*.md`. **S'il n'y en a aucun au statut `Validé`**, écris-le d'abord avec `/prd`, puis reviens ici.
+- La tranche est celle que cite la demande (`TR1`). S'il y a plusieurs PRD validés, ou si la demande ne cite pas de tranche, prends la première tranche non réalisée et dis-le dans le rapport.
 - La spec couvre cette tranche, et rien d'autre. Les précisions de la demande (règles, réponses attendues) la complètent. Si elles ajoutent un besoin que la tranche ne contient pas, signale-le : l'utilisateur corrige le PRD d'abord, ou le retire de la demande.
 
 ## 3. Créer le dossier
@@ -35,20 +35,14 @@ Lis `specs/constitution.md`, et le `CLAUDE.md` du dépôt s'il existe. Applique-
 - Hors périmètre : ce que tu as choisi de ne pas faire.
 - 70 lignes au plus.
 
-## 5. Clarifier
+## 5. Trancher
 
-Si un point **bloque** la rédaction (deux lectures possibles qui changent les scénarios), pose au plus 3 questions, en une seule fois. Sinon, note le point dans « Questions ouvertes » avec l'hypothèse retenue, et continue.
+Quand un point est ambigu (deux lectures possibles qui changent les scénarios), ne pose pas de question : retiens l'hypothèse la plus raisonnable, note-la dans « Questions ouvertes », et continue. Elle sera reprise dans le rapport final.
 
 ## 6. Vérifier
 
 `pnpm spec:check specs/NNN-nom`. Il vérifie aussi que la tranche citée existe dans le PRD. Corrige jusqu'à ce qu'il soit vert.
 
-## 7. S'arrêter
+## 7. Valider et enchaîner
 
-Montre à l'utilisateur la liste des scénarios (identifiant et titre) et les questions ouvertes, puis demande-lui de relire `specs/NNN-nom/spec.md`.
-
-**Ne passe pas à la suite.** Le statut reste `Brouillon` tant que l'utilisateur n'a pas dit explicitement qu'il valide (« je valide », « ok pour la spec »). Une remarque n'est pas une validation : corrige la spec et redemande.
-
-Sur accord explicite seulement : remplace `**Statut** : Brouillon` par `**Statut** : Validée`, relance `pnpm spec:check`, puis `git add specs/NNN-nom && git commit -m "docs(<module>): add validated spec NNN"`, et termine par :
-
-> Spec validée. Prochaine étape : `/spec-plan`
+Sans attendre : remplace `**Statut** : Brouillon` par `**Statut** : Validée`, relance `pnpm spec:check`, `git add specs/NNN-nom && git commit -m "docs(<module>): add spec NNN"`, et enchaîne avec `/spec-plan`.

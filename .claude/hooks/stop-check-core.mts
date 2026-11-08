@@ -1,20 +1,7 @@
 /**
- * Vérification de fin de tour de Claude Code (hook `Stop`) : format, lint et types des seuls
- * fichiers changés. Logique pure ; git et pnpm sont dans stop-check.mts.
+ * Commandes de vérification (format, lint, types) des seuls fichiers changés, utilisées par
+ * `pnpm verify` (tools/sdd). Logique pure ; git et pnpm sont dans tools/sdd/verify.mts.
  */
-
-export interface StopCheckInput {
-  /** L'agent continue déjà à cause de ce hook (`stop_hook_active`). */
-  stopHookActive: boolean;
-  /** `STOP_CHECK=off`. */
-  disabled: boolean;
-  /** Fichiers modifiés, supprimés ou nouveaux depuis la base (commits, index, arbre). */
-  changedFiles: string[];
-}
-
-export type StopCheckPlan =
-  | { run: false; reason: string }
-  | { run: true; files: string[]; block: boolean };
 
 export interface CheckCommand {
   label: string;
@@ -36,15 +23,6 @@ export interface WorkspacePackage {
 const OUTPUT_TAIL_LINES = 40;
 const LINTABLE = /\.(?:[cm]?[jt]sx?)$/;
 const HOOKS_DIR = '.claude/hooks/';
-
-export function planStopCheck(input: StopCheckInput): StopCheckPlan {
-  if (input.disabled) return { run: false, reason: 'STOP_CHECK=off' };
-  const files = [...new Set(input.changedFiles)].sort();
-  if (files.length === 0) return { run: false, reason: 'aucun fichier changé' };
-  // Une seconde fin de tour après un blocage n'est qu'avertie : sinon un échec que l'agent ne
-  // sait pas corriger le ferait tourner en boucle.
-  return { run: true, files, block: !input.stopHookActive };
-}
 
 /**
  * `existing` : les fichiers de `files` encore présents. Une suppression ne se formate ni ne se

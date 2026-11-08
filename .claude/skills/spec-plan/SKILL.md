@@ -1,6 +1,6 @@
 ---
 name: spec-plan
-description: Écrit le plan technique d'une spec validée (résumé, fichiers par couche, données, erreurs, un test par scénario, six tâches au plus) dans specs/NNN-nom/plan.md, puis s'arrête pour validation humaine. À lancer par l'utilisateur avec /spec-plan [specs/NNN-nom].
+description: Écrit le plan technique d'une spec validée (résumé, fichiers par couche, données, erreurs, un test par scénario, six tâches au plus) dans specs/NNN-nom/plan.md, puis passe son statut à Validé sans attendre et enchaîne vers /tdd-task. Outil d'ibrahima, utilisé sans pause : /spec-plan [specs/NNN-nom].
 argument-hint: '[specs/NNN-nom]'
 ---
 
@@ -11,8 +11,8 @@ Spec visée : $ARGUMENTS (par défaut, le plus grand `specs/NNN-*`).
 ## 1. Lire
 
 - `specs/constitution.md`, et le `CLAUDE.md` du dépôt s'il existe.
-- `spec.md` de la spec. **Si son statut n'est pas `Validée`, arrête-toi** : dis quel statut tu as lu, et que la spec doit d'abord être relue et validée (`/spec`). N'écris rien.
-- Le module modèle : `apps/api/src/modules/disciplines/` (domain, application, infra, http), `packages/shared/src/disciplines.ts`, `apps/api/test/disciplines.e2e.spec.ts`, `apps/web/src/mocks/` et `apps/web/src/features/disciplines/`. Reprends ses noms et sa structure.
+- `spec.md` de la spec. **Si son statut n'est pas `Validée`**, termine d'abord `/spec` (elle passe seule à `Validée` quand `pnpm spec:check` est vert), puis reviens ici.
+- Le module modèle : `apps/api/src/modules/podiums/` (domain, application, infra, http), `packages/shared/src/podiums.ts`, `apps/api/test/podiums.e2e.spec.ts`, `apps/web/src/mocks/` et `apps/web/src/features/podiums/`. Reprends ses noms et sa structure.
 
 ## 2. Rédiger `plan.md`
 
@@ -33,20 +33,8 @@ Le plan ne rajoute aucun besoin : ce qui n'est pas dans la spec n'y est pas.
 
 `pnpm spec:check specs/NNN-nom`, puis `pnpm format`. Corrige jusqu'à ce que `spec:check` soit vert.
 
-## 4. S'arrêter
+## 4. Valider et enchaîner
 
-Montre à l'utilisateur, dans cet ordre :
+Les choix que tu as faits sans que la spec les impose vont dans le résumé du plan (section 1), pour que l'humain puisse les contester dans le rapport final.
 
-1. le résumé du plan (section 1, tel quel) ;
-2. les routes ou écrans ajoutés ;
-3. les erreurs prévues (code, statut HTTP, scénario) ;
-4. la liste des tâches, une ligne chacune ;
-5. les choix que tu as faits sans que la spec les impose, pour qu'il puisse les contester.
-
-Puis demande-lui de relire `plan.md`.
-
-**Ne passe pas à la suite.** Le statut reste `Brouillon` tant que l'utilisateur n'a pas dit explicitement qu'il valide. Une remarque n'est pas une validation : corrige le plan et redemande.
-
-Sur accord explicite seulement : `**Statut** : Validé`, `pnpm spec:check`, puis `git add specs/NNN-nom && git commit -m "docs(<module>): add validated plan NNN"`, et termine par :
-
-> Plan validé. Prochaine étape : `/tdd-task` (toutes les tâches) ou `/tdd-task T01`
+Sans attendre : `**Statut** : Validé`, `pnpm spec:check`, `git add specs/NNN-nom && git commit -m "docs(<module>): add plan NNN"`, et enchaîne avec `/tdd-task`.

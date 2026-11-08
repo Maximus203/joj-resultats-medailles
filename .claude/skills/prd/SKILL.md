@@ -1,6 +1,6 @@
 ---
 name: prd
-description: Met en forme la vision produit complète de l'utilisateur dans un PRD d'une page (problème, utilisateurs, proposition, mesure du succès, tranches) dans specs/prd-nom.md, en la challengeant sans la remplacer, puis s'arrête pour validation humaine. Si le PRD existe déjà, l'amende au lieu d'en créer un second. À lancer par l'utilisateur avec /prd <son idée>, avant /spec, ou /prd <la modification> pour amender.
+description: Met en forme la vision produit complète de l'utilisateur dans un PRD d'une page (problème, utilisateurs, proposition, mesure du succès, tranches) dans specs/prd-nom.md, en la challengeant sans la remplacer, puis passe le statut à Validé sans attendre et enchaîne vers /spec. Si le PRD existe déjà, l'amende au lieu d'en créer un second. Outil d'ibrahima, utilisé sans pause : /prd <idée>, ou /prd <la modification> pour amender.
 argument-hint: <le problème et la solution que tu imagines, ou la modification du PRD>
 ---
 
@@ -16,7 +16,7 @@ Lis `specs/constitution.md`, et le `CLAUDE.md` du dépôt s'il existe. Applique-
 
 Si la demande est vide, demande à l'utilisateur, en une phrase, quel problème il veut résoudre et pour qui. N'écris rien d'autre.
 
-**Le PRD de ce produit existe déjà** (`specs/prd-*.md`) : la demande l'amende. N'en crée pas un second, passe directement à la section 6. Un PRD d'un autre produit (celui de l'atelier B, par exemple) n'est pas concerné : écris le nouveau. Si tu ne sais pas lequel la demande vise, demande-le, en une question.
+**Le PRD de ce produit existe déjà** (`specs/prd-*.md`) : la demande l'amende. N'en crée pas un second, passe directement à la section 6. Un PRD d'un autre produit (celui de l'atelier B, par exemple) n'est pas concerné : écris le nouveau. Si tu ne sais pas lequel la demande vise, retiens celui de ce produit et dis-le dans le rapport.
 
 ## 2. Challenger avant d'écrire
 
@@ -28,9 +28,9 @@ Confronte la demande aux sept sections du PRD (`.claude/skills/prd/prd-template.
 - la première tranche ne tient pas dans le temps disponible : plus de deux règles métier, ou plus d'une action principale ;
 - le succès ne se constate pas (« les utilisateurs sont satisfaits »).
 
-Pose **au plus 3 questions**, en une seule fois, sur les points qui changent le PRD. Une question peut proposer une alternative (« et si on commençait par… ? »), mais c'est l'utilisateur qui choisit. Attends ses réponses.
+Ne pose aucune question : pour chaque point faible, retiens l'hypothèse la plus raisonnable et note-la dans « Hypothèses et risques », marquée comme telle. Une alternative (« et si on commençait par… ? ») s'écrit aussi là, pour que l'humain puisse la contester dans le rapport final.
 
-Si la demande couvre déjà chaque section, ne pose pas de question : écris, et garde tes objections pour l'étape 5.
+Si la demande couvre déjà chaque section, écris, et garde tes objections pour l'étape 5.
 
 ## 3. Rédiger
 
@@ -44,20 +44,11 @@ Si la demande couvre déjà chaque section, ne pose pas de question : écris, et
 
 `pnpm spec:check specs/prd-nom.md`. Corrige jusqu'à ce qu'il soit vert.
 
-## 5. S'arrêter
+## 5. Valider et enchaîner
 
-Montre à l'utilisateur :
+Note dans « Hypothèses et risques » les 2 ou 3 faiblesses qui restent, chacune en une phrase, avec la question qu'un coach poserait ; ne les adoucis pas. Elles seront reprises dans le rapport final, où l'humain les conteste.
 
-- les tranches (identifiant et titre) ;
-- **tes objections** : les 2 ou 3 faiblesses qui restent, chacune en une phrase, avec la question qu'un coach poserait. Ne les adoucis pas ; s'il n'y en a pas, dis-le.
-
-Puis demande-lui de relire `specs/prd-nom.md` avec la [grille de relecture](../../../task/GRILLE-RELECTURE.md), et de le faire challenger par quelqu'un d'autre (un voisin, son coach).
-
-**Ne passe pas à la suite.** Le statut reste `Brouillon` tant que l'utilisateur n'a pas dit explicitement qu'il valide (« je valide », « ok pour le PRD »). Une remarque n'est pas une validation : corrige le PRD et redemande.
-
-Sur accord explicite seulement : remplace `**Statut** : Brouillon` par `**Statut** : Validé`, relance `pnpm spec:check specs/prd-nom.md`, puis `git add specs/prd-nom.md && git commit -m "docs(prd): add validated prd <nom>"`, et termine par :
-
-> PRD validé. Prochaine étape : `/spec TR1`
+Puis, sans attendre : remplace `**Statut** : Brouillon` par `**Statut** : Validé`, relance `pnpm spec:check specs/prd-nom.md`, `git add specs/prd-nom.md && git commit -m "docs(prd): add prd <nom>"`, et enchaîne avec `/spec TR1`.
 
 ## 6. Amender un PRD existant
 
@@ -66,7 +57,7 @@ Le PRD évolue au fil des tranches : une tranche réduite au point coach, une id
 1. Lis le PRD, et les specs qui le citent (ligne `**PRD** : specs/prd-nom.md, TRn`).
 2. Applique la modification demandée, et seulement elle. Challenge-la comme à la section 2 si elle touche le problème, les utilisateurs ou la tranche 1 : au plus 3 questions.
 3. **Ne renumérote ni ne supprime une tranche citée par une spec.** Une nouvelle tranche prend le numéro suivant. Si la modification change une tranche qui a déjà une spec, dis-le : cette spec devra être revue avant d'être réalisée.
-4. Repasse le statut à `**Statut** : Brouillon`, puis vérifie comme à la section 4.
-5. Montre à l'utilisateur ce qui a changé (tranches ajoutées, réduites ou modifiées) et les specs concernées, puis arrête-toi comme à la section 5 : le PRD amendé se relit et se valide à nouveau.
+4. Vérifie comme à la section 4 : `pnpm spec:check specs/prd-nom.md`.
+5. Dis dans le rapport ce qui a changé (tranches ajoutées, réduites ou modifiées) et les specs concernées.
 
-Sur accord explicite seulement : `**Statut** : Validé`, `pnpm spec:check specs/prd-nom.md`, puis `git add specs/prd-nom.md && git commit -m "docs(prd): amend prd <nom>"`, et termine par la prochaine étape : `/spec TRn` pour la tranche suivante à réaliser.
+Sans attendre : `**Statut** : Validé`, `git add specs/prd-nom.md && git commit -m "docs(prd): amend prd <nom>"`, puis enchaîne avec `/spec TRn` pour la tranche suivante à réaliser.

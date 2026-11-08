@@ -66,7 +66,7 @@ packages/
 specs/                      constitution et specs des fonctionnalités (voir Méthode)
 task/                       énoncé de l'atelier C, pistes et grille de relecture
 tools/sdd/                  scripts des skills : spec:check, tdd:red, verify
-.claude/                    hooks, skills et sous-agent relecteur de Claude Code
+.claude/                    garde-fou secrets, skills et sous-agents (relecteur, testeur) de Claude Code
 ```
 
 Un module de domaine de l'API, `src/modules/<domaine>/` :
@@ -132,38 +132,34 @@ Côté API, les tests s'appellent `*.spec.ts` (unitaires), `*.int.spec.ts` (int�
 
 Un composant shadcn de plus : `pnpm dlx shadcn@latest add <composant>` dans `apps/web`.
 
-## Claude Code : hooks et relecteur
+## Claude Code : agents, garde-fous et relecteur
 
-Configurés dans `.claude/settings.json`, écrits en Node dans `.claude/hooks/` et testés (`pnpm test`) :
+Le travail se fait en autonomie, par les agents de `CLAUDE.md` : ibrahima code, sofia dessine, cherif-qa teste, le relecteur local relit. Il n'y a plus de hook de fin de tour ni de contrôle du message de commit. Les garde-fous sont :
 
-- **Fin de tour (Stop)** : vérifie le format, le lint et les types des seuls fichiers changés. En cas d'échec, Claude reprend la main avec l'erreur. Si l'échec persiste au tour suivant, il est seulement signalé, pour ne pas tourner en boucle. Pour le couper le temps d'une session : `STOP_CHECK=off claude` (sous PowerShell : `$env:STOP_CHECK='off'; claude`).
-- **Avant une commande Bash** : refuse un `git commit` dont le message ne suit pas [Conventional Commits](https://www.conventionalcommits.org/fr/) (`feat(api): add bookings`), ou qui saute la vérification de pré-commit (`--no-verify`, `-n`, `LEFTHOOK=0`), en expliquant pourquoi.
-- **Avant une écriture de fichier** : refuse d'écrire un secret probable (clé d'API, token, mot de passe en clair, clé privée). Les vraies valeurs vont dans `apps/api/.env`, ignoré par git.
+- **Avant une écriture de fichier** : le hook `secret-guard` (`.claude/hooks/`, testé par `pnpm test`) refuse d'écrire un secret probable (clé d'API, token, mot de passe en clair, clé privée). Les vraies valeurs vont dans `apps/api/.env`, ignoré par git.
+- **Avant chaque commit** : lefthook lance `pnpm verify --staged` (format, lint, types et tests liés aux fichiers commités).
+- **Avant de livrer** : `pnpm check`.
 
-Le sous-agent **relecteur** (`.claude/agents/relecteur.md`) relit une fonctionnalité dans un contexte vierge. Il ne modifie rien et rend un verdict, preuves à l'appui, selon une grille courte (`relecteur-grille.md`) : chaque scénario a un test, aucune règle métier dans le controller, `domain/` reste pur, les erreurs passent par `AppError`. Dans Claude Code : « relis cette fonctionnalité avec le relecteur ».
-
-Côté git, lefthook lance `pnpm verify --staged` avant chaque commit : format, lint, types et tests liés aux fichiers commités.
+Le sous-agent **relecteur** (`.claude/agents/relecteur.md`) relit une fonctionnalité dans un contexte vierge. Il ne modifie rien et rend un verdict, preuves à l'appui, selon une grille courte (`relecteur-grille.md`) : chaque scénario a un test, aucune règle métier dans le controller, `domain/` reste pur, les erreurs passent par `AppError`.
 
 ## Méthode
 
-Développement guidé par la spec, en cinq commandes Claude Code et trois validations humaines :
+Développement guidé par la spec, en cinq commandes Claude Code que l'agent enchaîne seul, sans pause de validation :
 
 ```
-/prd <idée>     → specs/prd-nom.md : la vision, en tranches TR1, TR2… ── challengée, tu valides → Validé
-/spec TRn       → specs/NNN-nom/spec.md (Brouillon) ── tu relis et valides → Validée
-/spec-plan      → plan.md : fichiers, erreurs, tests, 6 tâches au plus ── tu valides → Validé
+/prd <idée>     → specs/prd-nom.md : la vision, en tranches TR1, TR2…
+/spec TRn       → specs/NNN-nom/spec.md : le quoi, en scénarios AS1, AS2…
+/spec-plan      → plan.md : fichiers, erreurs, tests, 6 tâches au plus
 /tdd-task [Tnn] → pour chaque tâche : test rouge → code → vert → un commit
-/converge       → traçabilité + pnpm check + relecteur → « Converged » (spec Implémentée)
+/converge       → traçabilité + pnpm check + QA (cherif-qa) + relecteur → « Converged »
 ```
 
-- **`/prd <idée>`** : pour qui, quel problème, quelle solution, et le découpage en tranches ; Claude pose des questions et dit où la vision est faible, sans la remplacer.
+- **`/prd <idée>`** : pour qui, quel problème, quelle solution, et le découpage en tranches ; les points faibles de la vision deviennent des hypothèses écrites, à contester dans le rapport final.
 - **`/spec TRn`** : le quoi d'une tranche du PRD, sans technique, avec des scénarios `AS1`, `AS2`…
-- **`/spec-plan`** : le comment, sur le modèle du module de référence, un test prévu par scénario.
+- **`/spec-plan`** : le comment, sur le modèle des modules existants (`podiums`), un test prévu par scénario.
 - **`/tdd-task`** : une tâche (`/tdd-task T03`) ou toutes ; `pnpm tdd:red` prouve que le test échoue pour la bonne raison.
-- **`/converge`** : si un manque reste, il devient une tâche ; après deux passages, c'est toi qui tranches.
+- **`/converge`** : si un manque reste, il devient une tâche ; après deux passages, l'agent escalade.
 
 Les règles communes sont dans `specs/constitution.md`. Les scripts `pnpm spec:check`, `tdd:red` et `verify` (`tools/sdd/`) sont les outils des skills ; pour toi, une seule commande : `pnpm check`.
-
-Les hooks (voir ci-dessus) refusent un commit mal nommé ou qui saute `pnpm verify`, et vérifient format, lint et types à chaque fin de tour (`STOP_CHECK=off claude` pour couper ce dernier).
 
 Ces commandes sont une version réduite de [Spec Kit](https://github.com/github/spec-kit) : `/spec` ≈ `/speckit.specify`, `/spec-plan` ≈ `/speckit.plan` + `/speckit.tasks`, `/tdd-task` ≈ `/speckit.implement`, `/converge` ≈ `/speckit.analyze` plus une relecture. Pour passer au cycle complet après la formation (constitution, clarify, checklist), installe la CLI `specify` (Python, via `uv`) et lance `specify init --here --ai claude` dans ton projet.

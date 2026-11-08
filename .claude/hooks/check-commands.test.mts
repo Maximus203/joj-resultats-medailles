@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runHook } from './run-hook.mts';
-import { checkCommands, failureReport, planStopCheck } from './stop-check-core.mts';
+import { checkCommands, failureReport } from './stop-check-core.mts';
 
 const PACKAGES = [
   { dir: 'apps/api', name: '@joj/api' },
@@ -8,26 +7,7 @@ const PACKAGES = [
   { dir: 'packages/shared', name: '@joj/shared' },
 ];
 
-describe('stop-check hook (Stop)', () => {
-  it('does nothing when STOP_CHECK=off or when nothing changed', () => {
-    expect(
-      planStopCheck({ stopHookActive: false, disabled: true, changedFiles: ['a.ts'] }),
-    ).toEqual({ run: false, reason: 'STOP_CHECK=off' });
-    expect(
-      planStopCheck({ stopHookActive: false, disabled: false, changedFiles: [] }),
-    ).toMatchObject({ run: false });
-  });
-
-  it('blocks on the first failure, only warns when the agent is already continuing because of the hook', () => {
-    const input = { disabled: false, changedFiles: ['b.ts', 'a.ts', 'a.ts'] };
-    expect(planStopCheck({ ...input, stopHookActive: false })).toEqual({
-      run: true,
-      files: ['a.ts', 'b.ts'],
-      block: true,
-    });
-    expect(planStopCheck({ ...input, stopHookActive: true })).toMatchObject({ block: false });
-  });
-
+describe('check commands (pnpm verify)', () => {
   it('checks format, lint and types of the changed files and packages only', () => {
     const files = ['apps/api/src/a.ts', 'README.md', 'packages/shared/src/gone.ts'];
     const existing = ['apps/api/src/a.ts', 'README.md'];
@@ -63,14 +43,5 @@ describe('stop-check hook (Stop)', () => {
     expect(report).toMatch(/en échec \(lint\)/);
     expect(report).toContain('ligne 59');
     expect(report).not.toContain('ligne 10\n');
-  });
-
-  it('script: STOP_CHECK=off disables the hook, whatever the input', () => {
-    const { status, stdout, stderr } = runHook(
-      'stop-check.mts',
-      { hook_event_name: 'Stop', stop_hook_active: false },
-      { STOP_CHECK: 'off' },
-    );
-    expect({ status, stdout, stderr }).toEqual({ status: 0, stdout: '', stderr: '' });
   });
 });
