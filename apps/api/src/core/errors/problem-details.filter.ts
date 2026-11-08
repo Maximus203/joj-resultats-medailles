@@ -21,6 +21,7 @@ const STATUS_BY_KIND: Record<ErrorKind, HttpStatus> = {
 };
 
 const INTERNAL_DETAIL = 'An unexpected error occurred.';
+const PAYLOAD_TOO_LARGE_DETAIL = 'Le corps de la requête est trop volumineux.';
 
 /** Seul endroit où une erreur devient une réponse HTTP (RFC 9457, application/problem+json). */
 @Catch()
@@ -75,7 +76,19 @@ export function toProblem(exception: unknown): ProblemDetails {
     };
   }
 
+  // Le lecteur de corps d'Express refuse un corps trop gros avant tout contrôleur.
+  if (isPayloadTooLarge(exception)) {
+    return {
+      ...base(HttpStatus.PAYLOAD_TOO_LARGE, 'PAYLOAD_TOO_LARGE'),
+      detail: PAYLOAD_TOO_LARGE_DETAIL,
+    };
+  }
+
   return { ...base(HttpStatus.INTERNAL_SERVER_ERROR, 'INTERNAL_ERROR'), detail: INTERNAL_DETAIL };
+}
+
+function isPayloadTooLarge(exception: unknown): boolean {
+  return exception instanceof Error && 'type' in exception && exception.type === 'entity.too.large';
 }
 
 function base(status: number, code: string) {
