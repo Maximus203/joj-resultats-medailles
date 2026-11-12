@@ -11,3 +11,4 @@ apps/api/.data/
 .claude/settings.local.json
 .test-shots/
 .vitest/
+.artist/
